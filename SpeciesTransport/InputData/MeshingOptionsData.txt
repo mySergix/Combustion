@@ -1,0 +1,6 @@
+Datos sobre las opciones del mallado del problema a simular
+(No cambiar el formato)
+			
+1.0	Stretching de la función Tanh en Direccion X					(En caso de haber elegido discretización tanh)
+1.0	Stretching de la función Tanh en Direccion Y					(En caso de haber elegido discretización tanh)
+1.0	Stretching de la función Tanh en Direccion Z					(En caso de haber elegido discretización tanh) 

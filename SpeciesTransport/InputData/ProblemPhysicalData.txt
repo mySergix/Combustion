@@ -1,0 +1,10 @@
+Datos físicos sobre el problema a simular y su fluido
+(No cambiar el formato)
+
+Datos físicos:
+1.0	    Densidad del fluido (kg/m3)	
+1.0	    Velocidad de flujo libre (m/s)
+
+0.0 	Gravedad en la dirección X (m/s2)
+0.0	    Gravedad en la dirección Y (m/s2)
+0.0	    Gravedad en la dirección Z (m/s2)

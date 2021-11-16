@@ -1,0 +1,7 @@
+Datos sobre la geometría del problema a simular
+(No cambiar el formato)
+
+Datos geométricos:
+1.0	Coordenada X de todo el dominio	(m)
+1.0	Coordenada Y de todo el dominio	(m)
+1.0	Coordenada Z de todo el dominio	(m)

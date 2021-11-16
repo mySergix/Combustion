@@ -1,0 +1,6 @@
+Datos sobre las especies químicas presentes en la reacción a simular 
+(No cambiar el formato)
+
+O2
+N2
+H2O
