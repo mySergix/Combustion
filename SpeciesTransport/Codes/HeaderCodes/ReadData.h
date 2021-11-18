@@ -35,7 +35,5 @@ class ReadData{
         void ReadDataFileToIntArray(string, int*, int);
 
 		void ReadInputs(Memory); // Lector datos en ficheros
-		//void ReadArrays(string, int , double*);
-
 		
 };
