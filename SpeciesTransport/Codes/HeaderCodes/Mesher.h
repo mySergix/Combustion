@@ -36,6 +36,10 @@ class Mesher{
 
         //Matrices necesarias
         double* M_Nodes;
+        double* M_NodesGlobal;
+
+        double* Test_Mesh;
+        double* Test_MeshGlobal;
 
 		//Constructor de la clase
 		Mesher(ReadData R1, Parallel P1);
@@ -44,6 +48,7 @@ class Mesher{
         void AllocateMemory(Memory);
         void Get_WorksplitInfo(Memory, Parallel);
         void Get_Mesh();
+        void Get_ZeroGlobalMesh();
         void RunMesher(Memory, Parallel);
 			
 };

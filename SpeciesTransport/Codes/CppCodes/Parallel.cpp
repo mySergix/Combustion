@@ -9,15 +9,16 @@
 using namespace std;
 
 #define LM(i,j,k,dim) ((NY + 2*Halo) * (NZ + 2*Halo)) * ((i) - Ix[Rango] + Halo) + ((NZ + 2*Halo) * ((j) + Halo)) + ((k) + Halo) + ((Fx[Rango] - Ix[Rango] + 2*Halo) * (NY + 2*Halo) * (NZ + 2*Halo)) * (dim)
+#define GM(i,j,k,dim) (NY + 2*Halo) * (NZ + 2*Halo) * ((i) + Halo) + (NZ + 2*Halo) * ((j) + Halo) + ((k) + Halo) + (NY + 2*Halo) * (NZ + 2*Halo) * (NX + 2*Halo) * (dim)
 
 Parallel::Parallel(ReadData R1){
 	
     // Data necessary
-    
+
         // Meshing data
-        NX = R1.ProblemNumericalData[1];
-        NY = R1.ProblemNumericalData[2];
-        NZ = R1.ProblemNumericalData[3];
+        NX = R1.ProblemNumericalData[0];
+        NY = R1.ProblemNumericalData[1];
+        NZ = R1.ProblemNumericalData[2];
 
         // Parallel computing data
 		Halo = 2;
@@ -88,7 +89,7 @@ int p;
 }
 
 // Local Matrix Communication
-void Parallel::CommunicateLocalMatrix(double* LocalSend, double* LocalReceive, int* Ix, int* Fx){
+void Parallel::CommunicateLocalMatrix(double* LocalSend, double* LocalReceive){
 MPI_Status ST;	
 
     // Send Everything to the right
@@ -111,6 +112,34 @@ MPI_Status ST;
 		MPI_Recv(&LocalReceive[LM(Fx[Rango], 0, 0, 0)], (Halo)*(NY + 2*Halo)*(NZ + 2*Halo), MPI_DOUBLE, Rango+1, 0, MPI_COMM_WORLD, &ST);
 	}
 	
+}
+
+void Parallel::SendMatrixToZero(double *LocalMatrix, double *GlobalMatrix){
+int i, j, k;
+MPI_Status ST;
+
+	if(Rango != 0){
+		MPI_Send(&LocalMatrix[LM(Ix[Rango], - Halo, - Halo, 0)], (Fx[Rango] - Ix[Rango]) * (NY + 2*Halo) * (NZ + 2*Halo), MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+	}
+	
+	if(Rango == 0){
+
+		for(i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
+			for(j = - Halo; j < NY + Halo; j++){
+				for(k = - Halo; k < NZ + Halo; k++){
+					GlobalMatrix[GM(i,j,k,0)] = LocalMatrix[LM(i,j,k,0)];
+				}		
+			}
+		}
+		
+		for(i = 1; i < Procesos; i++){
+			MPI_Recv(&GlobalMatrix[GM(Ix[i], - Halo, - Halo, 0)], (Fx[i] - Ix[i]) * (NY + 2*Halo) * (NZ + 2*Halo), MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &ST);
+		}
+	
+	}
+
+	MPI_Barrier(MPI_COMM_WORLD);	
+
 }
 
 void Parallel::RunParallel(Memory M1){

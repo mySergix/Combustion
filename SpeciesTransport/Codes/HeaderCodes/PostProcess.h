@@ -3,6 +3,8 @@
 //------------------------------------------------------------------------------------------------//
 
 #include <iostream>
+#include <sstream>
+#include <fstream>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,8 +32,9 @@ class PostProcess{
         int Halo;
 
 		//Constructor de la clase
-		PostProcess(ReadData R1, Parallel P1);
+		PostProcess(Memory M1, ReadData R1, Parallel P1);
 		
 		//Metodos de la clase
-        		
+        void GlobalEscalarVTK(string, string, string, double*, double*, int);
+        	
 };

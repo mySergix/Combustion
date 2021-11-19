@@ -41,7 +41,8 @@ class Parallel{
         void AllocateMemory(Memory);
         void WorkSplit(int, int*, int*);
 
-        void CommunicateLocalMatrix(double*, double*, int*, int*);
+        void CommunicateLocalMatrix(double*, double*);
+        void SendMatrixToZero(double*, double*);
 
 		void RunParallel(Memory);
 

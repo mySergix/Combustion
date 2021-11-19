@@ -10,20 +10,21 @@
 using namespace std;
 
 #define LM(i,j,k,dim) ((NY + 2*Halo) * (NZ + 2*Halo)) * ((i) - Ix[Rango] + Halo) + ((NZ + 2*Halo) * ((j) + Halo)) + ((k) + Halo) + ((Fx[Rango] - Ix[Rango] + 2*Halo) * (NY + 2*Halo) * (NZ + 2*Halo)) * (dim)
+#define GM(i,j,k,dim) (NY + 2*Halo) * (NZ + 2*Halo) * ((i) + Halo) + (NZ + 2*Halo) * ((j) + Halo) + ((k) + Halo) + (NY + 2*Halo) * (NZ + 2*Halo) * (NX + 2*Halo) * (dim)
 
 Mesher::Mesher(ReadData R1, Parallel P1){
 	
     // Data necessary
 
         // Geometry data
-        Xdominio = R1.GeometryData[1];
-        Ydominio = R1.GeometryData[2];
-        Zdominio = R1.GeometryData[3];
+        Xdominio = R1.GeometryData[0];
+        Ydominio = R1.GeometryData[1];
+        Zdominio = R1.GeometryData[2];
 
         // Meshing data
-        NX = R1.ProblemNumericalData[1];
-        NY = R1.ProblemNumericalData[2];
-        NZ = R1.ProblemNumericalData[3];
+        NX = R1.ProblemNumericalData[0];
+        NY = R1.ProblemNumericalData[1];
+        NZ = R1.ProblemNumericalData[2];
 
         // Parallel computing data
         Rango = P1.Rango;
@@ -35,8 +36,16 @@ Mesher::Mesher(ReadData R1, Parallel P1){
 
 void Mesher::AllocateMemory(Memory M1){
 
+    if (Rango == 0){
+        M_NodesGlobal = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 3);
+        Test_MeshGlobal = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+    }
+
     // Mesh 
     M_Nodes = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 3);
+
+    // Scalar field
+    Test_Mesh = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
 
 }
 
@@ -70,10 +79,30 @@ int i, j, k;
 
 }
 
+void Mesher::Get_ZeroGlobalMesh(){
+int i, j, k;
+
+    // Uniform Meshing  
+    for (i = - Halo; i < NX + Halo; i++){
+        for(j =  - Halo; j < NY + Halo; j++){
+            for(k = - Halo; k < NZ + Halo; k++){   
+                M_NodesGlobal[GM(i,j,k,0)] = 0.50 * ((2.0 * i + 1)/(NX + 1)) * Xdominio; // X coordinate
+                M_NodesGlobal[GM(i,j,k,1)] = 0.50 * ((2.0 * j + 1)/(NY + 1)) * Ydominio; // Y coordinate
+                M_NodesGlobal[GM(i,j,k,2)] = 0.50 * ((2.0 * k + 1)/(NZ + 1)) * Zdominio; // Z coordinate
+            }
+        }
+    }
+
+}
+
 void Mesher::RunMesher(Memory M1, Parallel P1){
 
     Get_WorksplitInfo(M1, P1);
     AllocateMemory(M1); 
     Get_Mesh();
+
+    if (Rango == 0){
+        Get_ZeroGlobalMesh();
+    }
 
 }
