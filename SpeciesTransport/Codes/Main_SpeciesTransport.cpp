@@ -1,3 +1,7 @@
+//------------------------------------------------------------------------------------------------//
+//                             MAIN FILE FOR SPECIES TRANSPORT SIMULATION                         //
+//------------------------------------------------------------------------------------------------//
+
 #include <fstream>
 #include <cstdlib>
 #include <iostream>
@@ -11,16 +15,11 @@
 
 #include "HeaderCodes/Memory.h"
 #include "HeaderCodes/ReadData.h"
-//#include "HeaderCodes/CanteraCombustion.h"
+#include "HeaderCodes/Parallel.h"
+#include "HeaderCodes/Mesher.h"
 
-// Clase para leer los input de Cantera
-// Clase para la programacion en paralelo
-// Clase para el mallador
 // Clase para el solver
 // Clase para el postproceso
-
-
-
 
 int main(int argc, char* argv[]){
 
@@ -32,6 +31,11 @@ Memory M1;
 ReadData R1(M1);
 R1.ReadInputs(M1);
 
+Parallel P1(R1);
+P1.RunParallel(M1);
+
+Mesher MESH(R1, P1);
+MESH.RunMesher(M1, P1);
 
 MPI_Finalize();
 

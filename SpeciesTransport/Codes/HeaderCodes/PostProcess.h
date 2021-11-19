@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------//
-//                             HEADER FILE FOR MESH CREATION CLASS                                //
+//                             HEADER FILE FOR POST PROCESSING CLASS                              //
 //------------------------------------------------------------------------------------------------//
 
 #include <iostream>
@@ -10,16 +10,11 @@
 
 using namespace std;
 
-class Mesher{	
+class PostProcess{	
 
 	public:
 
         // Variables de la clase
-
-        // Geometry data
-        double Xdominio;
-        double Ydominio;
-        double Zdominio;
 
         // Meshing data
         int NX;
@@ -34,16 +29,9 @@ class Mesher{
 
         int Halo;
 
-        //Matrices necesarias
-        double* M_Nodes;
-
 		//Constructor de la clase
-		Mesher(ReadData R1, Parallel P1);
+		PostProcess(ReadData R1, Parallel P1);
 		
 		//Metodos de la clase
-        void AllocateMemory(Memory);
-        void Get_WorksplitInfo(Memory, Parallel);
-        void Get_Mesh();
-        void RunMesher(Memory, Parallel);
-			
+        		
 };

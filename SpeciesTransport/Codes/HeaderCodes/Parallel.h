@@ -33,12 +33,16 @@ class Parallel{
 
 
 		//Constructor de la clase
-		Parallel(Memory M1);
+		Parallel(ReadData R1);
 		
 		//Metodos de la clase
         void Rango_Procesos();
         void Total_Procesos();
         void AllocateMemory(Memory);
-        void WorkSplit(int, int&, int&);
-			
+        void WorkSplit(int, int*, int*);
+
+        void CommunicateLocalMatrix(double*, double*, int*, int*);
+
+		void RunParallel(Memory);
+
 };
