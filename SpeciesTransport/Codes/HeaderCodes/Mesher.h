@@ -41,6 +41,9 @@ class Mesher{
         double* Test_Mesh;
         double* Test_MeshGlobal;
 
+        double *Surf;
+        double *Vol;
+        
 		//Constructor de la clase
 		Mesher(ReadData R1, Parallel P1);
 		

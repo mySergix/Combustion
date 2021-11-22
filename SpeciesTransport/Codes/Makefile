@@ -33,4 +33,5 @@ clean:
 	- $(RM) $(CLEAN) $(ExecutableName)
 
 run:
+	
 	mpirun -np 4 ./$(ExecutableName)
