@@ -35,6 +35,7 @@ class PostProcess{
 		PostProcess(Memory M1, ReadData R1, Parallel P1);
 		
 		//Metodos de la clase
-        void GlobalEscalarVTK(string, string, string, double*, double*, int);
-        	
+        void GlobalEscalarVTK(Mesher, string, string, string, double*, int);
+        void GlobalVectorialVTK(Mesher, string, string, string, Global&, int);
+        
 };

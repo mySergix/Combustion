@@ -34,6 +34,8 @@ class CFD_Solver{
 
         int Halo;
 
+        double Beta;
+
         //Matrices necesarias
         double* Test_Mesh;
         double* Test_MeshGlobal;
@@ -43,17 +45,22 @@ class CFD_Solver{
         double *Density;
         double *Density_Convective;
 
-        // Structure for the properties values a the walls
-        struct Walls
+        // Structure for the fields time steps properties
+        struct Property
         {
+            double *Past;
+            double *Pres;
+            double *Fut;
+
+            double *ContributionPast;
+            double *ContributionPres;
+
+            double *Convective;
+
             double *Wall_U;
             double *Wall_V;
             double *Wall_W;
-        };
 
-        // Structure for the boundary conditions
-        struct Boundaries
-        {
             double *Bottom;
             double *Top;
 
@@ -62,33 +69,50 @@ class CFD_Solver{
 
             double *Left;
             double *Right;
-        };
 
-        struct Walls Rho_W;
-        struct Boundaries Rho_Boun;
+        }
 
-        struct Walls U_W;
-        struct Boundaries U_Boun;
+        // Structure for the global matrix of core 0
+        struct Global
+        {
+            double *Density;
+            double *U;
+            double *V;
+            double *W;
+        }
 
-        struct Walls V_W;
-        struct Boundaries V_Boun;
+        struct Property Density;
+        struct Property U;
+        struct Property V;
+        struct Property W;
 
-        struct Walls W_W;
-        struct Boundaries W_Boun;
-
-        
+        struct Global GlobalMatrix;
 
 		//Constructor de la clase
 		CFD_Solver(Memory, ReadData, Parallel);
 		
 		//Metodos de la clase
         void AllocateMemory(Memory);
-        inline double CS(double, double, double, double, double, double, double, double, double, double);      
+        void Allocate_StructureMemory(Memory, Property&);
+
+        inline double CS(double, double, double, double, double, double, double, double, double, double);   
+        void Set_InitialValues();
 		void Get_BoundaryConditions();
+        void Update_BoundaryConditions();
+        void Get_TimeStep(Mesher);
+
         void CommunicateVelocities(Parallel, double*, double*, double*);
-        void ApplyBoundaries(Walls&, Boundaries&);
-        void Get_WallsProperty_Scalar(Parallel, double*, double*, double*, double*, double*, Walls&, Boundaries&);
-        void Get_WallsVelocities(double*, double*, double*, double*, Walls&, Boundaries&, Walls&, Boundaries&, Walls&, Boundaries&);
-        void Get_ConvectiveTermScalar(Mesher, Walls&, double*);
+        void ApplyBoundaries(Property&);
+        void Get_WallsValue_Scalar(Parallel, double*, Property&);
+        void Get_WallsVelocities(Mesher);
+        void Get_ConvectiveTerm(Mesher, Property&);
+
+        void Get_TemporalIntegration(Property&);
+
+        void Get_MaximumDifference(Property&, double&);
+
+        void UpdateField(Property&);
+
+        void RunSolver(Memory, Parallel, Mesher, PostProcess);
 
 };
