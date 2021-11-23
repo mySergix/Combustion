@@ -35,23 +35,27 @@ class Mesher{
         int Halo;
 
         //Matrices necesarias
-        double* M_Nodes;
-        double* M_NodesGlobal;
-
-        double* Test_Mesh;
-        double* Test_MeshGlobal;
-
-        double *Surf;
-        double *Vol;
+        double *Node_Mesh; // Nodal mesh
+        double *DeltaP; // Deltas (distance) of the nodal mesh
+        double *Surf; // Finite volume walls surface
+        double *Vol; // Finite volumes volume
         
+        // Global matrix
+        double *Global_Node_Mesh;
+
 		//Constructor de la clase
-		Mesher(ReadData R1, Parallel P1);
+		Mesher(Memory, ReadData, Parallel);
 		
 		//Metodos de la clase
         void AllocateMemory(Memory);
-        void Get_WorksplitInfo(Memory, Parallel);
-        void Get_Mesh();
-        void Get_ZeroGlobalMesh();
-        void RunMesher(Memory, Parallel);
+        
+        void Get_LocalMeshes();
+        void Get_LocalMesh_Deltas();
+        void Get_LocalMesh_Surfaces();
+        void Get_LocalMesh_Volumes();
+
+        void Get_GlobalMesh();
+
+        void RunMesher(Memory);
 			
 };

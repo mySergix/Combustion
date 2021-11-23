@@ -63,7 +63,7 @@ int i, j, k;
 	for(k = - HALO; k < NZ + HALO; k++){
 		for(j = - HALO; j < NY + HALO; j++){
 			for(i = - HALO; i < NX + HALO; i++){
-				file<<MESH.Node_Mesh[GM(i,j,k,0)]<<"   "<<MESH.Node_Mesh[GM(i,j,k,1)]<<"   "<<MESH.Node_Mesh[GM(i,j,k,2)]<<endl;
+				file<<MESH.Global_Node_Mesh[GM(i,j,k,0)]<<"   "<<MESH.Global_Node_Mesh[GM(i,j,k,1)]<<"   "<<MESH.Global_Node_Mesh[GM(i,j,k,2)]<<endl;
 			}
 		}
 	}
