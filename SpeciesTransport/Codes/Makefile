@@ -10,9 +10,9 @@ Class_1 = Memory
 Class_2 = ReadData
 Class_3 = Parallel
 Class_4 = Mesher
-Class_5 = CFD_Solver
-Class_6 = Species_Solver
-Class_7 = PostProcess
+Class_5 = PostProcess
+Class_6 = CFD_Solver
+Class_7 = Species_Solver
 
 Directorio_Clases = CppCodes/
 

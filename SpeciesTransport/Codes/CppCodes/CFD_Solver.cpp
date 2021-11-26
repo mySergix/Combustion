@@ -6,9 +6,10 @@
 #include "../HeaderCodes/ReadData.h"
 #include "../HeaderCodes/Parallel.h"
 #include "../HeaderCodes/Mesher.h"
+#include "../HeaderCodes/PostProcess.h"
 #include "../HeaderCodes/CFD_Solver.h"
 #include "../HeaderCodes/Species_Solver.h"
-#include "../HeaderCodes/PostProcess.h"
+
 
 
 using namespace std;
@@ -53,6 +54,7 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
         Halo = 2;
 
         Beta = 0.6;
+        GlobalConvergence = 1e-5;
 
 };
 
@@ -89,17 +91,17 @@ void CFD_Solver::Allocate_StructureMemory(Memory M1, Property &PropertyName){
     PropertyName.ContributionPast = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
     PropertyName.ContributionPres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
     
-    PropertyName.Bottom = M1.AllocateDouble(Fx[Rango] - Ix[Rango], 1, NZ, 1);
-    PropertyName.Top = M1.AllocateDouble(Fx[Rango] - Ix[Rango], 1, NZ, 1);
+    PropertyName.Bottom = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, 1, NZ + 2*Halo, 1);
+    PropertyName.Top = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, 1, NZ + 2*Halo, 1);
 
-    PropertyName.Here = M1.AllocateDouble(Fx[Rango] - Ix[Rango], NY, 1, 1);
-    PropertyName.There = M1.AllocateDouble(Fx[Rango] - Ix[Rango], NY, 1, 1);
+    PropertyName.Here = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo, 1, 1);
+    PropertyName.There = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo, 1, 1);
 
     if (Rango == 0){
-        PropertyName.Left = M1.AllocateDouble(Fx[Rango] - Ix[Rango], 1, NZ, 1);     
+        PropertyName.Left = M1.AllocateDouble(1, NY + 2*Halo, NZ + 2*Halo, 1);     
     }
     if (Rango == Procesos - 1){
-        PropertyName.Right = M1.AllocateDouble(Fx[Rango] - Ix[Rango], 1, NZ, 1);
+        PropertyName.Right = M1.AllocateDouble(1, NY + 2*Halo, NZ + 2*Halo, 1);  
     }
 
 }
@@ -490,7 +492,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                MaxDiff += (abs((PropertyName.Fut[LM(i,j,k,0)] - PropertyName.Pres[LM(i,j,k,0)]) / PropertyName.Pres[LM(i,j,k,0)]) - MaxDiff) * (abs((PropertyName.Fut[LM(i,j,k,0)] - PropertyName.Pres[LM(i,j,k,0)]) / PropertyName.Pres[LM(i,j,k,0)]) > MaxDiff);
+                MaxDiff += (abs((PropertyName.Fut[LM(i,j,k,0)] - PropertyName.Pres[LM(i,j,k,0)]) / (PropertyName.Pres[LM(i,j,k,0)] + 1e-10)) - MaxDiff) * (abs((PropertyName.Fut[LM(i,j,k,0)] - PropertyName.Pres[LM(i,j,k,0)]) / (PropertyName.Pres[LM(i,j,k,0)] + 1e-10)) > MaxDiff);
             }
         }
     }
@@ -522,7 +524,8 @@ void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcess PP1)
     AllocateMemory(M1); // Allocate memory for the matrix
     Set_InitialValues(); // Get the inital values of the properties
     Get_BoundaryConditions(); // Get the fixed boundary conditions
-
+    
+    
     while (MaxDiff >= GlobalConvergence){
 
         Step++;
@@ -536,19 +539,20 @@ void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcess PP1)
 
         Get_ConvectiveTerm(MESH, Density);
         Get_TemporalIntegration(Density);
-
-        if (Step % 100 == 0){
-            P1.SendMatrixToZero(Density.Pres, GlobalMatrix.Density);
-
+        
+        if (Step % 1 == 0){
+            Get_ConvergenceCriteria();
+            //P1.SendMatrixToZero(Density.Pres, GlobalMatrix.Density);
+            
             if (Rango == 0){
-                sprintf(FileName_1, "Density_Field_Step_%d", Step);
-                PP1.GlobalEscalarVTK(MESH, "CombustionResults", "Densidad", FileName_1, GlobalMatrix.Density, 0);
+                cout<<"Step: "<<Step<<", Total time: "<<Time<<", MaxDif: "<<MaxDiff<<endl;
+                //sprintf(FileName_1, "Density_Field_Step_%d", Step);
+                //PP1.GlobalEscalarVTK(MESH, "CombustionResults", "Densidad", FileName_1, GlobalMatrix.Density, 0);
             }
 
-            MPI_Barrier(MPI_COMM_WORLD);	
+            //MPI_Barrier(MPI_COMM_WORLD);	
         }
-
-        Get_ConvergenceCriteria();
+        
         UpdateField(Density);
 
     }

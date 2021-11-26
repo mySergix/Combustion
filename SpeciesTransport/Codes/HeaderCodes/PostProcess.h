@@ -31,8 +31,16 @@ class PostProcess{
 
         int Halo;
 
+        struct Global
+        {
+            double *Density;
+            double *U;
+            double *V;
+            double *W;
+        };
+
 		//Constructor de la clase
-		PostProcess(Memory M1, ReadData R1, Parallel P1);
+		PostProcess(Memory, ReadData, Parallel);
 		
 		//Metodos de la clase
         void GlobalEscalarVTK(Mesher, string, string, string, double*, int);

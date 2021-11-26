@@ -17,9 +17,10 @@
 #include "HeaderCodes/ReadData.h"
 #include "HeaderCodes/Parallel.h"
 #include "HeaderCodes/Mesher.h"
+#include "HeaderCodes/PostProcess.h"
 #include "HeaderCodes/CFD_Solver.h"
 #include "HeaderCodes/Species_Solver.h"
-#include "HeaderCodes/PostProcess.h"
+
 
 int main(int argc, char* argv[]){
 
@@ -34,14 +35,15 @@ R1.ReadInputs(M1);
 Parallel P1(R1);
 P1.RunParallel(M1);
 
-Mesher MESH(R1, P1);
-MESH.RunMesher(M1, P1);
+Mesher MESH(M1, R1, P1);
+MESH.RunMesher(M1);
 
+PostProcess PP1(M1, R1, P1);
 CFD_Solver CFD_S1(M1, R1, P1);
 
 Species_Solver SPE_S1(M1, R1, P1);
 
-PostProcess PP1(M1, R1, P1);
+CFD_S1.RunSolver(M1, P1, MESH, PP1);
 
 MPI_Finalize();
 

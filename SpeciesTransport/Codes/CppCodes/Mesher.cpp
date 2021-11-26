@@ -33,7 +33,7 @@ Mesher::Mesher(Memory M1, ReadData R1, Parallel P1){
         Ix = M1.AllocateInt(Procesos, 1, 1, 1);
         Fx = M1.AllocateInt(Procesos, 1, 1, 1);
 
-        for (i = 0; i < Procesos; i++){
+        for (int i = 0; i < Procesos; i++){
             Ix[i] = P1.Ix[i];
             Fx[i] = P1.Fx[i];
         }
@@ -81,7 +81,7 @@ int i, j, k;
 
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
-            for (k = 0, k < NZ; k++){
+            for (k = 0; k < NZ; k++){
                 DeltaP[LM(i,j,k,0)] = 0.50 * (Node_Mesh[LM(i+1,j,k,0)] - Node_Mesh[LM(i-1,j,k,0)]);
                 DeltaP[LM(i,j,k,1)] = 0.50 * (Node_Mesh[LM(i,j+1,k,1)] - Node_Mesh[LM(i,j-1,k,1)]);
                 DeltaP[LM(i,j,k,2)] = 0.50 * (Node_Mesh[LM(i,j,k+1,2)] - Node_Mesh[LM(i,j,k-1,2)]);
@@ -96,7 +96,7 @@ int i, j, k;
  
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
-            for (k = 0, k < NZ; k++){
+            for (k = 0; k < NZ; k++){
                 Surf[LM(i,j,k,0)] = DeltaP[LM(i,j,k,1)] * DeltaP[LM(i,j,k,2)];
                 Surf[LM(i,j,k,1)] = DeltaP[LM(i,j,k,0)] * DeltaP[LM(i,j,k,2)];
                 Surf[LM(i,j,k,2)] = DeltaP[LM(i,j,k,0)] * DeltaP[LM(i,j,k,1)];
@@ -112,7 +112,7 @@ int i, j, k;
 
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
-            for (k = 0, k < NZ; k++){
+            for (k = 0; k < NZ; k++){
                 Vol[LM(i,j,k,0)] = DeltaP[LM(i,j,k,0)] * DeltaP[LM(i,j,k,1)] * DeltaP[LM(i,j,k,2)];
             }
         }

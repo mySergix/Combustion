@@ -36,14 +36,9 @@ class CFD_Solver{
 
         double Beta;
 
-        //Matrices necesarias
-        double* Test_Mesh;
-        double* Test_MeshGlobal;
-
-        
-        // Mass Conservation
-        double *Density;
-        double *Density_Convective;
+        double DeltaT;
+        double MaxDiff;
+        double GlobalConvergence;
 
         // Structure for the fields time steps properties
         struct Property
@@ -70,7 +65,7 @@ class CFD_Solver{
             double *Left;
             double *Right;
 
-        }
+        };
 
         // Structure for the global matrix of core 0
         struct Global
@@ -79,7 +74,7 @@ class CFD_Solver{
             double *U;
             double *V;
             double *W;
-        }
+        };
 
         struct Property Density;
         struct Property U;
@@ -110,6 +105,7 @@ class CFD_Solver{
         void Get_TemporalIntegration(Property&);
 
         void Get_MaximumDifference(Property&, double&);
+        void Get_ConvergenceCriteria();
 
         void UpdateField(Property&);
 
