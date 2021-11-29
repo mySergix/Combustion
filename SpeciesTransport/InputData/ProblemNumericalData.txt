@@ -2,9 +2,9 @@ Datos sobre el problema a simular
 (No cambiar el formato)
 			
 Datos numéricos:
-80	Número de nodos en la dirección X
-80	Número de nodos en la dirección Y
-20  Número de nodos en la dirección Z
+60	Número de nodos en la dirección X
+40	Número de nodos en la dirección Y
+40  Número de nodos en la dirección Z
 
 1	Tipo de discretización en la dirección X			(1 -> Discretización Regular, Uniforme)
 1	Tipo de discretización en la dirección Y			(2 -> Discretización Tanh, Más densa en los extremos)

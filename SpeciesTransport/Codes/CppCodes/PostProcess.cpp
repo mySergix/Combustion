@@ -60,9 +60,10 @@ int i, j, k;
     file<<endl;
     file<<"POINTS"<<"   "<<(NX + 2*HALO) * (NY + 2*HALO) * (NZ + 2*HALO)<<"   "<<"double"<<endl;
 	
-	for(k = - HALO; k < NZ + HALO; k++){
+    
+    for(k = - HALO; k < NZ + HALO; k++){
 		for(j = - HALO; j < NY + HALO; j++){
-			for(i = - HALO; i < NX + HALO; i++){
+            for(i = - HALO; i < NX + HALO; i++){
 				file<<MESH.Global_Node_Mesh[GM(i,j,k,0)]<<"   "<<MESH.Global_Node_Mesh[GM(i,j,k,1)]<<"   "<<MESH.Global_Node_Mesh[GM(i,j,k,2)]<<endl;
 			}
 		}
@@ -73,13 +74,14 @@ int i, j, k;
     file<<"SCALARS "<<Variable<<" double"<<endl;
     file<<"LOOKUP_TABLE"<<"   "<<Variable<<endl;
     file<<endl;
-	for(k = - HALO; k < NZ + HALO; k++){
-		for(j = - HALO; j < NY + HALO; j++){
-			for(i = - HALO; i < NX + HALO; i++){
+	
+    for(k = - HALO; k < NZ + HALO; k++){
+        for(j = - HALO; j < NY + HALO; j++){
+            for(i = - HALO; i < NX + HALO; i++){      			
 				file<<ScalarMatrix[GM(i,j,k,0)]<<" ";
-			}
+            }
 		}
-	}
+    }
 
     file.close();
 

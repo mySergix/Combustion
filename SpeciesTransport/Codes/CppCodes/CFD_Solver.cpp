@@ -56,6 +56,8 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
         Beta = 0.6;
         GlobalConvergence = 1e-5;
 
+        c = 340;
+
 };
 
 // Function to allocate memory for all matrix
@@ -72,6 +74,16 @@ void CFD_Solver::AllocateMemory(Memory M1){
 
     // Velocity W
     Allocate_StructureMemory(M1, W);
+
+    if (Rango == 0){
+        GlobalMatrix.Density = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+    }
+
+    Pressure.Pres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+
+    Pressure.Gradient_X = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+    Pressure.Gradient_Y = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+    Pressure.Gradient_Z = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
 
 }
 
@@ -129,7 +141,7 @@ double PhiC_, XC_, XE_, PHIE_, PhiE;
     }
 
     // Non - Dimensionalization
-    PhiC_ = (PHIC - PHIU) / (PHID - PHIU);
+    PhiC_ = (PHIC - PHIU) / (PHID - PHIU + 1e-10);
     XC_ = (XC - XU) / (XD - XU);
     XE_ = (X - XU) / (XD - XU);
 
@@ -192,7 +204,7 @@ int i, j, k;
             for (k = - Halo; k < NZ + Halo; k++){
 
                 Density.Left[LEF_RIG(0,j,k,0)] = 1.0; // Density
-                U.Left[LEF_RIG(0,j,k,0)] = 1.0; // Velocity U
+                U.Left[LEF_RIG(0,j,k,0)] = 10.0; // Velocity U
                 V.Left[LEF_RIG(0,j,k,0)] = 0.0; // Velocity V
                 W.Left[LEF_RIG(0,j,k,0)] = 0.0; // Velocity W
 
@@ -207,9 +219,10 @@ int i, j, k;
 void CFD_Solver::Update_BoundaryConditions(){
 int i, j, k;
 
-    // Density Right Side
+    
     if (Rango == Procesos - 1){
 
+        // Right Side
         for (j = - Halo; j < NY + Halo; j++){
             for (k = - Halo; k < NZ + Halo; k++){
                 Density.Right[LEF_RIG(0,j,k,0)] = Density.Pres[LM(NX-1,j,k,0)]; // Density
@@ -219,6 +232,64 @@ int i, j, k;
             }
         }
         
+        // Pressure Right Side
+        for (i = NX; i < NX + Halo; i++){
+            for (j = - Halo; j < NY + Halo; j++){
+                for (k = - Halo; k < NZ + Halo; k++){
+                    Pressure.Pres[LM(i,j,k,0)] = Pressure.Pres[LM(NX-1,j,k,0)]; // Pressure
+                }
+            }
+        }
+
+    }
+
+    if (Rango == 0){
+
+        // Pressure Left Side
+        for (i = - Halo; i < 0; i++){
+            for (j = - Halo; j < NY + Halo; j++){
+                for (k = - Halo; k < NZ + Halo; k++){
+                    Pressure.Pres[LM(i,j,k,0)] = Pressure.Pres[LM(0,j,k,0)]; // Pressure
+                }
+            }
+        }
+
+    }
+
+    // Pressure Bottom
+    for (i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
+        for (j = - Halo; j < 0; j++){
+            for (k = - Halo; k < NZ + Halo; k++){
+                Pressure.Pres[LM(i,j,k,0)] = Pressure.Pres[LM(i,0,k,0)];
+            }
+        }
+    }
+
+    // Pressure Top
+    for (i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
+        for (j = NY; j < NY + Halo; j++){
+            for (k = - Halo; k < NZ + Halo; k++){
+                Pressure.Pres[LM(i,j,k,0)] = Pressure.Pres[LM(i,NY-1,k,0)];
+            }
+        }
+    }
+
+    // Pressure Here
+    for (i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
+        for (j = - Halo; j < NY + Halo; j++){
+            for (k = - Halo; k < 0; k++){
+                Pressure.Pres[LM(i,j,k,0)] = Pressure.Pres[i,j,NX + k,0];
+            }
+        }
+    }
+
+    // Pressure There
+    for (i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
+        for (j = - Halo; j < NY + Halo; j++){
+            for (k = NX; k < NX + Halo; k++){
+                Pressure.Pres[LM(i,j,k,0)] = Pressure.Pres[i,j,k - NX,0];
+            }
+        }
     }
 
 }
@@ -230,8 +301,8 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                Density.Pres[LM(i,j,k,0)] = 1.0;
-                Density.Past[LM(i,j,k,0)] = 1.0;
+                Density.Pres[LM(i,j,k,0)] = 0.95;
+                Density.Past[LM(i,j,k,0)] = 0.95;
             }
         }
     }
@@ -242,8 +313,8 @@ int i, j, k;
             for (k = 0; k < NZ; k++){
 
                 // Velocity U
-                U.Pres[LM(i,j,k,0)] = 1.0;
-                U.Past[LM(i,j,k,0)] = 1.0;
+                U.Pres[LM(i,j,k,0)] = 10.0;
+                U.Past[LM(i,j,k,0)] = 10.0;
 
                 // Velocity V
                 V.Pres[LM(i,j,k,0)] = 0.0;
@@ -286,13 +357,13 @@ MPI_Status ST;
                 // CFL Convective
 
                     // Velocity U
-                    DeltaT += (Courant * (MESH.DeltaP[LM(i,j,k,0)] / (abs(U.Pres[LM(i,j,k,0)]) + 1e-10)) - DeltaT) * (Courant * (MESH.DeltaP[LM(i,j,k,0)] / (abs(U.Pres[LM(i,j,k,0)]) + 1e-10)) < DeltaT);
+                    DeltaT += (Courant * (MESH.DeltaP[LM(i,j,k,0)] / (abs(U.Pres[LM(i,j,k,0)]) + c + 1e-10)) - DeltaT) * (Courant * (MESH.DeltaP[LM(i,j,k,0)] / (abs(U.Pres[LM(i,j,k,0)]) + c + 1e-10)) < DeltaT);
 
                     // Velocity V
-                    DeltaT += (Courant * (MESH.DeltaP[LM(i,j,k,1)] / (abs(V.Pres[LM(i,j,k,0)]) + 1e-10)) - DeltaT) * (Courant * (MESH.DeltaP[LM(i,j,k,1)] / (abs(V.Pres[LM(i,j,k,0)]) + 1e-10)) < DeltaT);
+                    DeltaT += (Courant * (MESH.DeltaP[LM(i,j,k,1)] / (abs(V.Pres[LM(i,j,k,0)]) + c + 1e-10)) - DeltaT) * (Courant * (MESH.DeltaP[LM(i,j,k,1)] / (abs(V.Pres[LM(i,j,k,0)]) + c + 1e-10)) < DeltaT);
 
                     // Velocity W
-                    DeltaT += (Courant * (MESH.DeltaP[LM(i,j,k,2)] / (abs(W.Pres[LM(i,j,k,0)]) + 1e-10)) - DeltaT) * (Courant * (MESH.DeltaP[LM(i,j,k,2)] / (abs(W.Pres[LM(i,j,k,0)]) + 1e-10)) < DeltaT);
+                    DeltaT += (Courant * (MESH.DeltaP[LM(i,j,k,2)] / (abs(W.Pres[LM(i,j,k,0)]) + c + 1e-10)) - DeltaT) * (Courant * (MESH.DeltaP[LM(i,j,k,2)] / (abs(W.Pres[LM(i,j,k,0)]) + c + 1e-10)) < DeltaT);
             
             }
         }
@@ -313,7 +384,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango] + 1; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                PropertyName.Wall_U[LMU(i,j,k,0)] = CS(0.50 * (Mesh[LM(i - 1,j,k,0)] + Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]), Mesh[LM(i-2,j,k,0)], PropertyName.Pres[LM(i-2,j,k,0)], Mesh[LM(i-1,j,k,0)], PropertyName.Pres[LM(i-1,j,k,0)], Mesh[LM(i,j,k,0)], PropertyName.Pres[LM(i,j,k,0)], Mesh[LM(i+1,j,k,0)], PropertyName.Pres[LM(i+1,j,k,0)]);
+                PropertyName.Wall_U[LMU(i,j,k,0)] = CS(0.50 * (Mesh[LM(i - 1,j,k,0)] + Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]), Mesh[LM(i-2,j,k,0)], PropertyName.Pres[LM(i-2,j,k,0)], Mesh[LM(i-1,j,k,0)], PropertyName.Pres[LM(i-1,j,k,0)], Mesh[LM(i,j,k,0)], PropertyName.Pres[LM(i,j,k,0)], Mesh[LM(i+1,j,k,0)], PropertyName.Pres[LM(i+1,j,k,0)]); 
             }
         }
     }
@@ -322,7 +393,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 1; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                PropertyName.Wall_V[LMV(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j-1,k,1)] + Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]), Mesh[LM(i,j-2,k,1)], PropertyName.Pres[LM(i,j-2,k,0)], Mesh[LM(i,j-1,k,1)], PropertyName.Pres[LM(i,j-1,k,0)], Mesh[LM(i,j,k,1)], PropertyName.Pres[LM(i,j,k,0)], Mesh[LM(i,j+1,k,1)], PropertyName.Pres[LM(i,j+1,k,0)]);
+                PropertyName.Wall_V[LMV(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j-1,k,1)] + Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]), Mesh[LM(i,j-2,k,1)], PropertyName.Pres[LM(i,j-2,k,0)], Mesh[LM(i,j-1,k,1)], PropertyName.Pres[LM(i,j-1,k,0)], Mesh[LM(i,j,k,1)], PropertyName.Pres[LM(i,j,k,0)], Mesh[LM(i,j+1,k,1)], PropertyName.Pres[LM(i,j+1,k,0)]);       
             }
         }
     }
@@ -357,7 +428,7 @@ int i, j, k;
     if (Rango == Procesos - 1){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){               
-                PropertyName.Wall_U[LMU(NX,j,k,0)] = PropertyName.Left[LEF_RIG(NX,j,k,0)];
+                PropertyName.Wall_U[LMU(NX,j,k,0)] = PropertyName.Right[LEF_RIG(NX,j,k,0)];
             }
         }
     }
@@ -395,6 +466,8 @@ int i, j, k;
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
                 U.Wall_U[LMU(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i - 1,j,k,0)] + MESH.Node_Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i-2,j,k,0)], U.Pres[LM(i-2,j,k,0)], MESH.Node_Mesh[LM(i-1,j,k,0)], U.Pres[LM(i-1,j,k,0)], MESH.Node_Mesh[LM(i,j,k,0)], U.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i+1,j,k,0)], U.Pres[LM(i+1,j,k,0)]);
+                V.Wall_U[LMU(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i - 1,j,k,0)] + MESH.Node_Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i-2,j,k,0)], V.Pres[LM(i-2,j,k,0)], MESH.Node_Mesh[LM(i-1,j,k,0)], V.Pres[LM(i-1,j,k,0)], MESH.Node_Mesh[LM(i,j,k,0)], V.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i+1,j,k,0)], V.Pres[LM(i+1,j,k,0)]);
+                W.Wall_U[LMU(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i - 1,j,k,0)] + MESH.Node_Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i-2,j,k,0)], W.Pres[LM(i-2,j,k,0)], MESH.Node_Mesh[LM(i-1,j,k,0)], W.Pres[LM(i-1,j,k,0)], MESH.Node_Mesh[LM(i,j,k,0)], W.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i+1,j,k,0)], W.Pres[LM(i+1,j,k,0)]);
             }
         }
     }
@@ -405,7 +478,9 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 1; j < NY; j++){
             for (k = 0; k < NZ; k++){
+                U.Wall_V[LMV(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j-1,k,1)] + MESH.Node_Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i,j-2,k,1)], U.Pres[LM(i,j-2,k,0)], MESH.Node_Mesh[LM(i,j-1,k,1)], U.Pres[LM(i,j-1,k,0)], MESH.Node_Mesh[LM(i,j,k,1)], U.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j+1,k,1)], U.Pres[LM(i,j+1,k,0)]);
                 V.Wall_V[LMV(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j-1,k,1)] + MESH.Node_Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i,j-2,k,1)], V.Pres[LM(i,j-2,k,0)], MESH.Node_Mesh[LM(i,j-1,k,1)], V.Pres[LM(i,j-1,k,0)], MESH.Node_Mesh[LM(i,j,k,1)], V.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j+1,k,1)], V.Pres[LM(i,j+1,k,0)]);
+                W.Wall_V[LMV(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j-1,k,1)] + MESH.Node_Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i,j-2,k,1)], W.Pres[LM(i,j-2,k,0)], MESH.Node_Mesh[LM(i,j-1,k,1)], W.Pres[LM(i,j-1,k,0)], MESH.Node_Mesh[LM(i,j,k,1)], W.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j+1,k,1)], W.Pres[LM(i,j+1,k,0)]);
             }
         }
     }
@@ -416,7 +491,9 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 1; k < NZ; k++){
-                W.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j,k-1,2)] + MESH.Node_Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i,j,k-2,2)], W.Pres[LM(i,j,k-2,0)], MESH.Node_Mesh[LM(i,j,k-2,2)], W.Pres[LM(i,j-1,k,0)], MESH.Node_Mesh[LM(i,j,k,2)], W.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j,k+1,2)], W.Pres[LM(i,j,k+1,0)]);
+                U.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j,k-1,2)] + MESH.Node_Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i,j,k-2,2)], U.Pres[LM(i,j,k-2,0)], MESH.Node_Mesh[LM(i,j,k-1,2)], U.Pres[LM(i,j,k-1,0)], MESH.Node_Mesh[LM(i,j,k,2)], U.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j,k+1,2)], U.Pres[LM(i,j,k+1,0)]);
+                V.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j,k-1,2)] + MESH.Node_Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i,j,k-2,2)], V.Pres[LM(i,j,k-2,0)], MESH.Node_Mesh[LM(i,j,k-1,2)], V.Pres[LM(i,j,k-1,0)], MESH.Node_Mesh[LM(i,j,k,2)], V.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j,k+1,2)], V.Pres[LM(i,j,k+1,0)]);
+                W.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j,k-1,2)] + MESH.Node_Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i,j,k-2,2)], W.Pres[LM(i,j,k-2,0)], MESH.Node_Mesh[LM(i,j,k-1,2)], W.Pres[LM(i,j,k-1,0)], MESH.Node_Mesh[LM(i,j,k,2)], W.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j,k+1,2)], W.Pres[LM(i,j,k+1,0)]);
             }
         }
     }
@@ -433,13 +510,81 @@ int i, j, k;
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
                 PropertyName.Convective[LM(i,j,k,0)] = 1.0/MESH.Vol[LM(i,j,k,0)] * (
-                                                     + MESH.Surf[LM(i,j,k,0)] * PropertyName.Wall_U[LMU(i+1,j,k,0)] * PropertyName.Wall_U[LMU(i+1,j,k,0)]
-                                                     - MESH.Surf[LM(i,j,k,0)] * PropertyName.Wall_U[LMU(i,j,k,0)] * PropertyName.Wall_U[LMU(i,j,k,0)]
-                                                     + MESH.Surf[LM(i,j,k,1)] * PropertyName.Wall_V[LMV(i,j+1,k,0)] * PropertyName.Wall_V[LMV(i,j+1,k,0)]
-                                                     - MESH.Surf[LM(i,j,k,1)] * PropertyName.Wall_V[LMV(i,j,k,0)] * PropertyName.Wall_V[LMV(i,j,k,0)]
-                                                     + MESH.Surf[LM(i,j,k,2)] * PropertyName.Wall_W[LMW(i,j,k+1,0)] * PropertyName.Wall_W[LMW(i,j,k+1,0)]
-                                                     - MESH.Surf[LM(i,j,k,2)] * PropertyName.Wall_W[LMW(i,j,k,0)] * PropertyName.Wall_W[LMW(i,j,k,0)]
+                                                     + MESH.Surf[LM(i,j,k,0)] * U.Wall_U[LMU(i+1,j,k,0)] * PropertyName.Wall_U[LMU(i+1,j,k,0)]
+                                                     - MESH.Surf[LM(i,j,k,0)] * U.Wall_U[LMU(i,j,k,0)] * PropertyName.Wall_U[LMU(i,j,k,0)]
+                                                     + MESH.Surf[LM(i,j,k,1)] * V.Wall_V[LMV(i,j+1,k,0)] * PropertyName.Wall_V[LMV(i,j+1,k,0)]
+                                                     - MESH.Surf[LM(i,j,k,1)] * V.Wall_V[LMV(i,j,k,0)] * PropertyName.Wall_V[LMV(i,j,k,0)]
+                                                     + MESH.Surf[LM(i,j,k,2)] * W.Wall_W[LMW(i,j,k+1,0)] * PropertyName.Wall_W[LMW(i,j,k+1,0)]
+                                                     - MESH.Surf[LM(i,j,k,2)] * W.Wall_W[LMW(i,j,k,0)] * PropertyName.Wall_W[LMW(i,j,k,0)]
                                                      );
+            }
+        }
+    }
+
+}
+
+//Function to calculate the pressure
+void CFD_Solver::Get_Pressure(){
+int i, j, k;
+
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+                Pressure.Pres[LM(i,j,k,0)] = Density.Pres[LM(i,j,k,0)] * 8.314 * 298.15;
+            }
+        }
+    }
+
+}
+
+// Function to calculate the pressure gradient
+void CFD_Solver::Get_PressureGradient(Mesher MESH){
+int i, j, k;
+double Px_1, Px_2, Py_1, Py_2, Pz_1, Pz_2;
+
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+                Px_1 = CS(0.50 * (MESH.Node_Mesh[LM(i - 1,j,k,0)] + MESH.Node_Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i-2,j,k,0)], Pressure.Pres[LM(i-2,j,k,0)], MESH.Node_Mesh[LM(i-1,j,k,0)], Pressure.Pres[LM(i-1,j,k,0)], MESH.Node_Mesh[LM(i,j,k,0)], Pressure.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i+1,j,k,0)], Pressure.Pres[LM(i+1,j,k,0)]);
+                Px_2 = CS(0.50 * (MESH.Node_Mesh[LM(i,j,k,0)] + MESH.Node_Mesh[LM(i + 1,j,k,0)]), 0.50 * (U.Pres[LM(i,j,k,0)] + U.Pres[LM(i + 1,j,k,0)]), MESH.Node_Mesh[LM(i-1,j,k,0)], Pressure.Pres[LM(i-1,j,k,0)], MESH.Node_Mesh[LM(i,j,k,0)], Pressure.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i+1,j,k,0)], Pressure.Pres[LM(i+1,j,k,0)], MESH.Node_Mesh[LM(i+2,j,k,0)], Pressure.Pres[LM(i+2,j,k,0)]);
+                
+                Py_1 = CS(0.50 * (MESH.Node_Mesh[LM(i,j-1,k,1)] + MESH.Node_Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i,j-2,k,1)], Pressure.Pres[LM(i,j-2,k,0)], MESH.Node_Mesh[LM(i,j-1,k,1)], Pressure.Pres[LM(i,j-1,k,0)], MESH.Node_Mesh[LM(i,j,k,1)], Pressure.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j+1,k,1)], Pressure.Pres[LM(i,j+1,k,0)]);
+                Py_2 = CS(0.50 * (MESH.Node_Mesh[LM(i,j,k,1)] + MESH.Node_Mesh[LM(i,j+1,k,1)]), 0.50 * (V.Pres[LM(i,j,k,0)] + V.Pres[LM(i,j+1,k,0)]), MESH.Node_Mesh[LM(i,j-1,k,1)], Pressure.Pres[LM(i,j-1,k,0)], MESH.Node_Mesh[LM(i,j,k,1)], Pressure.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j+1,k,1)], Pressure.Pres[LM(i,j+1,k,0)], MESH.Node_Mesh[LM(i,j+2,k,1)], Pressure.Pres[LM(i,j+2,k,0)]);
+                
+                Pz_1 = CS(0.50 * (MESH.Node_Mesh[LM(i,j,k-1,2)] + MESH.Node_Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]), MESH.Node_Mesh[LM(i,j,k-2,2)], Pressure.Pres[LM(i,j,k-2,0)], MESH.Node_Mesh[LM(i,j,k-1,2)], Pressure.Pres[LM(i,j,k-1,0)], MESH.Node_Mesh[LM(i,j,k,2)], Pressure.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j,k+1,2)], Pressure.Pres[LM(i,j,k+1,0)]);
+                Pz_2 = CS(0.50 * (MESH.Node_Mesh[LM(i,j,k,2)] + MESH.Node_Mesh[LM(i,j,k+1,2)]), 0.50 * (W.Pres[LM(i,j,k,0)] + W.Pres[LM(i,j,k+1,0)]), MESH.Node_Mesh[LM(i,j,k-1,2)], Pressure.Pres[LM(i,j,k-1,0)], MESH.Node_Mesh[LM(i,j,k,2)], Pressure.Pres[LM(i,j,k,0)], MESH.Node_Mesh[LM(i,j,k+1,2)], Pressure.Pres[LM(i,j,k+1,0)], MESH.Node_Mesh[LM(i,j,k+2,2)], Pressure.Pres[LM(i,j,k+2,0)]);
+
+                Pressure.Gradient_X[LM(i,j,k,0)] = (1.0 / MESH.DeltaP[LM(i,j,k,0)]) * (Px_2 - Px_1);
+                Pressure.Gradient_Y[LM(i,j,k,0)] = (1.0 / MESH.DeltaP[LM(i,j,k,1)]) * (Py_2 - Py_1);
+                Pressure.Gradient_Z[LM(i,j,k,0)] = (1.0 / MESH.DeltaP[LM(i,j,k,2)]) * (Pz_2 - Pz_1);
+            }
+        }
+    }
+
+}
+
+// Function to calculate the step contribution to the density
+void CFD_Solver::Get_StepContribution_Density(Property &PropertyName){
+int i, j, k;
+
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+                PropertyName.ContributionPres[LM(i,j,k,0)] = - PropertyName.Convective[LM(i,j,k,0)];
+            }
+        }
+    }
+
+}
+
+// Function to calculate the step contribution to each velocity
+void CFD_Solver::Get_StepContribution_Velocity(Property &PropertyName, double *PressureGradient){
+int i, j, k;
+
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+                PropertyName.ContributionPres[LM(i,j,k,0)] = (1.0 / Density.Pres[LM(i,j,k,0)]) * (- PropertyName.Convective[LM(i,j,k,0)] - PressureGradient[LM(i,j,k,0)]) + PropertyName.Gravity;
             }
         }
     }
@@ -450,13 +595,6 @@ int i, j, k;
 void CFD_Solver::Get_TemporalIntegration(Property &PropertyName){
 int i, j, k;
 
-    for (i = Ix[Rango]; i < Fx[Rango]; i++){
-        for (j = 0; j < NY; j++){
-            for (k = 0; k < NZ; k++){
-                PropertyName.ContributionPres[LM(i,j,k,0)] = - PropertyName.Convective[LM(i,j,k,0)];
-            }
-        }
-    }
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
@@ -537,20 +675,42 @@ void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcess PP1)
         Get_WallsVelocities(MESH);
         Get_WallsValue_Scalar(P1, MESH.Node_Mesh, Density);
 
+        // Density
         Get_ConvectiveTerm(MESH, Density);
+        Get_StepContribution_Density(Density);
         Get_TemporalIntegration(Density);
-        
-        if (Step % 1 == 0){
+
+        // Velocities
+        Get_Pressure();
+        Get_PressureGradient(MESH);
+
+        // Velocity U
+        Get_ConvectiveTerm(MESH, U);
+        Get_StepContribution_Velocity(U, Pressure.Gradient_X);
+
+        // Velocity V
+        Get_ConvectiveTerm(MESH, V);
+        Get_StepContribution_Velocity(V, Pressure.Gradient_Y);
+
+        // Velocity W
+        Get_ConvectiveTerm(MESH, W);
+        Get_StepContribution_Velocity(W, Pressure.Gradient_Z);
+
+        Get_TemporalIntegration(U);
+        Get_TemporalIntegration(V);
+        Get_TemporalIntegration(W);
+
+        if (Step % 100 == 0){
             Get_ConvergenceCriteria();
-            //P1.SendMatrixToZero(Density.Pres, GlobalMatrix.Density);
+            P1.SendMatrixToZero(Density.Pres, GlobalMatrix.Density);
             
             if (Rango == 0){
                 cout<<"Step: "<<Step<<", Total time: "<<Time<<", MaxDif: "<<MaxDiff<<endl;
-                //sprintf(FileName_1, "Density_Field_Step_%d", Step);
-                //PP1.GlobalEscalarVTK(MESH, "CombustionResults", "Densidad", FileName_1, GlobalMatrix.Density, 0);
+                sprintf(FileName_1, "Density_Field_Step_%d", Step);
+                PP1.GlobalEscalarVTK(MESH, "CombustionResults/", "Densidad", FileName_1, GlobalMatrix.Density, 0);
             }
 
-            //MPI_Barrier(MPI_COMM_WORLD);	
+            MPI_Barrier(MPI_COMM_WORLD);	
         }
         
         UpdateField(Density);

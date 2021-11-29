@@ -40,6 +40,8 @@ class CFD_Solver{
         double MaxDiff;
         double GlobalConvergence;
 
+        double c;
+
         // Structure for the fields time steps properties
         struct Property
         {
@@ -65,6 +67,17 @@ class CFD_Solver{
             double *Left;
             double *Right;
 
+            double Gravity;
+        };
+
+        // Structure for the pressure field
+        struct Presion
+        {
+            double *Pres;
+
+            double *Gradient_X;
+            double *Gradient_Y;
+            double *Gradient_Z;
         };
 
         // Structure for the global matrix of core 0
@@ -81,6 +94,8 @@ class CFD_Solver{
         struct Property V;
         struct Property W;
 
+        struct Presion Pressure;
+        
         struct Global GlobalMatrix;
 
 		//Constructor de la clase
@@ -102,6 +117,11 @@ class CFD_Solver{
         void Get_WallsVelocities(Mesher);
         void Get_ConvectiveTerm(Mesher, Property&);
 
+        void Get_Pressure();
+        void Get_PressureGradient(Mesher);
+        void Get_StepContribution_Density(Property&);
+        void Get_StepContribution_Velocity(Property&, double*);
+        
         void Get_TemporalIntegration(Property&);
 
         void Get_MaximumDifference(Property&, double&);
