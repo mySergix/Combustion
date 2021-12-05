@@ -44,6 +44,6 @@ class PostProcess{
 		
 		//Metodos de la clase
         void GlobalEscalarVTK(Mesher, string, string, string, double*, int);
-        void GlobalVectorialVTK(Mesher, string, string, string, Global&, int);
+        void GlobalVectorialVTK(Mesher, string, string, string, double*, double*, double*, int);
         
 };

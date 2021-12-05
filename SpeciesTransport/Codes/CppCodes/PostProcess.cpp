@@ -88,7 +88,7 @@ int i, j, k;
 }
 
 //Pasar los resultados de un Scalar a un VTK en 3D
-void PostProcess::GlobalVectorialVTK(Mesher MESH, string Carpeta, string Variable, string NombreFile, Global &GlobalMatrix, int HALO){
+void PostProcess::GlobalVectorialVTK(Mesher MESH, string Carpeta, string Variable, string NombreFile, double *UFIELD, double *VFIELD, double *WFIELD, int HALO){
 int i, j, k;
 
 	ofstream file;
@@ -110,8 +110,8 @@ int i, j, k;
     file<<"POINTS"<<"   "<<(NX + 2*HALO) * (NY + 2*HALO) * (NZ + 2*HALO)<<"   "<<"double"<<endl;
 	
 	for(k = - HALO; k < NZ + HALO; k++){
-		for(i = - HALO; i < NX + HALO; i++){
-			for(j = - HALO; j < NY + HALO; j++){
+		for(j = - HALO; j < NY + HALO; j++){
+            for(i = - HALO; i < NX + HALO; i++){
 				file<<MESH.Node_Mesh[GM(i,j,k,0)]<<"   "<<MESH.Node_Mesh[GM(i,j,k,1)]<<"   "<<MESH.Node_Mesh[GM(i,j,k,2)]<<endl;
 			}
 		}
@@ -123,9 +123,9 @@ int i, j, k;
     file<<endl;
 
 	for(k = - HALO; k < NZ + HALO; k++){
-		for(i = - HALO; i < NX + HALO; i++){
-			for(j = - HALO; j < NY + HALO; j++){	
-				file<<GlobalMatrix.U[GM(i,j,k,0)]<<" "<<GlobalMatrix.V[GM(i,j,k,0)]<<" "<<GlobalMatrix.W[GM(i,j,k,0)]<<endl;
+        for(j = - HALO; j < NY + HALO; j++){
+            for(i = - HALO; i < NX + HALO; i++){ 	
+				file<<UFIELD[GM(i,j,k,0)]<<" "<<VFIELD[GM(i,j,k,0)]<<" "<<WFIELD[GM(i,j,k,0)]<<endl;
 			}
 		}
 	}

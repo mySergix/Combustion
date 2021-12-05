@@ -58,6 +58,10 @@ class CFD_Solver{
             double *Wall_V;
             double *Wall_W;
 
+            double *Diff_X;
+            double *Diff_Y;
+            double *Diff_Z;
+
             double *Bottom;
             double *Top;
 
@@ -80,6 +84,26 @@ class CFD_Solver{
             double *Gradient_Z;
         };
 
+        // Structure for the viscous stresses
+        struct Stresses
+        {
+            double *Divergence;
+
+            double *Tau_xx;
+            double *Tau_yy;
+            double *Tau_zz;
+
+            double *Tau_xy_X;
+            double *Tau_xy_Y;
+
+            double *Tau_yz_Y;
+            double *Tau_yz_Z;
+
+            double *Tau_zx_Z;
+            double *Tau_zx_X;
+
+        };
+
         // Structure for the global matrix of core 0
         struct Global
         {
@@ -98,6 +122,8 @@ class CFD_Solver{
         
         struct Global GlobalMatrix;
 
+        struct Stresses Stress;
+
 		//Constructor de la clase
 		CFD_Solver(Memory, ReadData, Parallel);
 		
@@ -108,14 +134,17 @@ class CFD_Solver{
         inline double CS(double, double, double, double, double, double, double, double, double, double);   
         void Set_InitialValues();
 		void Get_BoundaryConditions();
-        void Update_BoundaryConditions();
+        void Update_BoundaryConditions(Mesher);
         void Get_TimeStep(Mesher);
 
         void CommunicateVelocities(Parallel, double*, double*, double*);
         void ApplyBoundaries(Property&);
+        void Get_PeriodicConditions(Mesher, Property&);
         void Get_WallsValue_Scalar(Parallel, double*, Property&);
         void Get_WallsVelocities(Mesher);
         void Get_ConvectiveTerm(Mesher, Property&);
+        void Get_Divergence(Mesher);
+        void Get_VelocityGradients(Mesher, Property&);
 
         void Get_Pressure();
         void Get_PressureGradient(Mesher);

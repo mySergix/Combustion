@@ -77,6 +77,10 @@ void CFD_Solver::AllocateMemory(Memory M1){
 
     if (Rango == 0){
         GlobalMatrix.Density = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+
+        GlobalMatrix.U = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+        GlobalMatrix.V = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+        GlobalMatrix.W = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
     }
 
     Pressure.Pres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
@@ -84,6 +88,21 @@ void CFD_Solver::AllocateMemory(Memory M1){
     Pressure.Gradient_X = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
     Pressure.Gradient_Y = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
     Pressure.Gradient_Z = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+
+    // Viscous Stresses
+    Stress.Divergence = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+    Stress.Tau_xx = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1); 
+    Stress.Tau_yy = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 1 + 2*Halo, NZ + 2*Halo, 1);
+    Stress.Tau_zz = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 1 + 2*Halo, 1);
+
+    Stress.Tau_xy_X = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+    Stress.Tau_xy_Y = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 1 + 2*Halo, NZ + 2*Halo, 1);
+
+    Stress.Tau_yz_Y = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 1 + 2*Halo, NZ + 2*Halo, 1);
+    Stress.Tau_yz_Z = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 1 + 2*Halo, 1);
+
+    Stress.Tau_zx_Z = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 1 + 2*Halo, 1);
+    Stress.Tau_zx_X = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
 
 }
 
@@ -97,6 +116,10 @@ void CFD_Solver::Allocate_StructureMemory(Memory M1, Property &PropertyName){
     PropertyName.Wall_U = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1); 
     PropertyName.Wall_V = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 1 + 2*Halo, NZ + 2*Halo, 1);
     PropertyName.Wall_W = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 1 + 2*Halo, 1);
+
+    PropertyName.Diff_X = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+    PropertyName.Diff_Y = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+    PropertyName.Diff_Z = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
 
     PropertyName.Convective = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
 
@@ -184,9 +207,7 @@ int i, j, k;
 
             // Parte Here
             Density.Here[HER_THE(i,j,0,0)] = 0.0; // Density
-            U.Here[HER_THE(i,j,0,0)] = 0.0; // U Velocity
-            V.Here[HER_THE(i,j,0,0)] = 0.0; // V Velocity
-            W.Here[HER_THE(i,j,0,0)] = 0.0; // W Velocity
+            
 
             // Parte There 
             Density.There[HER_THE(i,j,NZ,0)] = 0.0; // Density
@@ -215,11 +236,46 @@ int i, j, k;
 
 }
 
-// Function to update continuously the boundary conditions
-void CFD_Solver::Update_BoundaryConditions(){
+// Function to calculate and update periodic conditions
+void CFD_Solver::Get_PeriodicConditions(Mesher MESH, Property &PropertyName){
 int i, j, k;
 
-    
+    // Here
+    for (i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
+        for (j = - Halo; j < NY + Halo; j++){
+            for (k = - Halo; k < 0; k++){
+                PropertyName.Pres[LM(i,j,k,0)] = PropertyName.Pres[LM(i,j,NZ+k,0)];
+            }
+        }
+    }
+
+    // There
+    for (i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
+        for (j = - Halo; j < NY + Halo; j++){
+            for (k = NZ; k < NZ + Halo; k++){
+                PropertyName.Pres[LM(i,j,k,0)] = PropertyName.Pres[LM(i,j,k-NZ,0)];
+            }
+        }
+    } 
+
+    // Walls
+    for (i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
+        for (j = - Halo; j < NY + Halo; j++){
+            PropertyName.Here[HER_THE(i,j,0,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j,-1,2)] + MESH.Node_Mesh[LM(i,j,0,2)]), 0.50 * (W.Pres[LM(i,j,-1,0)] + W.Pres[LM(i,j,0,0)]), MESH.Node_Mesh[LM(i,j,-2,2)], PropertyName.Pres[LM(i,j,-2,0)], MESH.Node_Mesh[LM(i,j,-1,2)], PropertyName.Pres[LM(i,j,-1,0)], MESH.Node_Mesh[LM(i,j,0,2)], PropertyName.Pres[LM(i,j,0,0)], MESH.Node_Mesh[LM(i,j,1,2)], PropertyName.Pres[LM(i,j,1,0)]);
+            PropertyName.There[HER_THE(i,j,NZ,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j,NZ-1,2)] + MESH.Node_Mesh[LM(i,j,NZ,2)]), 0.50 * (W.Pres[LM(i,j,NZ-1,0)] + W.Pres[LM(i,j,NZ,0)]), MESH.Node_Mesh[LM(i,j,NZ-2,2)], PropertyName.Pres[LM(i,j,NZ-2,0)], MESH.Node_Mesh[LM(i,j,NZ-1,2)], PropertyName.Pres[LM(i,j,NZ-1,0)], MESH.Node_Mesh[LM(i,j,NZ,2)], PropertyName.Pres[LM(i,j,NZ,0)], MESH.Node_Mesh[LM(i,j,NZ+1,2)], PropertyName.Pres[LM(i,j,NZ+1,0)]);
+        }
+    }
+
+}
+
+// Function to update continuously the boundary conditions
+void CFD_Solver::Update_BoundaryConditions(Mesher MESH){
+int i, j, k;
+
+    Get_PeriodicConditions(MESH, U); // Periodic Conditions Velocity U
+    Get_PeriodicConditions(MESH, V); // Periodic Conditions Velocity V
+    Get_PeriodicConditions(MESH, W); // Periodic Conditions Velocity W
+
     if (Rango == Procesos - 1){
 
         // Right Side
@@ -256,7 +312,7 @@ int i, j, k;
 
     }
 
-    // Pressure Bottom
+    // Bottom 
     for (i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
         for (j = - Halo; j < 0; j++){
             for (k = - Halo; k < NZ + Halo; k++){
@@ -293,6 +349,7 @@ int i, j, k;
     }
 
 }
+
 // Function to set initial values for the variables and properties fields
 void CFD_Solver::Set_InitialValues(){
 int i, j, k;
@@ -327,6 +384,15 @@ int i, j, k;
         }
     }
 
+    // Pressure
+    for (i = Ix[Rango] - Halo; i < Fx[Rango] + Halo; i++){
+        for (j = - Halo; j < NY + Halo; j++){
+            for (k = - Halo; k < NZ + Halo; k++){
+                Pressure.Pres[LM(i,j,k,0)] =  Density.Pres[LM(i,j,k,0)] * 287.0 * 298.15;
+            }
+        }
+    }
+    
 }
 
 // Function to communicate all the velocity fields (local fields)
@@ -402,7 +468,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 1; k < NZ; k++){
-                PropertyName.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j,k-1,2)] + Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]), Mesh[LM(i,j,k-2,2)], PropertyName.Pres[LM(i,j,k-2,0)], Mesh[LM(i,j,k-2,2)], PropertyName.Pres[LM(i,j-1,k,0)], Mesh[LM(i,j,k,2)], PropertyName.Pres[LM(i,j,k,0)], Mesh[LM(i,j,k+1,2)], PropertyName.Pres[LM(i,j,k+1,0)]);
+                PropertyName.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j,k-1,2)] + Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]), Mesh[LM(i,j,k-2,2)], PropertyName.Pres[LM(i,j,k-2,0)], Mesh[LM(i,j,k-1,2)], PropertyName.Pres[LM(i,j,k-1,0)], Mesh[LM(i,j,k,2)], PropertyName.Pres[LM(i,j,k,0)], Mesh[LM(i,j,k+1,2)], PropertyName.Pres[LM(i,j,k+1,0)]);
             }
         }
     }
@@ -530,7 +596,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                Pressure.Pres[LM(i,j,k,0)] = Density.Pres[LM(i,j,k,0)] * 8.314 * 298.15;
+                Pressure.Pres[LM(i,j,k,0)] = Density.Pres[LM(i,j,k,0)] * 287.0 * 298.15;
             }
         }
     }
@@ -563,6 +629,108 @@ double Px_1, Px_2, Py_1, Py_2, Pz_1, Pz_2;
 
 }
 
+// Function to calculate the divergence of the field
+void CFD_Solver::Get_Divergence(Mesher MESH){
+int i, j, k;
+
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+                Stress.Divergence[LM(i,j,k,0)] = (1.0 / VolMP[LM(i,j,k,0)]) * (
+                                        - MESH.Surf[LM(i,j,k,0)] * U.Wall_U[LMU(i,j,k,0)]
+                                        + MESH.Surf[LM(i,j,k,0)] * U.Wall_U[LMU(i+1,j,k,0)]
+                                        - MESH.Surf[LM(i,j,k,1)] * V.Wall_V[LMV(i,j,k,0)]
+                                        + MESH.Surf[LM(i,j,k,1)] * V.Wall_V[LMV(i,j+1,k,0)]
+                                        - MESH.Surf[LM(i,j,k,2)] * W.Wall_W[LMW(i,j,k,0)]
+                                        + MESH.Surf[LM(i,j,k,2)] * W.Wall_W[LMW(i,j,k+1,0)]
+                                        );
+            }
+        }
+    }
+
+}
+
+// Function to calculate the velociy gradients at the walls
+void CFD_Solver::Get_VelocityGradients(Mesher MESH, Property &PropertyName){
+int i, j, k;
+
+    // Gradients in X direction
+    for (i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+                PropertyName.Diff_X[LMU(i,j,k,0)] = (PropertyName.Pres[LM(i,j,k,0)] - PropertyName.Pres[LM(i-1,j,k,0)]) / (0.50 * (MESH.DeltaP[LM(i,j,k,0)] + MESH.DeltaP[LM(i-1,j,k,0)]));
+            }
+        }
+    }
+
+    // Gradients in Y direction
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 1; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+                // Parte Top
+                PropertyName.Diff_Y[LMV(i,0,k,0)] = 0.0;
+
+                // Parte Bottom
+                PropertyName.Diff_Y[LMV(i,NY,k,0)] = 0.0;
+
+                // Resto
+                PropertyName.Diff_Y[LMV(i,j,k,0)] = (PropertyName.Pres[LM(i,j,k,0)] - PropertyName.Pres[LM(i,j-1,k,0)]) / (0.50 * (MESH.DeltaP[LM(i,j,k,1)] + MESH.DeltaP[LM(i,j-1,k,1)]));
+            }
+        }
+    }
+
+    // Gradients in Z direction
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ + 1; k++){
+                PropertyName.Diff_Z[LMW(i,j,k,0)] = (PropertyName.Pres[LM(i,j,k,0)] - PropertyName.Pres[LM(i,j,k-1,0)]) / (0.50 * (MESH.DeltaP[LM(i,j,k,2)] + MESH.DeltaP[LM(i,j,k-1,2)]));
+            }
+        }
+    }
+
+}
+
+// Function to calculate the viscous stresses of the fluid
+void CFD_Solver::Get_ViscousStresses(Mesher MESH){
+int i, j, k;
+
+    // Tau XX
+    for (i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+                Stress.Tau_xx[LMU(i,j,k,0)] =  - (2.0/3.0) * mu * 0.50 * (Divergence[LM(i-1,j,k,0)] + Divergence[LM(i,j,k,0)]) + 2.0 * mu * U.Diff_X[LMU(i,j,k,0)];
+            }
+        }
+    }
+
+    // Tau YY
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY + 1; j++){
+            for (k = 0; k < NZ; k++){
+                Stress.Tau_yy[LMV(i,j,k,0)] =  - (2.0/3.0) * mu * 0.50 * (Divergence[LM(i,j-1,k,0)] + Divergence[LM(i,j,k,0)]) + 2.0 * mu * V.Diff_Y[LMV(i,j,k,0)];
+            }
+        }
+    }
+
+    // Tau ZZ
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ + 1; k++){
+                Stress.Tau_zz[LMW(i,j,k,0)] =  - (2.0/3.0) * mu * 0.50 * (Divergence[LM(i,j,k-1,0)] + Divergence[LM(i,j,k,0)]) + 2.0 * mu * W.Diff_Z[LMW(i,j,k,0)];
+            }
+        }
+    }
+
+    // Tau XY
+    for (i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+                Stress.Tau_xy_Y[LMU(i,j,k,0)] =  mu * (U.Diff_Y[LMV(i,j,k,0)] + ;
+            }
+        }
+    }
+
+}
 // Function to calculate the step contribution to the density
 void CFD_Solver::Get_StepContribution_Density(Property &PropertyName){
 int i, j, k;
@@ -667,7 +835,7 @@ void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcess PP1)
     while (MaxDiff >= GlobalConvergence){
 
         Step++;
-        Update_BoundaryConditions();
+        Update_BoundaryConditions(MESH);
         Get_TimeStep(MESH);
         Time += DeltaT;
 
@@ -681,8 +849,8 @@ void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcess PP1)
         Get_TemporalIntegration(Density);
 
         // Velocities
-        Get_Pressure();
-        Get_PressureGradient(MESH);
+        //Get_Pressure();
+        //Get_PressureGradient(MESH);
 
         // Velocity U
         Get_ConvectiveTerm(MESH, U);
@@ -704,16 +872,26 @@ void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcess PP1)
             Get_ConvergenceCriteria();
             P1.SendMatrixToZero(Density.Pres, GlobalMatrix.Density);
             
+            P1.SendMatrixToZero(U.Pres, GlobalMatrix.U);
+            P1.SendMatrixToZero(V.Pres, GlobalMatrix.V);
+            P1.SendMatrixToZero(W.Pres, GlobalMatrix.W);
+
             if (Rango == 0){
                 cout<<"Step: "<<Step<<", Total time: "<<Time<<", MaxDif: "<<MaxDiff<<endl;
                 sprintf(FileName_1, "Density_Field_Step_%d", Step);
                 PP1.GlobalEscalarVTK(MESH, "CombustionResults/", "Densidad", FileName_1, GlobalMatrix.Density, 0);
+
+                sprintf(FileName_1, "Velocities_Field_Step_%d", Step);
+                PP1.GlobalVectorialVTK(MESH, "CombustionResults/", "Velocities", FileName_1, GlobalMatrix.U, GlobalMatrix.V, GlobalMatrix.W, 0);
             }
 
             MPI_Barrier(MPI_COMM_WORLD);	
         }
         
         UpdateField(Density);
+        UpdateField(U);
+        UpdateField(V);
+        UpdateField(W);
 
     }
     
