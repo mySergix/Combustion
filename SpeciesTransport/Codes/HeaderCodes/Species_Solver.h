@@ -34,14 +34,46 @@ class Species_Solver{
 
         int Halo;
 
+        double *kB;
+
         //Matrices necesarias
         double* Test_Mesh;
         double* Test_MeshGlobal;
+
+         // Structure for species data
+        struct Species
+        {
+            string Name; // Name of the species
+            double *Wmolar; // Molar weight of the species
+            double *Epsilon; // Characteristic Lennard-Jones energy
+            double *Cp; // Cp of the species
+
+            double *Y_Past;
+            double *Y_Pres;
+            double *Y_Fut;
+
+            double *X;
+        };
 
 		//Constructor de la clase
 		Species_Solver(Memory M1, ReadData R1, Parallel P1);
 		
 		//Metodos de la clase
-        
+
+        // Binary Diffusion Coefficient Models
+        double Get_BinaryDiff_ChampanEnskog(int, double, double, int, int, int);
+        double Get_BinaryDiff_WilkeLee(int, double, double, int, int, int);
+
+        // Diffusion Models
+        void Get_DiffusionCoefficient_FickModel(int, CFD_Solver);
+
+        void Get_WallsDiffusionCoefficients(int);
+
+        void Get_SpeciesDiffusion(Mesher, CFD_Solver, int);
+        void Get_SpeciesConvection(Mesher, CFD_Solver, int);
+        void Get_StepContribution_Species(CFD_Solver, int);
+        void Get_TemporalIntegration_Species(int);
+        void Get_Update(int);
+        void Get_MolarFraction_X();
 			
 };

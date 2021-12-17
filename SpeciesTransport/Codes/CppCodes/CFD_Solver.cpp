@@ -575,7 +575,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                PropertyName.Convective[LM(i,j,k,0)] = 1.0/MESH.Vol[LM(i,j,k,0)] * (
+                PropertyName.Convective[LM(i,j,k,0)] = (1.0/MESH.Vol[LM(i,j,k,0)]) * (
                                                      + MESH.Surf[LM(i,j,k,0)] * U.Wall_U[LMU(i+1,j,k,0)] * PropertyName.Wall_U[LMU(i+1,j,k,0)]
                                                      - MESH.Surf[LM(i,j,k,0)] * U.Wall_U[LMU(i,j,k,0)] * PropertyName.Wall_U[LMU(i,j,k,0)]
                                                      + MESH.Surf[LM(i,j,k,1)] * V.Wall_V[LMV(i,j+1,k,0)] * PropertyName.Wall_V[LMV(i,j+1,k,0)]
