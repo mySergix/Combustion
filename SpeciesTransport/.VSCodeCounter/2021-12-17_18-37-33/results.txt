@@ -1,0 +1,47 @@
+Date : 2021-12-17 18:37:33
+Directory : /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes
+Total : 19 files,  1507 codes, 250 comments, 583 blanks, all 2340 lines
+
+Languages
++--------------+------------+------------+------------+------------+------------+
+| language     | files      | code       | comment    | blank      | total      |
++--------------+------------+------------+------------+------------+------------+
+| C++          |         17 |      1,485 |        241 |        565 |      2,291 |
+| Makefile     |          1 |         19 |          8 |         10 |         37 |
+| Shell Script |          1 |          3 |          1 |          8 |         12 |
++--------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                               | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                  |         19 |      1,507 |        250 |        583 |      2,340 |
+| CppCodes                                                                                           |          8 |      1,163 |        172 |        410 |      1,745 |
+| HeaderCodes                                                                                        |          8 |        290 |         66 |        138 |        494 |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| filename                                                                                           | language     | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+--------------+------------+------------+------------+------------+
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/Clean_VTK.sh                    | Shell Script |          3 |          1 |          8 |         12 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/CFD_Solver.cpp         | C++          |        596 |        102 |        201 |        899 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/CanteraCombustion.cpp  | C++          |          7 |          4 |          5 |         16 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Memory.cpp             | C++          |         19 |          6 |         13 |         38 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Mesher.cpp             | C++          |        101 |         18 |         35 |        154 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Parallel.cpp           | C++          |        105 |         11 |         36 |        152 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/PostProcess.cpp        | C++          |         95 |          8 |         32 |        135 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/ReadData.cpp           | C++          |         71 |          5 |         34 |        110 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Species_Solver.cpp     | C++          |        169 |         18 |         54 |        241 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/CFD_Solver.h        | C++          |        106 |         13 |         44 |        163 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/CanteraCombustion.h | C++          |         16 |          3 |          7 |         26 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/Memory.h            | C++          |         13 |          6 |          8 |         27 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/Mesher.h            | C++          |         33 |         11 |         17 |         61 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/Parallel.h          | C++          |         26 |          8 |         15 |         49 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/PostProcess.h       | C++          |         29 |          8 |         12 |         49 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/ReadData.h          | C++          |         22 |          4 |         14 |         40 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/Species_Solver.h    | C++          |         45 |         13 |         21 |         79 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/Main_SpeciesTransport.cpp       | C++          |         32 |          3 |         17 |         52 |
+| /home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/Makefile                        | Makefile     |         19 |          8 |         10 |         37 |
+| Total                                                                                              |              |      1,507 |        250 |        583 |      2,340 |
++----------------------------------------------------------------------------------------------------+--------------+------------+------------+------------+------------+

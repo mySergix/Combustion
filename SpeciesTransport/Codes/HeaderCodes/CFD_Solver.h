@@ -41,6 +41,7 @@ class CFD_Solver{
         double GlobalConvergence;
 
         double c;
+        double mu;
 
         // Structure for the fields time steps properties
         struct Property
@@ -53,14 +54,23 @@ class CFD_Solver{
             double *ContributionPres;
 
             double *Convective;
+            double *Diffusive;
 
             double *Wall_U;
             double *Wall_V;
             double *Wall_W;
 
-            double *Diff_X;
-            double *Diff_Y;
-            double *Diff_Z;
+            double *Wall_U_Diff_X;
+            double *Wall_U_Diff_Y;
+            double *Wall_U_Diff_Z;
+
+            double *Wall_V_Diff_X;
+            double *Wall_V_Diff_Y;
+            double *Wall_V_Diff_Z;
+
+            double *Wall_W_Diff_X;
+            double *Wall_W_Diff_Y;
+            double *Wall_W_Diff_Z;
 
             double *Bottom;
             double *Top;
@@ -89,18 +99,18 @@ class CFD_Solver{
         {
             double *Divergence;
 
-            double *Tau_xx;
-            double *Tau_yy;
-            double *Tau_zz;
+            double *Tau_xx_X;
+            double *Tau_yy_Y;
+            double *Tau_zz_Z;
+
+            double *Tau_yx_Y;
+            double *Tau_zx_Z;
 
             double *Tau_xy_X;
-            double *Tau_xy_Y;
+            double *Tau_zy_Z;
 
             double *Tau_yz_Y;
-            double *Tau_yz_Z;
-
-            double *Tau_zx_Z;
-            double *Tau_zx_X;
+            double *Tau_xz_X;
 
         };
 
@@ -145,6 +155,8 @@ class CFD_Solver{
         void Get_ConvectiveTerm(Mesher, Property&);
         void Get_Divergence(Mesher);
         void Get_VelocityGradients(Mesher, Property&);
+        void Get_ViscousStresses(Mesher);
+        void Get_DiffusiveTermVelocity(Mesher, Property&, double*, double*, double*);
 
         void Get_Pressure();
         void Get_PressureGradient(Mesher);
