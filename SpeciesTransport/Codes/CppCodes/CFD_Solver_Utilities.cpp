@@ -1,3 +1,7 @@
+//------------------------------------------------------------------------------------------------//
+//                             CPP FILE FOR CFD SOLVER CLASS UTILITIES                            //
+//------------------------------------------------------------------------------------------------//
+
 // Function to set initial values for the variables and properties fields
 void CFD_Solver::Set_InitialValues(){
 int i, j, k;

@@ -75,5 +75,12 @@ class Species_Solver{
         void Get_TemporalIntegration_Species(int);
         void Get_Update(int);
         void Get_MolarFraction_X();
-			
+
+        // JANAF Calculations
+        double JANAF_CpHeat(double, int, int, int);
+        double JANAF_AbsEnthalpy_Specie(int, double);
+        double JANAF_AbsEnthalpy_Specie_Mix(double, int, int, int);
+        double JANAF_DynViscosity(double, int, int, int);
+        double JANAF_ThermalCond(double, int, int, int);
+
 };

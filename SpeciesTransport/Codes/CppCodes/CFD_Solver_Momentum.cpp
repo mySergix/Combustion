@@ -1,3 +1,7 @@
+//------------------------------------------------------------------------------------------------//
+//                        CPP FILE FOR N-S MOMENTUM EQUATION CALCULATIONS                         //
+//------------------------------------------------------------------------------------------------//
+
 // Calculation of Velocities at the Walls of the Volumes
 void CFD_Solver::Get_WallsVelocities(Mesher MESH){
 int i, j, k;
@@ -319,12 +323,12 @@ int i, j, k;
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
                 PropertyName.Diffusive[LM(i,j,k,0)] = (1.0/MESH.Vol[LM(i,j,k,0)]) * (
-                                                     + MESH.Surf[LM(i,j,k,0)] * Wall_U_Term[LMU(i,j,k,0)]
-                                                     - MESH.Surf[LM(i,j,k,0)] * Wall_U_Term[LMU(i+1,j,k,0)]
-                                                     + MESH.Surf[LM(i,j,k,1)] * Wall_V_Term[LMV(i,j,k,0)]
-                                                     - MESH.Surf[LM(i,j,k,1)] * Wall_V_Term[LMV(i,j+1,k,0)]
-                                                     + MESH.Surf[LM(i,j,k,2)] * Wall_W_Term[LMW(i,j,k,0)]
-                                                     - MESH.Surf[LM(i,j,k,2)] * Wall_W_Term[LMW(i,j,k+1,0)]
+                                                     - MESH.Surf[LM(i,j,k,0)] * Wall_U_Term[LMU(i,j,k,0)]
+                                                     + MESH.Surf[LM(i,j,k,0)] * Wall_U_Term[LMU(i+1,j,k,0)]
+                                                     - MESH.Surf[LM(i,j,k,1)] * Wall_V_Term[LMV(i,j,k,0)]
+                                                     + MESH.Surf[LM(i,j,k,1)] * Wall_V_Term[LMV(i,j+1,k,0)]
+                                                     - MESH.Surf[LM(i,j,k,2)] * Wall_W_Term[LMW(i,j,k,0)]
+                                                     + MESH.Surf[LM(i,j,k,2)] * Wall_W_Term[LMW(i,j,k+1,0)]
                                                      );
             }
         }

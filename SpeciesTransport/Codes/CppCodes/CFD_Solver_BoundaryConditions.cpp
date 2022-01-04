@@ -1,3 +1,7 @@
+//------------------------------------------------------------------------------------------------//
+//                            CPP FILE FOR BOUNDARY CONDITIONS SETUP                              //
+//------------------------------------------------------------------------------------------------//
+
 // Function to get the boundary conditions of each property
 void CFD_Solver::Get_BoundaryConditions(){
 int i, j, k;
