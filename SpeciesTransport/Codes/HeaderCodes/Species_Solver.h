@@ -41,19 +41,37 @@ class Species_Solver{
         double* Test_MeshGlobal;
 
          // Structure for species data
-        struct Species
+        struct Species_Struct
         {
             string Name; // Name of the species
             double *Wmolar; // Molar weight of the species
             double *Epsilon; // Characteristic Lennard-Jones energy
-            double *Cp; // Cp of the species
 
+            // Mass fractions
             double *Y_Past;
             double *Y_Pres;
             double *Y_Fut;
 
+            double *Y_Wall_U;
+            double *Y_Wall_V;
+            double *Y_Wall_W;
+
+            // Molar fraction
             double *X;
+
+            // Diffusion velocities
+            double *U_Diff;
+            double *V_Diff;
+            double *W_Diff;
+
+            // Equation terms
+            double *ConvectiveTerm;
+
+            double *ContributionPres;
+            double *ContributionPast;
         };
+
+        struct Species_Struct Species[N_Species];
 
 		//Constructor de la clase
 		Species_Solver(Memory M1, ReadData R1, Parallel P1);

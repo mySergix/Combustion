@@ -133,12 +133,12 @@ double Sum;
 
                 Sum = 0.0;
                 for (sp = 0; sp < N_Species; sp++){
-                    Sum += Species[sp].Y_Pres[LM(i,j,k,0)] / Species[sp].W_molar;
+                    Sum += Species[sp].Y_Pres[LM(i,j,k,0)] / Species[sp].Wmolar;
                 }
                 W_molar_Average = 1.0 / Sum;    
 
                 for (sp = 0; sp < N_Species; sp++){
-                    Species[sp].X[LM(i,j,k,0)] = (W_molar_Average / Species[sp].W_molar) * Species[sp].Y_Pres[LM(i,j,k,0)];
+                    Species[sp].X[LM(i,j,k,0)] = (W_molar_Average / Species[sp].Wmolar) * Species[sp].Y_Pres[LM(i,j,k,0)];
                 }
 
             }

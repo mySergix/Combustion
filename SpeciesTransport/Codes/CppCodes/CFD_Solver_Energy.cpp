@@ -68,4 +68,38 @@ int i, j, k;
 }
 
 // Function to calculate the enthalpy diffusion flow of the species
-void CFD_Solver::Get_EnthalpyDiffusion(Mesher MESH, Species_Solver SPE_S1)
+void CFD_Solver::Get_EnthalpyDiffusion(Mesher MESH, Species_Solver SPE_S1){
+int i, j, k, SP;
+
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = 0; k < NZ; k++){
+
+                Hs.DiffusionEnthalpy[LM(i,j,k,0)] = 0.0;
+
+                for (SP = 0; SP < N_Species; SP++){
+
+                    Hs.DiffusionEnthalpy[LM(i,j,k,0)] += (1.0/MESH.Vol[LM(i,j,k,0)])*(
+                                                       - MESH.Surf[LM(i,j,k,0)] * Density.Wall_U[LMU(i,j,k,0)] * SPE_S1.Species[SP].Y_Wall_U[LMU(i,j,k,0)] * SPE_S1.Species[SP].U_Diff[LMU(i,j,k,0)] * SPE_S1.JANAF_AbsEnthalpy_Specie(SP, 0.50 * (T.Pres[LM(i-1,j,k,0)] + T.Pres[LM(i,j,k,0)]))
+                                                       + MESH.Surf[LM(i,j,k,0)] * Density.Wall_U[LMU(i+1,j,k,0)] * SPE_S1.Species[SP].Y_Wall_U[LMU(i+1,j,k,0)] * SPE_S1.Species[SP].U_Diff[LMU(i+1,j,k,0)] * SPE_S1.JANAF_AbsEnthalpy_Specie(SP, 0.50 * (T.Pres[LM(i,j,k,0)] + T.Pres[LM(i+1,j,k,0)]))
+                                                       - MESH.Surf[LM(i,j,k,1)] * Density.Wall_V[LMV(i,j,k,0)] * SPE_S1.Species[SP].Y_Wall_V[LMV(i,j,k,0)] * SPE_S1.Species[SP].V_Diff[LMV(i,j,k,0)] * SPE_S1.JANAF_AbsEnthalpy_Specie(SP, 0.50 * (T.Pres[LM(i,j-1,k,0)] + T.Pres[LM(i,j,k,0)]))
+                                                       + MESH.Surf[LM(i,j,k,1)] * Density.Wall_V[LMV(i,j+1,k,0)] * SPE_S1.Species[SP].Y_Wall_V[LMV(i,j+1,k,0)] * SPE_S1.Species[SP].V_Diff[LMV(i,j+1,k,0)] * SPE_S1.JANAF_AbsEnthalpy_Specie(SP, 0.50 * (T.Pres[LM(i,j,k,0)] + T.Pres[LM(i,j+1,k,0)]))
+                                                       - MESH.Surf[LM(i,j,k,2)] * Density.Wall_W[LMW(i,j,k,0)] * SPE_S1.Species[SP].Y_Wall_W[LMW(i,j,k,0)] * SPE_S1.Species[SP].W_Diff[LMW(i,j,k,0)] * SPE_S1.JANAF_AbsEnthalpy_Specie(SP, 0.50 * (T.Pres[LM(i,j,k-1,0)] + T.Pres[LM(i,j,k,0)]))
+                                                       + MESH.Surf[LM(i,j,k,2)] * Density.Wall_W[LMW(i,j,k+1,0)] * SPE_S1.Species[SP].Y_Wall_W[LMW(i,j,k+1,0)] * SPE_S1.Species[SP].W_Diff[LMW(i,j,k+1,0)] * SPE_S1.JANAF_AbsEnthalpy_Specie(SP, 0.50 * (T.Pres[LM(i,j,k,0)] + T.Pres[LM(i,j,k+1,0)]))
+                                                       );
+
+                }
+                                                
+            }
+        }
+    }
+
+}
+
+// Function to calculate the viscous energy dissipation
+void CFD_Solver::Get_ViscousDissipation(Mesher MESH){
+int i, j, k;
+
+    // Pendiente (ecuaciones en el cuaderno)
+    
+}
