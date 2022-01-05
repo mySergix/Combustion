@@ -53,21 +53,23 @@ Species_Solver::Species_Solver(Memory M1, ReadData R1, Parallel P1){
 #include "Species_Solver_JANAF.cpp"
 #include "Species_Solver_Diffusion.cpp"
 
-// Function to calculate the convection term of a species
+// Function to calculate the convective term of each species
 void Species_Solver::Get_SpeciesConvection(Mesher MESH, CFD_Solver CFD_S1, int SP){
 int i, j, k;
+
+    // Importante, la aproximacion solo vale para flujos sin fuerzas volumetricas y SIN GRADIENTES DE PRESION
 
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                Species[SP].ConvectiveTerm[LM(i,j,k,0)] = (1.0/MESH.Vol[LM(i,j,k,0)]) * (
-                                                     + MESH.Surf[LM(i,j,k,0)] * CFD_S1.U.Wall_U[LMU(i+1,j,k,0)] * Species[SP].Y_Wall_U[LMU(i+1,j,k,0)]
-                                                     - MESH.Surf[LM(i,j,k,0)] * CFD_S1.U.Wall_U[LMU(i,j,k,0)] * Species[SP].Y_Wall_U[LMU(i,j,k,0)]
-                                                     + MESH.Surf[LM(i,j,k,1)] * CFD_S1.V.Wall_V[LMV(i,j+1,k,0)] * Species[SP].Y_Wall_V[LMV(i,j+1,k,0)]
-                                                     - MESH.Surf[LM(i,j,k,1)] * CFD_S1.V.Wall_V[LMV(i,j,k,0)] * Species[SP].Y_Wall_V[LMV(i,j,k,0)]
-                                                     + MESH.Surf[LM(i,j,k,2)] * CFD_S1.W.Wall_W[LMW(i,j,k+1,0)] * Species[SP].Y_Wall_W[LMW(i,j,k+1,0)]
-                                                     - MESH.Surf[LM(i,j,k,2)] * CFD_S1.W.Wall_W[LMW(i,j,k,0)] * Species[SP].Y_Wall_W[LMW(i,j,k,0)]
-                                                     );
+                Species[SP].ConvectiveTerm[LM(i,j,k,0)] = (1.0 / MESH.VolMP) * (
+                                                       - MESH.Surf[LM(i,j,k,0)] * (CFD_S1.Density.Wall_U[LMU(i,j,k,0)] + Species[SP].U_Diff[LMU(i,j,k,0)]) * Species[SP].Y_Wall_U[LMU(i,j,k,0)]
+                                                       + MESH.Surf[LM(i,j,k,0)] * (CFD_S1.Density.Wall_U[LMU(i+1,j,k,0)] + Species[SP].U_Diff[LMU(i+1,j,k,0)]) * Species[SP].Y_Wall_U[LMU(i+1,j,k,0)]
+                                                       - MESH.Surf[LM(i,j,k,1)] * (CFD_S1.Density.Wall_V[LMV(i,j,k,0)] + Species[SP].V_Diff[LMV(i,j,k,0)]) * Species[SP].Y_Wall_V[LMV(i,j,k,0)] 
+                                                       + MESH.Surf[LM(i,j,k,1)] * (CFD_S1.Density.Wall_V[LMV(i,j+1,k,0)] + Species[SP].V_Diff[LMV(i,j+1,k,0)]) * Species[SP].Y_Wall_V[LMV(i,j+1,k,0)]
+                                                       - MESH.Surf[LM(i,j,k,2)] * (CFD_S1.Density.Wall_W[LMW(i,j,k,0)] + Species[SP].W_Diff[LMW(i,j,k,0)]) * Species[SP].Y_Wall_W[LMW(i,j,k,0)]
+                                                       + MESH.Surf[LM(i,j,k,2)] * (CFD_S1.Density.Wall_W[LMW(i,j,k+1,0)] + Species[SP].W_Diff[LMW(i,j,k+1,0)]) * Species[SP].Y_Wall_W[LMW(i,j,k+1,0)]
+                                                       );
             }
         }
     }

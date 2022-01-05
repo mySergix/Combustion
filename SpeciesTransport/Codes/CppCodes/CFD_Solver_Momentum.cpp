@@ -55,12 +55,12 @@ int i, j, k;
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
                 PropertyName.Convective[LM(i,j,k,0)] = (1.0/MESH.Vol[LM(i,j,k,0)]) * (
-                                                     + MESH.Surf[LM(i,j,k,0)] * U.Wall_U[LMU(i+1,j,k,0)] * PropertyName.Wall_U[LMU(i+1,j,k,0)]
-                                                     - MESH.Surf[LM(i,j,k,0)] * U.Wall_U[LMU(i,j,k,0)] * PropertyName.Wall_U[LMU(i,j,k,0)]
-                                                     + MESH.Surf[LM(i,j,k,1)] * V.Wall_V[LMV(i,j+1,k,0)] * PropertyName.Wall_V[LMV(i,j+1,k,0)]
-                                                     - MESH.Surf[LM(i,j,k,1)] * V.Wall_V[LMV(i,j,k,0)] * PropertyName.Wall_V[LMV(i,j,k,0)]
-                                                     + MESH.Surf[LM(i,j,k,2)] * W.Wall_W[LMW(i,j,k+1,0)] * PropertyName.Wall_W[LMW(i,j,k+1,0)]
-                                                     - MESH.Surf[LM(i,j,k,2)] * W.Wall_W[LMW(i,j,k,0)] * PropertyName.Wall_W[LMW(i,j,k,0)]
+                                                     + MESH.Surf[LM(i,j,k,0)] * Density.Wall_U[LMU(i+1,j,k,0)] * U.Wall_U[LMU(i+1,j,k,0)] * PropertyName.Wall_U[LMU(i+1,j,k,0)]
+                                                     - MESH.Surf[LM(i,j,k,0)] * Density.Wall_U[LMU(i,j,k,0)] * U.Wall_U[LMU(i,j,k,0)] * PropertyName.Wall_U[LMU(i,j,k,0)]
+                                                     + MESH.Surf[LM(i,j,k,1)] * Density.Wall_V[LMV(i,j+1,k,0)] * V.Wall_V[LMV(i,j+1,k,0)] * PropertyName.Wall_V[LMV(i,j+1,k,0)]
+                                                     - MESH.Surf[LM(i,j,k,1)] * Density.Wall_V[LMV(i,j,k,0)] * V.Wall_V[LMV(i,j,k,0)] * PropertyName.Wall_V[LMV(i,j,k,0)]
+                                                     + MESH.Surf[LM(i,j,k,2)] * Density.Wall_W[LMW(i,j,k+1,0)] * W.Wall_W[LMW(i,j,k+1,0)] * PropertyName.Wall_W[LMW(i,j,k+1,0)]
+                                                     - MESH.Surf[LM(i,j,k,2)] * Density.Wall_W[LMW(i,j,k,0)] * W.Wall_W[LMW(i,j,k,0)] * PropertyName.Wall_W[LMW(i,j,k,0)]
                                                      );
             }
         }

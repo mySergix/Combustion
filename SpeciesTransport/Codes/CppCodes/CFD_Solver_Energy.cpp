@@ -66,3 +66,6 @@ int i, j, k;
     }
 
 }
+
+// Function to calculate the enthalpy diffusion flow of the species
+void CFD_Solver::Get_EnthalpyDiffusion(Mesher MESH, Species_Solver SPE_S1)

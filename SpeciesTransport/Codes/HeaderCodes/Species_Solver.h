@@ -67,7 +67,7 @@ class Species_Solver{
         // Diffusion Models
         void Get_DiffusionCoefficient_FickModel(int, CFD_Solver);
 
-        void Get_WallsDiffusionCoefficients(int);
+        void Get_WallsDiffusionVelocities(int, Mesher);
 
         void Get_SpeciesDiffusion(Mesher, CFD_Solver, int);
         void Get_SpeciesConvection(Mesher, CFD_Solver, int);
