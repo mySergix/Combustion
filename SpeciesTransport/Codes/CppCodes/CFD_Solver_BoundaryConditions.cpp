@@ -61,7 +61,7 @@ int i, j, k;
 }
 
 // Function to calculate and update periodic conditions
-void CFD_Solver::Get_PeriodicConditions(Mesher MESH, Property &PropertyName){
+void CFD_Solver::Get_PeriodicConditions(Mesher MESH, Property_Struct &PropertyName){
 int i, j, k;
 
     // Here
@@ -175,7 +175,7 @@ int i, j, k;
 }
 
 // Function for the application of the boundary condition to the walls of the volumes
-void CFD_Solver::ApplyBoundaries(Property &PropertyName){
+void CFD_Solver::ApplyBoundaries(Property_Struct &PropertyName){
 int i, j, k;
 
     // Left Side

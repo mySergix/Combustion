@@ -10,7 +10,7 @@ double W_ab, Sigma_ab, Epsilon_ab, E_ab, Tn;
 
     for (i = 0; i < N_Species; i++){
         if (i =! SP){
-            W_ab = power(1.0 / Species[SP].W_molar + 1.0 / Species[i].W_molar, - 1.0);
+            W_ab = power(1.0 / Species[SP].Wmolar + 1.0 / Species[i].Wmolar, - 1.0);
             Sigma_ab = (Species[SP].sigma + Species[i].sigma) / 2.0;
             Epsilon_ab = sqrt(Species[SP].Epsilon * Species[i].Epsilon);
             E_ab = Epsilon_ab / kB;

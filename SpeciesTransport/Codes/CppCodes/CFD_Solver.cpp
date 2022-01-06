@@ -62,6 +62,7 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
 };
 
 // Parts of the CFD SOLVER Class
+#include "CFD_Solver_Memory.cpp"
 #include "CFD_Solver_Utilities.cpp"
 #include "CFD_Solver_BoundaryConditions.cpp"
 #include "CFD_Solver_Mass.cpp"
@@ -83,71 +84,10 @@ void CFD_Solver::AllocateMemory(Memory M1){
     // Velocity W
     Allocate_StructureMemory(M1, W);
 
-    if (Rango == 0){
-        GlobalMatrix.Density = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-
-        GlobalMatrix.U = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-        GlobalMatrix.V = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-        GlobalMatrix.W = M1.AllocateDouble(NX + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    }
-
-    Pressure.Pres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-
-    Pressure.Gradient_X = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    Pressure.Gradient_Y = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    Pressure.Gradient_Z = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-/*
-    // Viscous Stresses
-    Stress.Divergence = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    Stress.Tau_xx = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1); 
-    Stress.Tau_yy = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 1 + 2*Halo, NZ + 2*Halo, 1);
-    Stress.Tau_zz = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 1 + 2*Halo, 1);
-
-    Stress.Tau_xy_X = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    Stress.Tau_xy_Y = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 1 + 2*Halo, NZ + 2*Halo, 1);
-
-    Stress.Tau_yz_Y = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 1 + 2*Halo, NZ + 2*Halo, 1);
-    Stress.Tau_yz_Z = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 1 + 2*Halo, 1);
-
-    Stress.Tau_zx_Z = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 1 + 2*Halo, 1);
-    Stress.Tau_zx_X = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-*/
+  
 }
 
-// Function to allocate memory for a certain structure
-void CFD_Solver::Allocate_StructureMemory(Memory M1, Property &PropertyName){
 
-    PropertyName.Past = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    PropertyName.Pres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    PropertyName.Fut = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-
-    PropertyName.Wall_U = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1); 
-    PropertyName.Wall_V = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 1 + 2*Halo, NZ + 2*Halo, 1);
-    PropertyName.Wall_W = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 1 + 2*Halo, 1);
-
-    //PropertyName.Diff_X = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    //PropertyName.Diff_Y = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    //PropertyName.Diff_Z = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 1 + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-
-    PropertyName.Convective = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-
-    PropertyName.ContributionPast = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    PropertyName.ContributionPres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
-    
-    PropertyName.Bottom = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, 1, NZ + 2*Halo, 1);
-    PropertyName.Top = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, 1, NZ + 2*Halo, 1);
-
-    PropertyName.Here = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo, 1, 1);
-    PropertyName.There = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo, 1, 1);
-
-    if (Rango == 0){
-        PropertyName.Left = M1.AllocateDouble(1, NY + 2*Halo, NZ + 2*Halo, 1);     
-    }
-    if (Rango == Procesos - 1){
-        PropertyName.Right = M1.AllocateDouble(1, NY + 2*Halo, NZ + 2*Halo, 1);  
-    }
-
-}
 
 // Function to communicate all the velocity fields (local fields)
 void CFD_Solver::CommunicateVelocities(Parallel P1, double *UFIELD, double *VFIELD, double *WFIELD){

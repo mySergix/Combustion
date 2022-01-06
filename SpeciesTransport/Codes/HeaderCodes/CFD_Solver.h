@@ -41,10 +41,10 @@ class CFD_Solver{
         double GlobalConvergence;
 
         double c;
-        double mu;
+        double R_ideal;
 
-        // Structure for the fields time steps properties
-        struct Property
+        // Structure for the density, velocities and enthalpy maps
+        struct Property_Struct
         {
             double *Past;
             double *Pres;
@@ -85,7 +85,7 @@ class CFD_Solver{
         };
 
         // Structure for the pressure field
-        struct Presion
+        struct Pressure_Struct
         {
             double *Pres;
 
@@ -95,8 +95,10 @@ class CFD_Solver{
         };
 
         // Structure for the viscous stresses
-        struct Stresses
+        struct Stresses_Struct
         {
+            double *mu_Visc;
+
             double *Divergence;
 
             double *Tau_xx_X;
@@ -123,52 +125,74 @@ class CFD_Solver{
             double *W;
         };
 
-        struct Property Density;
-        struct Property U;
-        struct Property V;
-        struct Property W;
+        // Aditional Energy Equation terms
+        double *Lambda;
+        double *FourierDiffusion;
+        double *EnthalpyDiffusion;
 
-        struct Presion Pressure;
+        // Structures Declaration
+        struct Property_Struct Density;
+
+        struct Property_Struct U;
+        struct Property_Struct V;
+        struct Property_Struct W;
+
+        struct Presion_Struct Pressure;
         
         struct Global GlobalMatrix;
 
-        struct Stresses Stress;
+        struct Stresses_Struct Stress;
 
 		//Constructor de la clase
 		CFD_Solver(Memory, ReadData, Parallel);
 		
 		//Metodos de la clase
-        void AllocateMemory(Memory);
-        void Allocate_StructureMemory(Memory, Property&);
+
+            // Memory Allocation
+            void Allocate_Struct_MapFields(Memory, Property_Struct&);
+            void Allocate_Struct_VelocityGradients(Memory, Property_Struct&);
+            void Allocate_Struct_BoundaryConditions(Memory, Property_Struct&);
+            void Allocate_Struct_Contributions(Memory, Property_Struct&);
+            void Allocate_Struct_VelocityEqsTerms(Memory, Property_Struct&);
+            void Allocate_Struct_Pressure(Memory);
+            void Allocate_Struct_Stresses(Memory);
+            void Allocate_Struct_EnergyEqTerms(Memory);
+            void Allocate_Struct_Global(Memory);
 
         inline double CS(double, double, double, double, double, double, double, double, double, double);   
         void Set_InitialValues();
 		void Get_BoundaryConditions();
         void Update_BoundaryConditions(Mesher);
+        void ApplyBoundaries(Property_Struct&);
+        void Get_PeriodicConditions(Mesher, Property_Struct&);
+
         void Get_TimeStep(Mesher);
 
         void CommunicateVelocities(Parallel, double*, double*, double*);
-        void ApplyBoundaries(Property&);
-        void Get_PeriodicConditions(Mesher, Property&);
-        void Get_WallsValue_Scalar(Parallel, double*, Property&);
-        void Get_WallsVelocities(Mesher);
-        void Get_ConvectiveTerm(Mesher, Property&);
+        
+        void Get_WallsValue_Property(Parallel, Mesher, Property_Struct&);
+
+        void Get_ConvectiveTerm_Density(Mesher);
+        void Get_ConvectiveTerm_Property(Mesher, Property_Struct&);
         void Get_Divergence(Mesher);
-        void Get_VelocityGradients(Mesher, Property&);
+        void Get_VelocityGradients(Mesher, Property_Struct&);
+
+        void Get_DynamicViscosity(Species_Solver);
         void Get_ViscousStresses(Mesher);
-        void Get_DiffusiveTermVelocity(Mesher, Property&, double*, double*, double*);
+        void Get_DiffusiveTerm_Velocity(Mesher, Property_Struct&, double*, double*, double*);
 
         void Get_Pressure();
         void Get_PressureGradient(Mesher);
-        void Get_StepContribution_Density(Property&);
-        void Get_StepContribution_Velocity(Property&, double*);
-        
-        void Get_TemporalIntegration(Property&);
 
-        void Get_MaximumDifference(Property&, double&);
+        void Get_StepContribution_Density(Property_Struct&);
+        void Get_StepContribution_Velocity(Property_Struct&, double*);
+        
+        void Get_TemporalIntegration_Property(Property_Struct&);
+
+        void Get_MaximumDifference(Property_Struct&, double&);
         void Get_ConvergenceCriteria();
 
-        void UpdateField(Property&);
+        void UpdateField(Property_Struct&);
 
         void RunSolver(Memory, Parallel, Mesher, PostProcess);
 

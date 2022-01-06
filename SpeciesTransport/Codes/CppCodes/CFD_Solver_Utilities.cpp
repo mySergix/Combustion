@@ -120,7 +120,7 @@ double PhiC_, XC_, XE_, PHIE_, PhiE;
 }
 
 // Calculation of Property Value at the Walls of the Volumes
-void CFD_Solver::Get_WallsValue_Scalar(Parallel P1, double *Mesh, Property &PropertyName){
+void CFD_Solver::Get_WallsValue_Property(Parallel P1, Mesher MESH, Property_Struct &PropertyName){
 int i, j, k;
 
     // Communication of the local metrix of the properties
@@ -130,7 +130,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango] + 1; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                PropertyName.Wall_U[LMU(i,j,k,0)] = CS(0.50 * (Mesh[LM(i - 1,j,k,0)] + Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]), Mesh[LM(i-2,j,k,0)], PropertyName.Pres[LM(i-2,j,k,0)], Mesh[LM(i-1,j,k,0)], PropertyName.Pres[LM(i-1,j,k,0)], Mesh[LM(i,j,k,0)], PropertyName.Pres[LM(i,j,k,0)], Mesh[LM(i+1,j,k,0)], PropertyName.Pres[LM(i+1,j,k,0)]); 
+                PropertyName.Wall_U[LMU(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i - 1,j,k,0)] +MESH.Node_Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]),MESH.Node_Mesh[LM(i-2,j,k,0)], PropertyName.Pres[LM(i-2,j,k,0)],MESH.Node_Mesh[LM(i-1,j,k,0)], PropertyName.Pres[LM(i-1,j,k,0)],MESH.Node_Mesh[LM(i,j,k,0)], PropertyName.Pres[LM(i,j,k,0)],MESH.Node_Mesh[LM(i+1,j,k,0)], PropertyName.Pres[LM(i+1,j,k,0)]); 
             }
         }
     }
@@ -139,7 +139,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 1; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                PropertyName.Wall_V[LMV(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j-1,k,1)] + Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]), Mesh[LM(i,j-2,k,1)], PropertyName.Pres[LM(i,j-2,k,0)], Mesh[LM(i,j-1,k,1)], PropertyName.Pres[LM(i,j-1,k,0)], Mesh[LM(i,j,k,1)], PropertyName.Pres[LM(i,j,k,0)], Mesh[LM(i,j+1,k,1)], PropertyName.Pres[LM(i,j+1,k,0)]);       
+                PropertyName.Wall_V[LMV(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j-1,k,1)] +MESH.Node_Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]),MESH.Node_Mesh[LM(i,j-2,k,1)], PropertyName.Pres[LM(i,j-2,k,0)],MESH.Node_Mesh[LM(i,j-1,k,1)], PropertyName.Pres[LM(i,j-1,k,0)],MESH.Node_Mesh[LM(i,j,k,1)], PropertyName.Pres[LM(i,j,k,0)],MESH.Node_Mesh[LM(i,j+1,k,1)], PropertyName.Pres[LM(i,j+1,k,0)]);       
             }
         }
     }
@@ -148,7 +148,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 1; k < NZ; k++){
-                PropertyName.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j,k-1,2)] + Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]), Mesh[LM(i,j,k-2,2)], PropertyName.Pres[LM(i,j,k-2,0)], Mesh[LM(i,j,k-1,2)], PropertyName.Pres[LM(i,j,k-1,0)], Mesh[LM(i,j,k,2)], PropertyName.Pres[LM(i,j,k,0)], Mesh[LM(i,j,k+1,2)], PropertyName.Pres[LM(i,j,k+1,0)]);
+                PropertyName.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j,k-1,2)] +MESH.Node_Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]),MESH.Node_Mesh[LM(i,j,k-2,2)], PropertyName.Pres[LM(i,j,k-2,0)],MESH.Node_Mesh[LM(i,j,k-1,2)], PropertyName.Pres[LM(i,j,k-1,0)],MESH.Node_Mesh[LM(i,j,k,2)], PropertyName.Pres[LM(i,j,k,0)],MESH.Node_Mesh[LM(i,j,k+1,2)], PropertyName.Pres[LM(i,j,k+1,0)]);
             }
         }
     }
@@ -158,7 +158,7 @@ int i, j, k;
 }
 
 // Function to integrate the density calculation
-void CFD_Solver::Get_TemporalIntegration(Property &PropertyName){
+void CFD_Solver::Get_TemporalIntegration_Property(Property_Struct &PropertyName){
 int i, j, k;
 
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
@@ -173,7 +173,7 @@ int i, j, k;
 }
 
 // Function to update the values of the properties fields
-void CFD_Solver::UpdateField(Property &PropertyName){
+void CFD_Solver::UpdateField(Property_Struct &PropertyName){
 int i, j, k;
 
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
@@ -190,7 +190,7 @@ int i, j, k;
 }
 
 // Function to calculate the difference between time steps
-void CFD_Solver::Get_MaximumDifference(Property &PropertyName, double &MaxDiff){
+void CFD_Solver::Get_MaximumDifference(Property_Struct &PropertyName, double &MaxDiff){
 int i, j, k;
 
     for (i = Ix[Rango]; i < Fx[Rango]; i++){

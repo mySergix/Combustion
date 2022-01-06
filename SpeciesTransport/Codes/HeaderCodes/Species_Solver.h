@@ -35,10 +35,7 @@ class Species_Solver{
         int Halo;
 
         double *kB;
-
-        //Matrices necesarias
-        double* Test_Mesh;
-        double* Test_MeshGlobal;
+        double *R_ideal;
 
          // Structure for species data
         struct Species_Struct
@@ -46,6 +43,7 @@ class Species_Solver{
             string Name; // Name of the species
             double *Wmolar; // Molar weight of the species
             double *Epsilon; // Characteristic Lennard-Jones energy
+            double *sigma;
 
             // Mass fractions
             double *Y_Past;
@@ -59,6 +57,9 @@ class Species_Solver{
             // Molar fraction
             double *X;
 
+            // Diffusion coefficient
+            double *D_am;
+
             // Diffusion velocities
             double *U_Diff;
             double *V_Diff;
@@ -69,36 +70,45 @@ class Species_Solver{
 
             double *ContributionPres;
             double *ContributionPast;
+
+            // JANAF Terms
+            double *Cp_coeff;
+            double *h_coeff;
+            double *mu_coeff;
+            double *lambda_coeff;
+
         };
 
-        struct Species_Struct Species[N_Species];
+        struct Species_Struct Species [N_Species];
 
 		//Constructor de la clase
 		Species_Solver(Memory M1, ReadData R1, Parallel P1);
 		
 		//Metodos de la clase
 
-        // Binary Diffusion Coefficient Models
-        double Get_BinaryDiff_ChampanEnskog(int, double, double, int, int, int);
-        double Get_BinaryDiff_WilkeLee(int, double, double, int, int, int);
+            // Memory allocation
+            void Allocate_Struct_Species(Memory, int);
 
-        // Diffusion Models
-        void Get_DiffusionCoefficient_FickModel(int, CFD_Solver);
+            // Binary Diffusion Coefficient Models
+            double Get_BinaryDiff_ChampanEnskog(int, double, double, int, int, int);
+            double Get_BinaryDiff_WilkeLee(int, double, double, int, int, int);
 
-        void Get_WallsDiffusionVelocities(int, Mesher);
+            // Diffusion Models
+            void Get_DiffusionCoefficient_FickModel(int, CFD_Solver);
 
-        void Get_SpeciesDiffusion(Mesher, CFD_Solver, int);
-        void Get_SpeciesConvection(Mesher, CFD_Solver, int);
-        void Get_StepContribution_Species(CFD_Solver, int);
-        void Get_TemporalIntegration_Species(int);
-        void Get_Update(int);
-        void Get_MolarFraction_X();
+            void Get_WallsDiffusionVelocities(int, Mesher);
+            void Get_SpeciesConvection(Mesher, CFD_Solver, int);
 
-        // JANAF Calculations
-        double JANAF_CpHeat(double, int, int, int);
-        double JANAF_AbsEnthalpy_Specie(int, double);
-        double JANAF_AbsEnthalpy_Specie_Mix(double, int, int, int);
-        double JANAF_DynViscosity(double, int, int, int);
-        double JANAF_ThermalCond(double, int, int, int);
+            void Get_TemporalIntegration_Species(int);
+
+            void Get_Update(int);
+            void Get_MolarFraction_X();
+
+            // JANAF Calculations
+            double JANAF_CpHeat(double, int, int, int);
+            double JANAF_AbsEnthalpy_Specie(int, double);
+            double JANAF_AbsEnthalpy_Specie_Mix(double, int, int, int);
+            double JANAF_DynViscosity(double, int, int, int);
+            double JANAF_ThermalCond(double, int, int, int);
 
 };

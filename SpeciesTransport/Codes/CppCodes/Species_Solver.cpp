@@ -50,6 +50,7 @@ Species_Solver::Species_Solver(Memory M1, ReadData R1, Parallel P1){
 }
 
 // Parts of the Species Solver Class
+#include "Species_Solver_Memory.cpp"
 #include "Species_Solver_JANAF.cpp"
 #include "Species_Solver_Diffusion.cpp"
 
@@ -62,7 +63,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                Species[SP].ConvectiveTerm[LM(i,j,k,0)] = (1.0 / MESH.VolMP) * (
+                Species[SP].ContributionPres[LM(i,j,k,0)] = (1.0 / MESH.VolMP) * (
                                                        - MESH.Surf[LM(i,j,k,0)] * (CFD_S1.Density.Wall_U[LMU(i,j,k,0)] + Species[SP].U_Diff[LMU(i,j,k,0)]) * Species[SP].Y_Wall_U[LMU(i,j,k,0)]
                                                        + MESH.Surf[LM(i,j,k,0)] * (CFD_S1.Density.Wall_U[LMU(i+1,j,k,0)] + Species[SP].U_Diff[LMU(i+1,j,k,0)]) * Species[SP].Y_Wall_U[LMU(i+1,j,k,0)]
                                                        - MESH.Surf[LM(i,j,k,1)] * (CFD_S1.Density.Wall_V[LMV(i,j,k,0)] + Species[SP].V_Diff[LMV(i,j,k,0)]) * Species[SP].Y_Wall_V[LMV(i,j,k,0)] 
@@ -70,20 +71,6 @@ int i, j, k;
                                                        - MESH.Surf[LM(i,j,k,2)] * (CFD_S1.Density.Wall_W[LMW(i,j,k,0)] + Species[SP].W_Diff[LMW(i,j,k,0)]) * Species[SP].Y_Wall_W[LMW(i,j,k,0)]
                                                        + MESH.Surf[LM(i,j,k,2)] * (CFD_S1.Density.Wall_W[LMW(i,j,k+1,0)] + Species[SP].W_Diff[LMW(i,j,k+1,0)]) * Species[SP].Y_Wall_W[LMW(i,j,k+1,0)]
                                                        );
-            }
-        }
-    }
-
-}
-
-// Function to calculate the step contribution to each species
-void Species_Solver::Get_StepContribution_Species(CFD_Solver CFD_S1, int SP){
-int i, j, k;
-
-    for (i = Ix[Rango]; i < Fx[Rango]; i++){
-        for (j = 0; j < NY; j++){
-            for (k = 0; k < NZ; k++){
-                Species[SP].ContributionPres[LM(i,j,k,0)] = (1.0 / CFD_S1.Density.Pres[LM(i,j,k,0)]) * (- Species[SP].ConvectiveTerm[LM(i,j,k,0)] - Species[SP].DiffusionTerm[LM(i,j,k,0)]);
             }
         }
     }
@@ -98,7 +85,7 @@ int i, j, k;
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
                 Species[SP].Y_Fut[LM(i,j,k,0)] = (2.0 * Beta * Species[SP].Y_Pres[LM(i,j,k,0)] - (Beta - 0.50) * Species[SP].Y_Past[LM(i,j,k,0)]) / (Beta + 0.50) 
-                                              + DeltaT * ((1.0 + Beta) * Species[SP].ContributionPres[LM(i,j,k,0)] - Beta * Species[SP].ContributionPast[LM(i,j,k,0)]); 
+                                              + DeltaT * ((1.0 + Beta) * (1.0 / CFD_S1.Density.Pres[LM(i,j,k,0)]) * Species[SP].ContributionPres[LM(i,j,k,0)] - Beta * (1.0 / CFD_S1.Density.Past[LM(i,j,k,0)]) * Species[SP].ContributionPast[LM(i,j,k,0)]); 
             }
         }
     }
@@ -144,4 +131,5 @@ double Sum;
             }
         }
     }
+    
 }
