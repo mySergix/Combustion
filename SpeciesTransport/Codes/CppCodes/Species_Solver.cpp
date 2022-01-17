@@ -10,8 +10,6 @@
 #include "../HeaderCodes/CFD_Solver.h"
 #include "../HeaderCodes/Species_Solver.h"
 
-
-
 using namespace std;
 
 #define LM(i,j,k,dim) ((NY + 2*Halo) * (NZ + 2*Halo)) * ((i) - Ix[Rango] + Halo) + ((NZ + 2*Halo) * ((j) + Halo)) + ((k) + Halo) + ((Fx[Rango] - Ix[Rango] + 2*Halo) * (NY + 2*Halo) * (NZ + 2*Halo)) * (dim)
@@ -50,10 +48,12 @@ Species_Solver::Species_Solver(Memory M1, ReadData R1, Parallel P1){
 }
 
 // Parts of the Species Solver Class
-#include "Species_Solver_Memory.cpp"
-#include "Species_Solver_JANAF.cpp"
-#include "Species_Solver_Diffusion.cpp"
+//#include "Species_Solver_Memory.cpp"
+//#include "Species_Solver_Read.cpp"
+//#include "Species_Solver_JANAF.cpp"
+//#include "Species_Solver_Diffusion.cpp"
 
+/*
 // Function to calculate the convective term of each species
 void Species_Solver::Get_SpeciesConvection(Mesher MESH, CFD_Solver CFD_S1, int SP){
 int i, j, k;
@@ -133,3 +133,5 @@ double Sum;
     }
     
 }
+
+*/

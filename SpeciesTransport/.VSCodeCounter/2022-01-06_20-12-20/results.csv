@@ -1,0 +1,30 @@
+"filename", "language", "C++", "Shell Script", "Makefile", "comment", "blank", "total"
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/Clean_VTK.sh", "Shell Script", 0, 3, 0, 1, 8, 12
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/CFD_Solver.cpp", "C++", 103, 0, 0, 22, 55, 180
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/CFD_Solver_BoundaryConditions.cpp", "C++", 146, 0, 0, 32, 43, 221
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/CFD_Solver_Energy.cpp", "C++", 71, 0, 0, 11, 23, 105
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/CFD_Solver_Mass.cpp", "C++", 17, 0, 0, 4, 4, 25
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/CFD_Solver_Memory.cpp", "C++", 69, 0, 0, 22, 40, 131
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/CFD_Solver_Momentum.cpp", "C++", 234, 0, 0, 36, 54, 324
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/CFD_Solver_Utilities.cpp", "C++", 137, 0, 0, 31, 49, 217
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Memory.cpp", "C++", 19, 0, 0, 6, 13, 38
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Mesher.cpp", "C++", 101, 0, 0, 18, 35, 154
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Parallel.cpp", "C++", 105, 0, 0, 11, 36, 152
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/PostProcess.cpp", "C++", 95, 0, 0, 8, 32, 135
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/ReadData.cpp", "C++", 71, 0, 0, 5, 34, 110
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Species_Solver.cpp", "C++", 89, 0, 0, 13, 33, 135
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Species_Solver_Diffusion.cpp", "C++", 70, 0, 0, 11, 21, 102
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Species_Solver_JANAF.cpp", "C++", 80, 0, 0, 8, 19, 107
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/CppCodes/Species_Solver_Memory.cpp", "C++", 18, 0, 0, 11, 9, 38
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/CFD_Solver.h", "C++", 128, 0, 0, 16, 55, 199
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/CanteraCombustion.h", "C++", 16, 0, 0, 3, 7, 26
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/Memory.h", "C++", 13, 0, 0, 6, 8, 27
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/Mesher.h", "C++", 33, 0, 0, 11, 17, 61
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/Parallel.h", "C++", 26, 0, 0, 8, 15, 49
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/PostProcess.h", "C++", 29, 0, 0, 8, 12, 49
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/ReadData.h", "C++", 22, 0, 0, 4, 14, 40
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/HeaderCodes/Species_Solver.h", "C++", 63, 0, 0, 20, 31, 114
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/Main_SpeciesTransport.cpp", "C++", 25, 0, 0, 10, 17, 52
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/Makefile", "Makefile", 0, 0, 16, 12, 9, 37
+"/home/sergiogus/Documents/GitHub/Combustion/SpeciesTransport/Codes/Outdated_Codes.cpp", "C++", 33, 0, 0, 4, 8, 45
+"Total", "-", 1813, 3, 16, 352, 701, 2885

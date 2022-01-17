@@ -10,8 +10,6 @@
 #include "../HeaderCodes/CFD_Solver.h"
 #include "../HeaderCodes/Species_Solver.h"
 
-
-
 using namespace std;
 
 #define LM(i,j,k,dim) ((NY + 2*Halo) * (NZ + 2*Halo)) * ((i) - Ix[Rango] + Halo) + ((NZ + 2*Halo) * ((j) + Halo)) + ((k) + Halo) + ((Fx[Rango] - Ix[Rango] + 2*Halo) * (NY + 2*Halo) * (NZ + 2*Halo)) * (dim)
@@ -25,7 +23,7 @@ using namespace std;
 #define LEF_RIG(i,j,k,dim) ((NZ + 2*Halo) * ((j) + Halo)) + ((k) + Halo)
 #define HER_THE(i,j,k,dim) ((NY + 2*Halo)) * ((i) - Ix[Rango] + Halo) + ((j) + Halo)
 
-CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
+CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1, Species_Solver SPE_S1){
 
     // Data necessary
 
@@ -63,31 +61,11 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
 
 // Parts of the CFD SOLVER Class
 #include "CFD_Solver_Memory.cpp"
-#include "CFD_Solver_Utilities.cpp"
-#include "CFD_Solver_BoundaryConditions.cpp"
-#include "CFD_Solver_Mass.cpp"
-#include "CFD_Solver_Momentum.cpp"
-#include "CFD_Solver_Energy.cpp"
-
-// Function to allocate memory for all matrix
-void CFD_Solver::AllocateMemory(Memory M1){
-
-    // Density
-    Allocate_StructureMemory(M1, Density);
-
-    // Velocity U
-    Allocate_StructureMemory(M1, U);
-
-    // Velocity V
-    Allocate_StructureMemory(M1, V);
-
-    // Velocity W
-    Allocate_StructureMemory(M1, W);
-
-  
-}
-
-
+//#include "CFD_Solver_Utilities.cpp"
+//#include "CFD_Solver_BoundaryConditions.cpp"
+//#include "CFD_Solver_Mass.cpp"
+//#include "CFD_Solver_Momentum.cpp"
+//#include "CFD_Solver_Energy.cpp"
 
 // Function to communicate all the velocity fields (local fields)
 void CFD_Solver::CommunicateVelocities(Parallel P1, double *UFIELD, double *VFIELD, double *WFIELD){
@@ -97,7 +75,7 @@ void CFD_Solver::CommunicateVelocities(Parallel P1, double *UFIELD, double *VFIE
     P1.CommunicateLocalMatrix(WFIELD, WFIELD); // Velocity W
 
 }
-
+/*
 // Function to run the CFD Solver
 void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcess PP1){
 
@@ -177,3 +155,4 @@ void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcess PP1)
     }
     
 }
+*/

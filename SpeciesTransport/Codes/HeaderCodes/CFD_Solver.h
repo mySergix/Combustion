@@ -10,6 +10,9 @@
 
 using namespace std;
 
+// Forward declaration of classes
+class Species_Solver;
+
 class CFD_Solver{	
 
 	public:
@@ -40,6 +43,7 @@ class CFD_Solver{
         double MaxDiff;
         double GlobalConvergence;
 
+        double mu;
         double c;
         double R_ideal;
 
@@ -137,14 +141,14 @@ class CFD_Solver{
         struct Property_Struct V;
         struct Property_Struct W;
 
-        struct Presion_Struct Pressure;
+        struct Pressure_Struct Pressure;
         
         struct Global GlobalMatrix;
 
         struct Stresses_Struct Stress;
 
 		//Constructor de la clase
-		CFD_Solver(Memory, ReadData, Parallel);
+		CFD_Solver(Memory, ReadData, Parallel, Species_Solver);
 		
 		//Metodos de la clase
 

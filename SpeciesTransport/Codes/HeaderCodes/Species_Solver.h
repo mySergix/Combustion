@@ -8,7 +8,12 @@
 #include <stdio.h>
 #include <cmath>
 
+#define N_Species 3
+
 using namespace std;
+
+// Forward declaration of classes
+class CFD_Solver;
 
 class Species_Solver{	
 
@@ -34,8 +39,10 @@ class Species_Solver{
 
         int Halo;
 
-        double *kB;
-        double *R_ideal;
+        double kB;
+        double R_ideal;
+
+        string *SpeciesString;
 
          // Structure for species data
         struct Species_Struct
@@ -79,7 +86,7 @@ class Species_Solver{
 
         };
 
-        struct Species_Struct Species [N_Species];
+        Species_Struct Species[N_Species];
 
 		//Constructor de la clase
 		Species_Solver(Memory M1, ReadData R1, Parallel P1);
@@ -88,6 +95,11 @@ class Species_Solver{
 
             // Memory allocation
             void Allocate_Struct_Species(Memory, int);
+
+            // Data input
+            void Read_SpeciesName(string);
+            void Read_AllSpeciesData();
+            void Read_SpeciesInformation(Species_Struct&, string);
 
             // Binary Diffusion Coefficient Models
             double Get_BinaryDiff_ChampanEnskog(int, double, double, int, int, int);
