@@ -130,7 +130,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango] + 1; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                PropertyName.Wall_U[LMU(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i - 1,j,k,0)] +MESH.Node_Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]),MESH.Node_Mesh[LM(i-2,j,k,0)], PropertyName.Pres[LM(i-2,j,k,0)],MESH.Node_Mesh[LM(i-1,j,k,0)], PropertyName.Pres[LM(i-1,j,k,0)],MESH.Node_Mesh[LM(i,j,k,0)], PropertyName.Pres[LM(i,j,k,0)],MESH.Node_Mesh[LM(i+1,j,k,0)], PropertyName.Pres[LM(i+1,j,k,0)]); 
+                PropertyName.Wall_U[LMU(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i - 1,j,k,0)] + MESH.Node_Mesh[LM(i,j,k,0)]), 0.50 * (U.Pres[LM(i - 1,j,k,0)] + U.Pres[LM(i,j,k,0)]),MESH.Node_Mesh[LM(i-2,j,k,0)], PropertyName.Pres[LM(i-2,j,k,0)],MESH.Node_Mesh[LM(i-1,j,k,0)], PropertyName.Pres[LM(i-1,j,k,0)],MESH.Node_Mesh[LM(i,j,k,0)], PropertyName.Pres[LM(i,j,k,0)],MESH.Node_Mesh[LM(i+1,j,k,0)], PropertyName.Pres[LM(i+1,j,k,0)]); 
             }
         }
     }
@@ -139,7 +139,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 1; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                PropertyName.Wall_V[LMV(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j-1,k,1)] +MESH.Node_Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]),MESH.Node_Mesh[LM(i,j-2,k,1)], PropertyName.Pres[LM(i,j-2,k,0)],MESH.Node_Mesh[LM(i,j-1,k,1)], PropertyName.Pres[LM(i,j-1,k,0)],MESH.Node_Mesh[LM(i,j,k,1)], PropertyName.Pres[LM(i,j,k,0)],MESH.Node_Mesh[LM(i,j+1,k,1)], PropertyName.Pres[LM(i,j+1,k,0)]);       
+                PropertyName.Wall_V[LMV(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j-1,k,1)] + MESH.Node_Mesh[LM(i,j,k,1)]), 0.50 * (V.Pres[LM(i,j-1,k,0)] + V.Pres[LM(i,j,k,0)]),MESH.Node_Mesh[LM(i,j-2,k,1)], PropertyName.Pres[LM(i,j-2,k,0)],MESH.Node_Mesh[LM(i,j-1,k,1)], PropertyName.Pres[LM(i,j-1,k,0)],MESH.Node_Mesh[LM(i,j,k,1)], PropertyName.Pres[LM(i,j,k,0)],MESH.Node_Mesh[LM(i,j+1,k,1)], PropertyName.Pres[LM(i,j+1,k,0)]);       
             }
         }
     }
@@ -148,7 +148,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 1; k < NZ; k++){
-                PropertyName.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (Mesh[LM(i,j,k-1,2)] +MESH.Node_Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]),MESH.Node_Mesh[LM(i,j,k-2,2)], PropertyName.Pres[LM(i,j,k-2,0)],MESH.Node_Mesh[LM(i,j,k-1,2)], PropertyName.Pres[LM(i,j,k-1,0)],MESH.Node_Mesh[LM(i,j,k,2)], PropertyName.Pres[LM(i,j,k,0)],MESH.Node_Mesh[LM(i,j,k+1,2)], PropertyName.Pres[LM(i,j,k+1,0)]);
+                PropertyName.Wall_W[LMW(i,j,k,0)] = CS(0.50 * (MESH.Node_Mesh[LM(i,j,k-1,2)] + MESH.Node_Mesh[LM(i,j,k,2)]), 0.50 * (W.Pres[LM(i,j,k-1,0)] + W.Pres[LM(i,j,k,0)]),MESH.Node_Mesh[LM(i,j,k-2,2)], PropertyName.Pres[LM(i,j,k-2,0)],MESH.Node_Mesh[LM(i,j,k-1,2)], PropertyName.Pres[LM(i,j,k-1,0)],MESH.Node_Mesh[LM(i,j,k,2)], PropertyName.Pres[LM(i,j,k,0)],MESH.Node_Mesh[LM(i,j,k+1,2)], PropertyName.Pres[LM(i,j,k+1,0)]);
             }
         }
     }

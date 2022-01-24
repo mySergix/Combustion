@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------------------------//
 
 // Function to read the name of the files of species data
-void ReadData::Read_SpeciesName(string FileName){
+void Species_Solver::Read_SpeciesName(string FileName){
 int i = 0;
 int lines = 0;
 string linea;
@@ -43,7 +43,7 @@ string FinalName;
 }
 
 // Function to read the data of each species
-void ReadData::Read_SpeciesInformation(Species_Struct &Specie, string FileName){
+void Species_Solver::Read_SpeciesInformation(Species_Struct &Specie, string FileName){
 int i = 0;
 string linea;
 stringstream InitialName;

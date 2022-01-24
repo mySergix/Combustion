@@ -43,9 +43,7 @@ Species_Solver SPE_S1(M1, R1, P1);
 
 CFD_Solver CFD_S1(M1, R1, P1, SPE_S1);
 
-
-
-//CFD_S1.RunSolver(M1, P1, MESH, PP1);
+CFD_S1.RunSolver(M1, P1, MESH, PP1, SPE_S1);
 
 MPI_Finalize();
 

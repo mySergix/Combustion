@@ -134,12 +134,16 @@ class CFD_Solver{
         double *FourierDiffusion;
         double *EnthalpyDiffusion;
 
+        double *T_Pres;
+
         // Structures Declaration
         struct Property_Struct Density;
 
         struct Property_Struct U;
         struct Property_Struct V;
         struct Property_Struct W;
+
+        struct Property_Struct Hs;
 
         struct Pressure_Struct Pressure;
         
@@ -162,42 +166,47 @@ class CFD_Solver{
             void Allocate_Struct_Stresses(Memory);
             void Allocate_Struct_EnergyEqTerms(Memory);
             void Allocate_Struct_Global(Memory);
+            void Allocate_VelocityMemory(Memory, Property_Struct&);
 
-        inline double CS(double, double, double, double, double, double, double, double, double, double);   
-        void Set_InitialValues();
-		void Get_BoundaryConditions();
-        void Update_BoundaryConditions(Mesher);
-        void ApplyBoundaries(Property_Struct&);
-        void Get_PeriodicConditions(Mesher, Property_Struct&);
+            // Class Utilities
+            void Set_InitialValues();
+            void Get_TimeStep(Mesher);
+            inline double CS(double, double, double, double, double, double, double, double, double, double);   
+            void Get_WallsValue_Property(Parallel, Mesher, Property_Struct&);
+            void Get_TemporalIntegration_Property(Property_Struct&);
+            void UpdateField(Property_Struct&);
+            void Get_MaximumDifference(Property_Struct&, double&);
+            void Get_ConvergenceCriteria();
 
-        void Get_TimeStep(Mesher);
-
-        void CommunicateVelocities(Parallel, double*, double*, double*);
+            // Boundary Conditions
+            void Get_BoundaryConditions();
+            void Get_PeriodicConditions(Mesher, Property_Struct&);
+            void Update_BoundaryConditions(Mesher); 
+            void ApplyBoundaries(Property_Struct&);
         
-        void Get_WallsValue_Property(Parallel, Mesher, Property_Struct&);
+            // Mass Equation
+            void Get_ConvectiveTerm_Density(Mesher);
+            void Get_StepContribution_Density(Property_Struct&);
 
-        void Get_ConvectiveTerm_Density(Mesher);
-        void Get_ConvectiveTerm_Property(Mesher, Property_Struct&);
-        void Get_Divergence(Mesher);
-        void Get_VelocityGradients(Mesher, Property_Struct&);
-
-        void Get_DynamicViscosity(Species_Solver);
-        void Get_ViscousStresses(Mesher);
-        void Get_DiffusiveTerm_Velocity(Mesher, Property_Struct&, double*, double*, double*);
-
-        void Get_Pressure();
-        void Get_PressureGradient(Mesher);
-
-        void Get_StepContribution_Density(Property_Struct&);
-        void Get_StepContribution_Velocity(Property_Struct&, double*);
+            // Momentum Equation
+            void Get_ConvectiveTerm_Property(Mesher, Property_Struct&);
+            void Get_Pressure();
+            void Get_PressureGradient(Mesher);
+            void Get_Divergence(Mesher);
+            void Get_VelocityGradients(Mesher, Property_Struct&);
+            void Get_DynamicViscosity(Species_Solver);
+            void Get_ViscousStresses(Mesher);
+            void Get_DiffusiveTerm_Velocity(Mesher, Property_Struct&, double*, double*, double*);
+            void Get_StepContribution_Velocity(Property_Struct&, double*);
         
-        void Get_TemporalIntegration_Property(Property_Struct&);
+            // Energy Equation
+            void Get_Initial_AbsEnthalpy(Species_Solver&);
+            void Get_StepContribution_Enthalpy();
+            void Get_ThermalConductivity(Species_Solver&);
+            void Get_FourierDiffusion(Mesher);
+            void Get_EnthalpyDiffusion(Mesher, Species_Solver&);
+            void Get_ViscousDissipation(Mesher);
 
-        void Get_MaximumDifference(Property_Struct&, double&);
-        void Get_ConvergenceCriteria();
-
-        void UpdateField(Property_Struct&);
-
-        void RunSolver(Memory, Parallel, Mesher, PostProcess);
+        void RunSolver(Memory, Parallel, Mesher, PostProcess, Species_Solver);
 
 };

@@ -4,97 +4,100 @@
 
 // Function to run the CFD Solver
 void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcess PP1, Species_Solver SPE_S1){
+int n;
 
-    double Time = 0.0; // Time of the simulation
-    int Step = 0; // Steps of the simulation
-
-    MaxDiff = 2.0 * GlobalConvergence;
-
-    char FileName_1[300];
-
+double Time = 0.0; // Time of the simulation
+int Step = 0; // Steps of the simulation
+MaxDiff = 2.0 * GlobalConvergence;
 
     // CFD Solver Preprocess
 
         // Memory allocation
+
+            // Density
+            Allocate_Struct_MapFields(M1, Density);
+            Allocate_Struct_BoundaryConditions(M1, Density);
+            Allocate_Struct_Contributions(M1, Density);
+
+            // Velocities
+            Allocate_VelocityMemory(M1, U); // U Velocity
+            Allocate_VelocityMemory(M1, V); // U Velocity
+            Allocate_VelocityMemory(M1, W); // U Velocity
+        
+            // Viscous stresses
+            Allocate_Struct_Stresses(M1);
+
+            // Pressure
+            Allocate_Struct_Pressure(M1);
+
+            // Energy
+            Allocate_Struct_MapFields(M1, Hs);
+            Allocate_Struct_BoundaryConditions(M1, Hs);
+            Allocate_Struct_Contributions(M1, Hs);
+            Allocate_Struct_EnergyEqTerms(M1);
+
         // Initial field settings
+        Set_InitialValues();
+
         // Initial boundary conditions
+        // Analizar y poner bien las boundary conditions
 
 
     // Species Solver Preprocess
 
         // Memory allocation
-        // Read species data
+        for (n = 0; n < N_Species; n++){
+            SPE_S1.Allocate_Struct_Species(M1, n);
+        }
+
+        // Species Data reading
+        SPE_S1.Read_SpeciesName("Species_Data.txt");
+        SPE_S1.Read_AllSpeciesData();
+
         // Initial species field settings
+        // Calculos y campos iniciales
+
         // Initial species boundary conditions
+        // Analizar y poner bien las boundary conditions
+
+
+        while (Step < 10){
+
+            Step++;
+            Update_BoundaryConditions(MESH);
+            Get_TimeStep(MESH);
+            Time += DeltaT;
+
+            // CFD Solver
+            
+                // Walls' Velocities
+                Get_WallsValue_Property(P1, MESH, U); // Velocity U
+                Get_WallsValue_Property(P1, MESH, U); // Velocity U
+                Get_WallsValue_Property(P1, MESH, U); // Velocity U
+                
+                // Density
+                Get_WallsValue_Property(P1, MESH, Density);
+                Get_ConvectiveTerm_Density(MESH);
+                Get_TemporalIntegration_Property(Density);
 
         
 
-    AllocateMemory(M1); // Allocate memory for the matrix
-    Set_InitialValues(); // Get the inital values of the properties
-    Get_BoundaryConditions(); // Get the fixed boundary conditions
-    
-    
-    while (MaxDiff >= GlobalConvergence){
+            // Species Solver
 
-        Step++;
-        Update_BoundaryConditions(MESH);
-        Get_TimeStep(MESH);
-        Time += DeltaT;
 
-        CommunicateVelocities(P1, U.Pres, V.Pres, W.Pres);
-        Get_WallsVelocities(MESH);
-        Get_WallsValue_Scalar(P1, MESH.Node_Mesh, Density);
-
-        // Density
-        Get_ConvectiveTerm(MESH, Density);
-        Get_StepContribution_Density(Density);
-        Get_TemporalIntegration(Density);
-
-        // Velocities
-        //Get_Pressure();
-        //Get_PressureGradient(MESH);
-
-        // Velocity U
-        Get_ConvectiveTerm(MESH, U);
-        Get_StepContribution_Velocity(U, Pressure.Gradient_X);
-
-        // Velocity V
-        Get_ConvectiveTerm(MESH, V);
-        Get_StepContribution_Velocity(V, Pressure.Gradient_Y);
-
-        // Velocity W
-        Get_ConvectiveTerm(MESH, W);
-        Get_StepContribution_Velocity(W, Pressure.Gradient_Z);
-
-        Get_TemporalIntegration(U);
-        Get_TemporalIntegration(V);
-        Get_TemporalIntegration(W);
-
-        if (Step % 100 == 0){
-            Get_ConvergenceCriteria();
-            P1.SendMatrixToZero(Density.Pres, GlobalMatrix.Density);
+            if (Step % 1 == 0){
             
-            P1.SendMatrixToZero(U.Pres, GlobalMatrix.U);
-            P1.SendMatrixToZero(V.Pres, GlobalMatrix.V);
-            P1.SendMatrixToZero(W.Pres, GlobalMatrix.W);
 
-            if (Rango == 0){
-                cout<<"Step: "<<Step<<", Total time: "<<Time<<", MaxDif: "<<MaxDiff<<endl;
-                sprintf(FileName_1, "Density_Field_Step_%d", Step);
-                PP1.GlobalEscalarVTK(MESH, "CombustionResults/", "Densidad", FileName_1, GlobalMatrix.Density, 0);
+                if (Rango == 0){
+                    cout<<"Step: "<<Step<<", Total time: "<<Time<<", MaxDif: "<<MaxDiff<<endl;
+                }
 
-                sprintf(FileName_1, "Velocities_Field_Step_%d", Step);
-                PP1.GlobalVectorialVTK(MESH, "CombustionResults/", "Velocities", FileName_1, GlobalMatrix.U, GlobalMatrix.V, GlobalMatrix.W, 0);
+                MPI_Barrier(MPI_COMM_WORLD);
+
             }
 
-            MPI_Barrier(MPI_COMM_WORLD);	
-        }
-        
-        UpdateField(Density);
-        UpdateField(U);
-        UpdateField(V);
-        UpdateField(W);
+            UpdateField(Density);
 
-    }
-    
+        }
+
 }

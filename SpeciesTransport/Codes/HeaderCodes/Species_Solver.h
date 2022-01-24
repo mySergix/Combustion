@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <cmath>
+#include <math.h>
 
 #define N_Species 3
 
@@ -48,9 +48,9 @@ class Species_Solver{
         struct Species_Struct
         {
             string Name; // Name of the species
-            double *Wmolar; // Molar weight of the species
-            double *Epsilon; // Characteristic Lennard-Jones energy
-            double *sigma;
+            double Wmolar; // Molar weight of the species
+            double Epsilon; // Characteristic Lennard-Jones energy
+            double sigma;
 
             // Mass fractions
             double *Y_Past;
@@ -107,14 +107,7 @@ class Species_Solver{
 
             // Diffusion Models
             void Get_DiffusionCoefficient_FickModel(int, CFD_Solver);
-
             void Get_WallsDiffusionVelocities(int, Mesher);
-            void Get_SpeciesConvection(Mesher, CFD_Solver, int);
-
-            void Get_TemporalIntegration_Species(int);
-
-            void Get_Update(int);
-            void Get_MolarFraction_X();
 
             // JANAF Calculations
             double JANAF_CpHeat(double, int, int, int);
@@ -123,4 +116,10 @@ class Species_Solver{
             double JANAF_DynViscosity(double, int, int, int);
             double JANAF_ThermalCond(double, int, int, int);
 
+            // Species Solver
+            void Get_SpeciesConvection(Mesher, CFD_Solver, int);
+            void Get_TemporalIntegration_Species(int, CFD_Solver);
+            void Get_Update(int);
+            void Get_MolarFraction_X();
+            
 };

@@ -61,17 +61,9 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1, Species_Solver SPE_S
 
 // Parts of the CFD SOLVER Class
 #include "CFD_Solver_Memory.cpp"
-//#include "CFD_Solver_Utilities.cpp"
-//#include "CFD_Solver_BoundaryConditions.cpp"
-//#include "CFD_Solver_Mass.cpp"
-//#include "CFD_Solver_Momentum.cpp"
-//#include "CFD_Solver_Energy.cpp"
-
-// Function to communicate all the velocity fields (local fields)
-void CFD_Solver::CommunicateVelocities(Parallel P1, double *UFIELD, double *VFIELD, double *WFIELD){
-
-    P1.CommunicateLocalMatrix(UFIELD, UFIELD); // Velocity U
-    P1.CommunicateLocalMatrix(VFIELD, VFIELD); // Velocity V
-    P1.CommunicateLocalMatrix(WFIELD, WFIELD); // Velocity W
-
-}
+#include "CFD_Solver_Utilities.cpp"
+#include "CFD_Solver_BoundaryConditions.cpp"
+#include "CFD_Solver_Mass.cpp"
+#include "CFD_Solver_Momentum.cpp"
+#include "CFD_Solver_Energy.cpp"
+#include "CFD_Solver_RunSolver.cpp"

@@ -113,6 +113,7 @@ void CFD_Solver::Allocate_Struct_EnergyEqTerms(Memory M1){
     Lambda = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
     FourierDiffusion = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1); 
     EnthalpyDiffusion = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
+    T_Pres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2 * Halo, NY + 2*Halo, NZ + 2*Halo, 1);
 
 }
 
@@ -128,3 +129,13 @@ void CFD_Solver::Allocate_Struct_Global(Memory M1){
 
 }
 
+// Function to allocate the memory for each velocity component
+void CFD_Solver::Allocate_VelocityMemory(Memory M1, Property_Struct &PropertyName){
+
+    Allocate_Struct_MapFields(M1, PropertyName);
+    Allocate_Struct_VelocityGradients(M1, PropertyName);
+    Allocate_Struct_BoundaryConditions(M1, PropertyName);
+    Allocate_Struct_Contributions(M1, PropertyName);
+    Allocate_Struct_VelocityEqsTerms(M1, PropertyName);
+    
+}

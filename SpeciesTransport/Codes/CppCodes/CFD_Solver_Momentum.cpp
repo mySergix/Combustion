@@ -30,7 +30,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                Pressure.Pres[LM(i,j,k,0)] = Density.Pres[LM(i,j,k,0)] * R_ideal * T.Pres[LM(i,j,k,0)];
+                Pressure.Pres[LM(i,j,k,0)] = Density.Pres[LM(i,j,k,0)] * R_ideal * T_Pres[LM(i,j,k,0)];
             }
         }
     }
@@ -194,7 +194,7 @@ int i, j, k;
     for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
         for (j = 0; j < NY; j++){
             for (k = - 1; k < NZ + 1; k++){
-                Stress.mu_Visc[LM(i,j,k,0)] = SPE_S1.JANAF_DynViscosity(T.Pres[LM(i,j,k,0)], i, j, k);
+                Stress.mu_Visc[LM(i,j,k,0)] = SPE_S1.JANAF_DynViscosity(T_Pres[LM(i,j,k,0)], i, j, k);
             }
         }
     }

@@ -15,6 +15,10 @@ using namespace std;
 #define LM(i,j,k,dim) ((NY + 2*Halo) * (NZ + 2*Halo)) * ((i) - Ix[Rango] + Halo) + ((NZ + 2*Halo) * ((j) + Halo)) + ((k) + Halo) + ((Fx[Rango] - Ix[Rango] + 2*Halo) * (NY + 2*Halo) * (NZ + 2*Halo)) * (dim)
 #define GM(i,j,k,dim) (NY + 2*Halo) * (NZ + 2*Halo) * ((i) + Halo) + (NZ + 2*Halo) * ((j) + Halo) + ((k) + Halo) + (NY + 2*Halo) * (NZ + 2*Halo) * (NX + 2*Halo) * (dim)
 
+#define LMU(i,j,k,dim) ((NY + 2*Halo) * (NZ + 2*Halo)) * ((i) - Ix[Rango] + Halo) + ((NZ + 2*Halo) * ((j) + Halo)) + ((k) + Halo)
+#define LMV(i,j,k,dim) ((NY + 1 + 2*Halo) * (NZ + 2*Halo)) * ((i) - Ix[Rango] + Halo) + ((NZ + 2*Halo) * ((j) + Halo)) + ((k) + Halo)
+#define LMW(i,j,k,dim) ((NY + 2*Halo) * (NZ + 1 + 2*Halo)) * ((i) - Ix[Rango] + Halo) + ((NZ + 1 + 2*Halo) * ((j) + Halo)) + ((k) + Halo)
+
 Species_Solver::Species_Solver(Memory M1, ReadData R1, Parallel P1){
 	
     // Data necessary
@@ -48,12 +52,12 @@ Species_Solver::Species_Solver(Memory M1, ReadData R1, Parallel P1){
 }
 
 // Parts of the Species Solver Class
-//#include "Species_Solver_Memory.cpp"
-//#include "Species_Solver_Read.cpp"
-//#include "Species_Solver_JANAF.cpp"
-//#include "Species_Solver_Diffusion.cpp"
+#include "Species_Solver_Memory.cpp"
+#include "Species_Solver_Read.cpp"
+#include "Species_Solver_JANAF.cpp"
+#include "Species_Solver_Diffusion.cpp"
 
-/*
+
 // Function to calculate the convective term of each species
 void Species_Solver::Get_SpeciesConvection(Mesher MESH, CFD_Solver CFD_S1, int SP){
 int i, j, k;
@@ -63,7 +67,7 @@ int i, j, k;
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                Species[SP].ContributionPres[LM(i,j,k,0)] = (1.0 / MESH.VolMP) * (
+                Species[SP].ContributionPres[LM(i,j,k,0)] = (1.0 / MESH.Vol[LM(i,j,k,0)]) * (
                                                        - MESH.Surf[LM(i,j,k,0)] * (CFD_S1.Density.Wall_U[LMU(i,j,k,0)] + Species[SP].U_Diff[LMU(i,j,k,0)]) * Species[SP].Y_Wall_U[LMU(i,j,k,0)]
                                                        + MESH.Surf[LM(i,j,k,0)] * (CFD_S1.Density.Wall_U[LMU(i+1,j,k,0)] + Species[SP].U_Diff[LMU(i+1,j,k,0)]) * Species[SP].Y_Wall_U[LMU(i+1,j,k,0)]
                                                        - MESH.Surf[LM(i,j,k,1)] * (CFD_S1.Density.Wall_V[LMV(i,j,k,0)] + Species[SP].V_Diff[LMV(i,j,k,0)]) * Species[SP].Y_Wall_V[LMV(i,j,k,0)] 
@@ -78,14 +82,14 @@ int i, j, k;
 }
 
 // Function to integrate the species equation
-void Species_Solver::Get_TemporalIntegration_Species(int SP){
+void Species_Solver::Get_TemporalIntegration_Species(int SP, CFD_Solver CFD_S1){
 int i, j, k;
 
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
-                Species[SP].Y_Fut[LM(i,j,k,0)] = (2.0 * Beta * Species[SP].Y_Pres[LM(i,j,k,0)] - (Beta - 0.50) * Species[SP].Y_Past[LM(i,j,k,0)]) / (Beta + 0.50) 
-                                              + DeltaT * ((1.0 + Beta) * (1.0 / CFD_S1.Density.Pres[LM(i,j,k,0)]) * Species[SP].ContributionPres[LM(i,j,k,0)] - Beta * (1.0 / CFD_S1.Density.Past[LM(i,j,k,0)]) * Species[SP].ContributionPast[LM(i,j,k,0)]); 
+                Species[SP].Y_Fut[LM(i,j,k,0)] = (2.0 * CFD_S1.Beta * Species[SP].Y_Pres[LM(i,j,k,0)] - (CFD_S1.Beta - 0.50) * Species[SP].Y_Past[LM(i,j,k,0)]) / (CFD_S1.Beta + 0.50) 
+                                              + CFD_S1.DeltaT * ((1.0 + CFD_S1.Beta) * (1.0 / CFD_S1.Density.Pres[LM(i,j,k,0)]) * Species[SP].ContributionPres[LM(i,j,k,0)] - CFD_S1.Beta * (1.0 / CFD_S1.Density.Past[LM(i,j,k,0)]) * Species[SP].ContributionPast[LM(i,j,k,0)]); 
             }
         }
     }
@@ -111,21 +115,21 @@ int i, j, k;
 
 // Function to calculate the molar fraction of each species
 void Species_Solver::Get_MolarFraction_X(){
-int i, j, k, sp;
-double Sum;
+int i, j, k, n;
+double Sum, W_molar_Average;
 
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 0; j < NY; j++){
             for (k = 0; k < NZ; k++){
 
                 Sum = 0.0;
-                for (sp = 0; sp < N_Species; sp++){
-                    Sum += Species[sp].Y_Pres[LM(i,j,k,0)] / Species[sp].Wmolar;
+                for (n = 0; n < N_Species; n++){
+                    Sum += Species[n].Y_Pres[LM(i,j,k,0)] / Species[n].Wmolar;
                 }
                 W_molar_Average = 1.0 / Sum;    
 
-                for (sp = 0; sp < N_Species; sp++){
-                    Species[sp].X[LM(i,j,k,0)] = (W_molar_Average / Species[sp].Wmolar) * Species[sp].Y_Pres[LM(i,j,k,0)];
+                for (n = 0; n < N_Species; n++){
+                    Species[n].X[LM(i,j,k,0)] = (W_molar_Average / Species[n].Wmolar) * Species[n].Y_Pres[LM(i,j,k,0)];
                 }
 
             }
@@ -134,4 +138,3 @@ double Sum;
     
 }
 
-*/
