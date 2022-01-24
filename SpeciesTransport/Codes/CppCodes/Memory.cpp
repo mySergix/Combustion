@@ -27,12 +27,3 @@ int *M1;
 	return M1;
 
 }
-
-//Memoria dinámica array de strings
-string *Memory::AllocateStringArray(int N){
-string *M1;
-
-	M1 = new std::string [N];
-	return M1;
-	
-}

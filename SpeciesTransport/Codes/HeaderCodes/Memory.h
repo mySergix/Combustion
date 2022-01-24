@@ -21,6 +21,5 @@ class Memory{
 			//Métodos de alojamiento de memoria
 			int *AllocateInt(int, int, int, int);
 			double *AllocateDouble(int, int, int, int);
-			string *AllocateStringArray(int);
 			
 };
