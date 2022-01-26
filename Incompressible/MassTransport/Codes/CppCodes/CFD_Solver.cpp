@@ -62,8 +62,8 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
 #include "CFD_Solver_Utilities.cpp"
 #include "CFD_Solver_BoundaryConditions.cpp"
 #include "CFD_Solver_PoissonCoeffs.cpp"
+#include "CFD_Solver_MomentumDiffusion.cpp"
 //#include "CFD_Solver_MomentumConvection.cpp"
-//#include "CFD_Solver_MomentumDiffusion.cpp"
 //#include "CFD_Solver_Energy.cpp"
-//#include "CFD_Solver_RunSolver.cpp"
+#include "CFD_Solver_RunSolver.cpp"
 

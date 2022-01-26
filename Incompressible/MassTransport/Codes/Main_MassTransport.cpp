@@ -44,7 +44,7 @@ MPI_Barrier(MPI_COMM_WORLD);
 
 CFD_Solver CFD_S1(M1, R1, P1);
 
-CFD_S1.Allocate_VelocitiesMemory(M1);
+//CFD_S1.RunSolver(M1, P1, MESH);
 
 MPI_Finalize();
 

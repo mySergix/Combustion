@@ -46,9 +46,17 @@ class Parallel{
 			void RunParallel(Memory);
 
 			// Communication
-			void CommunicateDataLP(double*, double*);
-			void CommunicateDataLU(double*, double*);
-			void CommunicateDataLV(double*, double*);
-			void CommunicateDataLW(double*, double*);
-		
+
+				// Local Communication
+				void CommunicateDataLP(double*, double*);
+				void CommunicateDataLU(double*, double*);
+				void CommunicateDataLV(double*, double*);
+				void CommunicateDataLW(double*, double*);
+
+				// Global Communication
+				void SendMatrixToZeroMP(double*, double*);
+				void SendMatrixToZeroMU(double*, double*);
+				void SendMatrixToZeroMV(double*, double*);
+				void SendMatrixToZeroMW(double*, double*);
+
 };

@@ -324,7 +324,8 @@ int i, j, k;
     for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
         for(j = 0; j < NY; j++){
 		    for(k = 0; k < NZ; k++){		
-				U.Fut[LU(i,j,k,0)] = U.Predictor[LU(i,j,k,0)] - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i-1,j,k,0)]) / MESH.DeltasMU[LU(i,j,k,0)]);
+				U.Fut[LU(i,j,k,0)] = U.Predictor[LU(i,j,k,0)]; //- (DeltaT / Rho) * (P.Pres[LP(i,j,k,0)] - P.Pres[LP(i-1,j,k,0)]);
+				// - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i-1,j,k,0)]) / 1.0);//MESH.DeltasMU[LU(i,j,k,0)]);
 			}
 		}
 	}
@@ -355,7 +356,7 @@ int i, j, k;
             V.Fut[LV(i,NY,k,0)] = V.Top[TOP(i,NY,k)];
 
             for(j = 1; j < NY; j++){ 		
-				V.Fut[LV(i,j,k,0)] = V.Predictor[LV(i,j,k,0)] - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,1)]);
+				V.Fut[LV(i,j,k,0)] = V.Predictor[LV(i,j,k,0)];// - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,1)]);
 			}
 		}
 	}
@@ -371,7 +372,7 @@ int i, j, k;
             W.Fut[LW(i,j,NZ,0)] = W.There[THERE(i,j,NZ)];
 
 		    for(k = 1; k < NZ; k++){		
-				W.Fut[LW(i,j,k,0)] = W.Predictor[LW(i,j,k,0)] - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i,j,k-1,0)]) / MESH.DeltasMW[LW(i,j,k,0)]);
+				W.Fut[LW(i,j,k,0)] = W.Predictor[LW(i,j,k,0)];// - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i,j,k-1,0)]) / MESH.DeltasMW[LW(i,j,k,0)]);
 			}
 		}
 	}

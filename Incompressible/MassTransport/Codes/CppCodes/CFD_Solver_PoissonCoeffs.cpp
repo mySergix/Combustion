@@ -8,8 +8,8 @@ int i, j, k;
 
     // West and East Coefficients (aw, ae)
     for(i = Ix[Rango]; i < Fx[Rango]; i++){
-		for(k = 0; k < NZ; k++){
-			for(j = 0; j < NY; j++){
+        for(j = 0; j < NY; j++){
+		    for(k = 0; k < NZ; k++){	
                 A.aw[LA(i,j,k,0)] = MESH.SupMP[LP(i,j,k,0)]/MESH.DeltasMU[LU(i,j,k,0)];
                 A.ae[LA(i,j,k,0)] = MESH.SupMP[LP(i,j,k,0)]/MESH.DeltasMU[LU(i+1,j,k,0)];
             }

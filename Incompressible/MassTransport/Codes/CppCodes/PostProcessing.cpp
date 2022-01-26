@@ -1,90 +1,25 @@
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <cmath>
-#include <mpi.h>
+//------------------------------------------------------------------------------------------------//
+//                             CPP FILE FOR PARALLEL PROGRAMMING CLASS                            //
+//------------------------------------------------------------------------------------------------//
 
 using namespace std;
 
 #include "../HeaderCodes/Memory.h"
 #include "../HeaderCodes/ReadData.h"
-#include "../HeaderCodes/ParPro.h"
+#include "../HeaderCodes/Parallel.h"
 #include "../HeaderCodes/Mesher.h"
 #include "../HeaderCodes/PostProcessing.h"
-/*
-#define PI 3.141592653589793
 
-#define GP(i,j,k,dim) ((NY+2*HP)*(NZ+2*HP))*((i)+HP) + (((j)+HP) + ((k)+HP)*(NY+2*HP)) + ((NX+2*HP)*(NY+2*HP)*(NZ+2*HP)*(dim)) //Global Index P Mesh
-#define GP2(i,j,k,dim) ((NY)*(NZ))*(i) + ((j) + (k)*NY) //Global Index P 
-#define GU(i,j,k,dim) ((NY+2*HP)*(NZ+2*HP))*((i)+HP) + (((j)+HP) + ((k)+HP)*(NY+2*HP)) + ((NX+1+2*HP)*(NY+2*HP)*(NZ+2*HP)*(dim)) //Global Index U Mesh
-#define GV(i,j,k,dim) ((NY+1+2*HP)*(NZ+2*HP))*((i)+HP) + (((j)+HP) + ((k)+HP)*(NY+1+2*HP)) + ((NX+2*HP)*(NY+1+2*HP)*(NZ+2*HP)*(dim)) //Global Index V Mesh
-#define GW(i,j,k,dim) ((NY+2*HP)*(NZ+1+2*HP))*((i)+HP) + (((j)+HP) + ((k)+HP)*(NY+2*HP)) + ((NX+2*HP)*(NY+2*HP)*(NZ+1+2*HP)*(dim)) //Global Index W Mesh
-*/
-//Global Index P Mesh
-#define GP(i,j,k,Dim) (NY + 2*HaloPressure)*(NZ + 2*HaloPressure)*((i) + HaloPressure) + ((j) + HaloPressure) + ((k) + HaloPressure)*(NY + 2*HaloPressure) + (NX + 2*HaloPressure)*(NY + 2*HaloPressure)*(NZ + 2*HaloPressure)*(Dim)
-
-//Global Index U Mesh
-#define GU(i,j,k,Dim) (NY + 2*HaloU)*(NZ + 2*HaloU)*((i) + HaloU) + ((j) + HaloU) + ((k) + HaloU)*(NY + 2*HaloU) + (NX + 1 + 2*HaloU)*(NY + 2*HaloU)*(NZ + 2*HaloU)*(Dim)
-
-//Global Index V Mesh
-#define GV(i,j,k,Dim) (NY + 1 + 2*HaloV)*(NZ + 2*HaloV)*((i) + HaloV) + ((j) + HaloV) + ((k) + HaloV)*(NY + 1 + 2*HaloV) + (NX + 2*HaloV)*(NY + 1 + 2*HaloV)*(NZ + 2*HaloV)*(Dim)
-
-//Global Index W Mesh
-#define GW(i,j,k,Dim) (NY + 2*HaloW)*(NZ + 1 + 2*HaloW)*((i) + HaloW) + ((j) + HaloW) + ((k) + HaloW)*(NY + 2*HaloW) + (NX + 2*HaloW)*(NY + 2*HaloW)*(NZ + 1 + 2*HaloW)*(Dim)
-
-//Local Index Pressure (P) Mesh
-#define LP(i,j,k,dim) (NY + 2*HaloPressure)*(NZ + 2*HaloPressure)*((i) - Ix + HaloPressure) + (j + HaloPressure) + (k + HaloPressure)*(NY + 2*HaloPressure)
-
-//Local Index Velocity (U) Mesh
-#define LU(i,j,k,dim) (NY + 2*HaloU)*(NZ + 2*HaloU)*((i) - Ix + HaloU) + ((j) + HaloU) + ((k) + HaloU)*(NY + 2*HaloU)
-
-//Local Index Velocity (V) Mesh
-#define LV(i,j,k,dim) (NY + 1 + 2*HaloV)*(NZ + 2*HaloV)*((i) - Ix + HaloV) + ((j) + HaloV) + ((k) + HaloV)*(NY + 1 + 2*HaloV)
-
-//Local Index Velocity (W) Mesh
-#define LW(i,j,k,dim) (NY + 2*HaloW)*(NZ + 1 + 2*HaloW)*((i) - Ix + HaloW) + ((j) + HaloW) + ((k) + HaloW)*(NY + 2*HaloW)
-
-//Local Index Pressure Coefficients (A)
-#define LA(i,j,k,dim) (NY*NZ)*((i) - Ix) + (j) + (k)*NY
-
-PostProcessing::PostProcessing(Memory M1, ReadData R1, Mesher MESH, string InputDirectorio){
+PostProcessing::PostProcessing(Memory M1, ReadData R1, Mesher MESH){
 	
     Problema = R1.ProblemNumericalData[0];
 
     NX = MESH.NX;
     NY = MESH.NY;
-    NZ = R1.ProblemNumericalData[4];
-
-    Reynolds = R1.ProblemPhysicalData[2];
-    Rayleigh = R1.ProblemPhysicalData[3];
-    Prandtl = R1.ProblemPhysicalData[5];
-
-    Tleft = R1.ProblemPhysicalData[9]; 
-	Tright = R1.ProblemPhysicalData[10];  
-
-    //Datos Geométricos del problema
-	Xdominio = R1.GeometryData[0];
-	Ydominio = R1.GeometryData[1];
-	Zdominio = R1.GeometryData[2];
-
-	Xcentroide = R1.GeometryData[3];
-	Ycentroide = R1.GeometryData[4];
-
-	Xcuadrado = R1.GeometryData[5];
-	Ycuadrado = R1.GeometryData[6];
+    NZ = MESH.NZ;
 
 	Halo = 2;
 	HP = 2;
-
-	HaloPressure = 1;
-	HaloU = 2;
-	HaloV = 2;
-	HaloW = 2;
-
-	DIRECTORIO = InputDirectorio;
 
 }
 

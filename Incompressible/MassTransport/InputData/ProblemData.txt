@@ -11,7 +11,7 @@ Datos numéricos:
 
 40	Número de nodos en la dirección X
 40	Número de nodos en la dirección Y
-30  Número de nodos en la dirección Z
+30      Número de nodos en la dirección Z
 
 1	Tipo de discretización en la dirección X			(1 -> Discretización Regular, Uniforme)
 1	Tipo de discretización en la dirección Y			(2 -> Discretización Tanh, Más densa en los extremos)
@@ -26,7 +26,7 @@ Datos numéricos:
 1.0	Stretching de la función Tanh en Direccion Z					(En caso de haber elegido discretización tanh)
 
 1e-5	Precisión de la convergencia en cada step	
-1e-7	Precisión de la convergencia en el estado estacionario
+1e-6	Precisión de la convergencia en el estado estacionario
 
 SUDS	    Esquema convectivo de 2o orden utilizado en el problema
 UDS	    Esquema convectivo de 1er orden utilizado en el problema

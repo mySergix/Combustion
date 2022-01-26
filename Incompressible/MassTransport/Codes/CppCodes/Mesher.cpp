@@ -56,7 +56,7 @@ void Mesher::Get_Deltas(){
 int i, j, k;
 
 	// Collocated mesh distances
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){
 				DeltasMP[LP(i,j,k,0)] = MU[LU(i+1,j,k,0)] - MU[LU(i,j,k,0)]; // Delta X
@@ -112,7 +112,7 @@ int i, j, k;
 	}
 
 	// Staggered V mesh distances
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(k = 0; k < NZ; k++){
 
 			DeltasMV[LV(i,0,k,0)] = MU[LU(i+1,0,k,0)] - MU[LU(i,0,k,0)]; // Delta X Parte Abajo
@@ -134,7 +134,7 @@ int i, j, k;
 	}
 
 	// Staggered W mesh distances
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 
 			DeltasMW[LW(i,j,0,0)] = MU[LU(i+1,j,0,0)] - MU[LU(i,j,0,0)]; // Delta X Parte Here
@@ -161,7 +161,7 @@ void Mesher::Get_Surfaces(){
 int i, j, k;
 
 	// Collocated mesh surfaces
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){
 				SupMP[LP(i,j,k,0)] = DeltasMU[LU(i,j,k,1)]*DeltasMU[LU(i,j,k,2)]; // Surface X
@@ -183,7 +183,7 @@ int i, j, k;
 	}	
 
 	// Staggered V mesh surfaces
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(k = 0; k < NZ; k++){
 			for(j = 0; j < NY + 1; j++){
 				SupMV[LV(i,j,k,0)] = DeltasMV[LV(i,j,k,1)]*DeltasMV[LV(i,j,k,2)]; // Surface X
@@ -194,7 +194,7 @@ int i, j, k;
 	}
 
 	// Staggered W mesh surfaces
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){		
 			for(k = 0; k < NZ + 1; k++){
 				SupMW[LW(i,j,k,0)] = DeltasMW[LW(i,j,k,1)]*DeltasMW[LW(i,j,k,2)]; // Surface X
@@ -211,7 +211,7 @@ void Mesher::Get_Volumes(){
 int i, j, k;
 
 	// Collocated mesh CV Volumes
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){
 				VolMP[LP(i,j,k,0)] = DeltasMP[LP(i,j,k,0)]*SupMP[LP(i,j,k,0)];
@@ -229,7 +229,7 @@ int i, j, k;
 	}
 
 	// Staggered V mesh CV Volumes
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY + 1; j++){
 			for(k = 0; k < NZ; k++){
 				VolMV[LV(i,j,k,0)] = DeltasMV[LV(i,j,k,0)]*SupMV[LV(i,j,k,0)];
@@ -238,7 +238,7 @@ int i, j, k;
 	}
 
 	// Staggered W mesh CV Volumes
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ + 1; k++){
 				VolMW[LW(i,j,k,0)] = DeltasMW[LW(i,j,k,2)]*SupMW[LW(i,j,k,2)];

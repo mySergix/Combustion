@@ -29,27 +29,28 @@
 #define RIGHT(i,j,k) (NZ*(j)) + (k)
 
 // Local Index Bottom Side
-#define BOTTOM(i,j,k) NZ*((i) - Ix[Rango]) + (k)
+#define BOTTOM(i,j,k) NZ*((i) - Ix[Rango] + 1) + (k)
 
 // Local Index Top Side
-#define TOP(i,j,k) NZ*((i) - Ix[Rango]) + (k)
+#define TOP(i,j,k) NZ*((i) - Ix[Rango] + 1) + (k)
 
 // Local Index Here Side
-#define HERE(i,j,k) NY*((i) - Ix[Rango]) + (j)
+#define HERE(i,j,k) NY*((i) - Ix[Rango] + 1) + (j)
 
 // Local Index There Side
-#define THERE(i,j,k) NY*((i) - Ix[Rango]) + (j) 
+#define THERE(i,j,k) NY*((i) - Ix[Rango] + 1) + (j) 
 
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------
-//Global Index P Mesh
-#define GP(i,j,k,Dim) (NY + 2*HaloPressure)*(NZ + 2*HaloPressure)*((i) + HaloPressure) + ((j) + HaloPressure) + ((k) + HaloPressure)*(NY + 2*HaloPressure) + (NX + 2*HaloPressure)*(NY + 2*HaloPressure)*(NZ + 2*HaloPressure)*(Dim)
+// Global Index of Collocated and Staggered Matrix
 
-//Global Index U Mesh
-#define GU(i,j,k,Dim) (NY + 2*HaloU)*(NZ + 2*HaloU)*((i) + HaloU) + ((j) + HaloU) + ((k) + HaloU)*(NY + 2*HaloU) + (NX + 1 + 2*HaloU)*(NY + 2*HaloU)*(NZ + 2*HaloU)*(Dim)
+// Global Index Collocated mesh
+#define GP(i,j,k,Dim) (NY + 2*HP)*(NZ + 2*HP)*((i) + HP)  + ((j) + HP)*(NZ + 2*HP) + ((k) + HP)
 
-//Global Index V Mesh
-#define GV(i,j,k,Dim) (NY + 1 + 2*HaloV)*(NZ + 2*HaloV)*((i) + HaloV) + ((j) + HaloV) + ((k) + HaloV)*(NY + 1 + 2*HaloV) + (NX + 2*HaloV)*(NY + 1 + 2*HaloV)*(NZ + 2*HaloV)*(Dim)
+// Global Index Staggered U mesh
+#define GU(i,j,k,Dim) (NY + 2*Halo)*(NZ + 2*Halo)*((i) + Halo)  + ((j) + Halo)*(NZ + 2*Halo) + ((k) + Halo)
 
-//Global Index W Mesh
-#define GW(i,j,k,Dim) (NY + 2*HaloW)*(NZ + 1 + 2*HaloW)*((i) + HaloW) + ((j) + HaloW) + ((k) + HaloW)*(NY + 2*HaloW) + (NX + 2*HaloW)*(NY + 2*HaloW)*(NZ + 1 + 2*HaloW)*(Dim)
+// Global Index Staggered V mesh
+#define GV(i,j,k,Dim) (NY + 2*HP + 1)*(NZ + 2*HP)*((i) + HP)  + ((j) + HP)*(NZ + 2*HP) + ((k) + HP)
+
+// Global Index Staggered W mesh
+#define GW(i,j,k,Dim) (NY + 2*Halo)*(NZ + 2*Halo + 1)*((i) + Halo)  + ((j) + Halo)*(NZ + 2*Halo + 1) + ((k) + Halo)
