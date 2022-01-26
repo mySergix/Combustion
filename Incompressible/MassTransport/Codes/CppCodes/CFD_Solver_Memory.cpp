@@ -16,7 +16,7 @@ void CFD_Solver::Allocate_PoissonCoeffsMemory(Memory M1){
 
     A.ap = M1.AllocateDouble(Fx[Rango] - Ix[Rango], NY, NZ, 1); 
     A.bp = M1.AllocateDouble(Fx[Rango] - Ix[Rango], NY, NZ, 1);
-    
+
 }
 
 // Function to allocate memory for the components of velocities structures
@@ -58,15 +58,45 @@ void CFD_Solver::Allocate_VelocitiesMemory(Memory M1){
 
     // Velocity U
     Allocate_VelocitiesPartMemory(M1, U, Fx[Rango] - Ix[Rango] + 2*Halo + 1, NY + 2*Halo, NZ + 2*Halo);
-    Allocate_VelocitiesBoundaryConditionsMemory(M1, U, Fx[Rango] - Ix[Rango] + 1, NY, NZ);
+    Allocate_VelocitiesBoundaryConditionsMemory(M1, U, Fx[Rango] - Ix[Rango] + 2, NY, NZ);
 
     // Velocity V
     Allocate_VelocitiesPartMemory(M1, V, Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo + 1, NZ + 2*Halo);
-    Allocate_VelocitiesBoundaryConditionsMemory(M1, V, Fx[Rango] - Ix[Rango] + 2, NY + 1, NZ);
+    Allocate_VelocitiesBoundaryConditionsMemory(M1, V, Fx[Rango] - Ix[Rango] + 2, NY, NZ);
 
     // Velocity W
     Allocate_VelocitiesPartMemory(M1, W, Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo, NZ + 2*Halo + 1);
-    Allocate_VelocitiesBoundaryConditionsMemory(M1, W, Fx[Rango] - Ix[Rango] + 2, NY, NZ + 1);
+    Allocate_VelocitiesBoundaryConditionsMemory(M1, W, Fx[Rango] - Ix[Rango] + 2, NY, NZ);
   
 }
 
+// Function to allocate memory for the pressure matrix
+void CFD_Solver::Allocate_PressureMemory(Memory M1){
+    P.Pres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
+    P.Sup = M1.AllocateDouble(Fx[Rango] - Ix[Rango], NY, NZ, 1);
+}
+
+// Function to delete all the memory of a velocity structure
+void CFD_Solver::Delete_VelocityMemory(Velocity_Struct &StructName){
+
+    delete [] StructName.Predictor;
+
+    delete [] StructName.Pres;
+    delete [] StructName.Fut;
+
+    delete [] StructName.ContributionPast;
+    delete [] StructName.ContributionPres;
+
+    delete [] StructName.Convective;
+    delete [] StructName.Diffusive;
+
+    delete [] StructName.Bottom;
+    delete [] StructName.Top;
+
+    delete [] StructName.Here;
+    delete [] StructName.There;
+
+    delete [] StructName.Left;
+    delete [] StructName.Right;
+
+}

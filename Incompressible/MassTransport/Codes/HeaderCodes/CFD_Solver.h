@@ -59,6 +59,13 @@ class CFD_Solver{
 		double gz;
 
 		double DeltaT;
+        double mu;
+
+        double ConvergenciaGS;
+		double MaxDiffGS;
+
+		double ConvergenciaGlobal;
+		double MaxDiffGlobal;
 
         struct Velocity_Struct
         {
@@ -100,9 +107,17 @@ class CFD_Solver{
             double *bp;
         };
 
+        struct Pressure_Struct
+        {
+            double *Pres;
+            double *Sup;
+        };
+
         struct Velocity_Struct U;
         struct Velocity_Struct V;
         struct Velocity_Struct W;
+
+        struct Pressure_Struct P;
 
         struct Poisson_Coeffs A;
         
@@ -112,5 +127,26 @@ class CFD_Solver{
             void Allocate_PoissonCoeffsMemory(Memory);
             void Allocate_VelocitiesPartMemory(Memory, Velocity_Struct&, int, int, int);
             void Allocate_VelocitiesBoundaryConditionsMemory(Memory, Velocity_Struct&, int, int, int);
+            void Allocate_PressureMemory(Memory);
             void Allocate_VelocitiesMemory(Memory);
+            void Delete_VelocityMemory(Velocity_Struct&);
+
+            // Utilities
+            void Get_InitialConditions();
+            void Get_StepTime(Mesher, Parallel);
+            inline double ConvectiveScheme(double, double, double, double, double, double, double, double, double, double, string);
+            void Get_ContributionsPredictors();
+            void Get_PredictorsDivergence(Mesher);
+            void Get_Velocities(Mesher, Parallel);
+            void Get_Stop();
+            void Get_Update();
+
+            // Boundary Conditions
+            void Get_InitialBoundaryConditions();
+            void Get_PeriodicBoundaryConditions();
+
+            // Poisson Coefficients
+            void Get_PoissonCoefficients(Mesher);
+            void Get_GaussSeidel(Parallel);
+            
 };

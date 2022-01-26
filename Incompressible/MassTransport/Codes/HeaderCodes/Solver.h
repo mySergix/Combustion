@@ -31,11 +31,7 @@ class Solver{
 		int StepsPantalla;
 		int StepsFile;
 
-		double ConvergenciaGS;
-		double MaxDiffGS;
-
-		double ConvergenciaGlobal;
-		double MaxDiffGlobal;
+		
 
 		
 

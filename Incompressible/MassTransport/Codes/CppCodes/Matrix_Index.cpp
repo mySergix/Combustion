@@ -2,6 +2,8 @@
 //                             CPP FILE FOR MATRIX INDEX FUNCTIONS                                //
 //------------------------------------------------------------------------------------------------//
 
+// Local Index of Collocated and Staggered Matrix
+
 // Local Index Collocated mesh
 #define LP(i,j,k,dim) (NY + 2*HP)*(NZ + 2*HP)*((i) - Ix[Rango] + HP) + (j + HP)*(NZ + 2*HP) + ((k) + HP) + ((Fx[Rango] - Ix[Rango] + 2*HP)*(NY + 2*HP)*(NZ + 2*HP) * dim)
 
@@ -16,6 +18,27 @@
 
 // Local Index Poisson Coefficients
 #define LA(i,j,k,dim) (NY * NZ)*((i) - Ix[Rango]) + (NZ)*(j) + (k)
+
+
+// Boundary Conditions Index
+
+// Local Index Left Side
+#define LEFT(i,j,k) (NZ*(j)) + (k)
+
+// Local Index Right Side
+#define RIGHT(i,j,k) (NZ*(j)) + (k)
+
+// Local Index Bottom Side
+#define BOTTOM(i,j,k) NZ*((i) - Ix[Rango]) + (k)
+
+// Local Index Top Side
+#define TOP(i,j,k) NZ*((i) - Ix[Rango]) + (k)
+
+// Local Index Here Side
+#define HERE(i,j,k) NY*((i) - Ix[Rango]) + (j)
+
+// Local Index There Side
+#define THERE(i,j,k) NY*((i) - Ix[Rango]) + (j) 
 
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------

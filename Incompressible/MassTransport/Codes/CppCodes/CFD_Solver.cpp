@@ -36,6 +36,24 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
         Fx[i] = P1.Fx[i];
     }
 
+    //Datos Físicos del Problema
+	Rho = R1.ProblemPhysicalData[0];
+	Uref = R1.ProblemPhysicalData[1];
+	Reynolds = R1.ProblemPhysicalData[2];
+
+	Rayleigh = R1.ProblemPhysicalData[3];
+	Cp = R1.ProblemPhysicalData[4];
+	Prandtl = R1.ProblemPhysicalData[5];
+
+	gx = R1.ProblemPhysicalData[6];
+	gy = R1.ProblemPhysicalData[7];
+	gz = R1.ProblemPhysicalData[8];
+
+    mu = (Uref * Xdominio) / Reynolds;
+
+    ConvergenciaGS = R1.ProblemData[3];
+	ConvergenciaGlobal = R1.ProblemData[4];
+
 }
 
 // Files of the class
@@ -44,8 +62,8 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
 #include "CFD_Solver_Utilities.cpp"
 #include "CFD_Solver_BoundaryConditions.cpp"
 #include "CFD_Solver_PoissonCoeffs.cpp"
-#include "CFD_Solver_MomentumConvection.cpp"
-#include "CFD_Solver_MomentumDiffusion.cpp"
-#include "CFD_Solver_Energy.cpp"
-#include "CFD_Solver_RunSolver.cpp"
+//#include "CFD_Solver_MomentumConvection.cpp"
+//#include "CFD_Solver_MomentumDiffusion.cpp"
+//#include "CFD_Solver_Energy.cpp"
+//#include "CFD_Solver_RunSolver.cpp"
 
