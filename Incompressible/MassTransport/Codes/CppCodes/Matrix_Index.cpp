@@ -50,7 +50,7 @@
 #define GU(i,j,k,Dim) (NY + 2*Halo)*(NZ + 2*Halo)*((i) + Halo)  + ((j) + Halo)*(NZ + 2*Halo) + ((k) + Halo)
 
 // Global Index Staggered V mesh
-#define GV(i,j,k,Dim) (NY + 2*HP + 1)*(NZ + 2*HP)*((i) + HP)  + ((j) + HP)*(NZ + 2*HP) + ((k) + HP)
+#define GV(i,j,k,Dim) (NY + 2*Halo + 1)*(NZ + 2*Halo)*((i) + Halo)  + ((j) + Halo)*(NZ + 2*Halo) + ((k) + Halo)
 
 // Global Index Staggered W mesh
 #define GW(i,j,k,Dim) (NY + 2*Halo)*(NZ + 2*Halo + 1)*((i) + Halo)  + ((j) + Halo)*(NZ + 2*Halo + 1) + ((k) + Halo)
