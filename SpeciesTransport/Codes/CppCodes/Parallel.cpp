@@ -94,7 +94,7 @@ MPI_Status ST;
 
     // Send Everything to the right
 	if(Rango != Procesos - 1){
-		MPI_Send(&LocalSend[LM(Fx[Halo] - Halo, 0, 0, 0)], (Halo)*(NY + 2*Halo)*(NZ + 2*Halo), MPI_DOUBLE, Rango+1, 0, MPI_COMM_WORLD);
+		MPI_Send(&LocalSend[LM(Fx[Rango] - Halo, 0, 0, 0)], (Halo)*(NY + 2*Halo)*(NZ + 2*Halo), MPI_DOUBLE, Rango+1, 0, MPI_COMM_WORLD);
 	}
     
 	if(Rango != 0){

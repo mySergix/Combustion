@@ -1,0 +1,12 @@
+Datos sobre la geometría del problema a simular
+(No cambiar el formato)
+
+Datos geométricos:
+1.0	Coordenada X de todo el dominio	(m)
+1.0	Coordenada Y de todo el dominio	(m)
+1.0	Coordenada Z de todo el dominio	(m)
+	
+12.5	Coordenada X del centroide (m)					(En el caso de seleccionar Square Cylinder)
+4.0	Coordenada Y del centroide (m)					    (En el caso de seleccionar Square Cylinder)
+1.0	Longitud X (horizontal) del sólido (m)				(En el caso de seleccionar Square Cylinder)
+1.0	Longitud Y (vertical) del sólido (m)				(En el caso de seleccionar Square Cylinder)
