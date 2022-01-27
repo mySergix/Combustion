@@ -155,6 +155,7 @@ class CFD_Solver{
             // Boundary Conditions
             void Get_InitialBoundaryConditions();
             void Get_PeriodicBoundaryConditions();
+            void Get_StaticHalos();
 
             // Poisson Coefficients
             void Get_PoissonCoefficients(Mesher);
@@ -165,6 +166,9 @@ class CFD_Solver{
             void Get_DiffusionU(Mesher);
             void Get_DiffusionV(Mesher);
             void Get_DiffusionW(Mesher);
+
+            // Momentum Convection
+            void Get_ConvectionU(Mesher);
 
             // Run Solver
             void RunSolver(Memory, Parallel, Mesher, PostProcessing);

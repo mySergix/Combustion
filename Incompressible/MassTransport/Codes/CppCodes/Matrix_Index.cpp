@@ -54,3 +54,9 @@
 
 // Global Index Staggered W mesh
 #define GW(i,j,k,Dim) (NY + 2*Halo)*(NZ + 2*Halo + 1)*((i) + Halo)  + ((j) + Halo)*(NZ + 2*Halo + 1) + ((k) + Halo)
+
+// Linear interpolation macro
+#define Interpolacion(CO, C1, V1, C2, V2) V1 + ((V2 - V1)/(C2 - C1))*(CO - C1)
+
+// Mean value macro
+#define Mean(Value1, Value2) 0.50 * (Value1 + Value2)

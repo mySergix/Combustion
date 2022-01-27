@@ -63,3 +63,30 @@ int i, j, k;
     }
 
 }
+
+// Function to set all the corresponding velocity halos
+void CFD_Solver::Get_StaticHalos(){
+int i, j, k;
+
+    // Velocity U
+    if (Rango == 0){
+        for (i = - Halo; i < Ix[Rango] + 1; i++){
+            for (j = 0; j < NY; j++){
+                for (k = 0; k < NZ; k++){
+                    U.Pres[LU(i,j,k,0)] = U.Left[LEFT(i,j,k)];
+                }
+            }
+        }
+    }
+    else if (Rango == Procesos - 1){
+        for (i = Fx[Rango]; i < Fx[Rango] + Halo + 1; i++){
+            for (j = 0; j < NY; j++){
+                for (k = 0; k < NZ; k++){
+                    U.Pres[LU(i,j,k,0)] = U.Right[RIGHT(i,j,k)];
+                }
+            }
+        }
+    }
+
+
+}

@@ -25,7 +25,8 @@ int i, j, k;
 	PrintTxt();
 	
     Get_InitialBoundaryConditions();
-    
+	Get_StaticHalos();
+
 	while(MaxDiffGlobal >= ConvergenciaGlobal){
 		
 		Step++;
@@ -42,13 +43,15 @@ int i, j, k;
         Get_DiffusionV(MESH);
         Get_DiffusionW(MESH);
         
+		Get_ConvectionU(MESH);
+
         Get_ContributionsPredictors();
         Get_PredictorsDivergence(MESH);
 
         Get_GaussSeidel(P1);
 		Get_Velocities(MESH, P1);
 
-		if(Step%1 == 0){
+		if(Step%100 == 0){
 
 			// Communication to global matrix
 			P1.SendMatrixToZeroMP(P.Pres, Global.P);
