@@ -45,6 +45,7 @@ int i, j, k;
         
 		Get_ConvectionU(MESH);
 		Get_ConvectionV(MESH);
+		Get_ConvectionW(MESH);
 
         Get_ContributionsPredictors();
         Get_PredictorsDivergence(MESH);

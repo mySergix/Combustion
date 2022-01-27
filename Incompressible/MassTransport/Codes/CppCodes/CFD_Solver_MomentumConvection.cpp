@@ -612,8 +612,8 @@ double uW, uE, vW, vE, vS, vN, wH, wT, vH, vT;
 // Function to calculate the convective term of Velocity W
 void CFD_Solver::Get_ConvectionW(Mesher MESH){
 int i, j, k;
-double vS_pred, vN_pred;
-double uW, uE, vW, vE, vS, vN, wH, wT, vH, vT;
+double wH_pred, wT_pred;
+double wH, wT, uW, uE, wW, wE, vS, vN, wS, wN;
 
     // Center
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
@@ -629,14 +629,14 @@ double uW, uE, vW, vE, vS, vN, wH, wT, vH, vT;
 				uW = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i,j,k-1,2)], U.Pres[LU(i,j,k-1,0)], MESH.MU[LU(i,j,k,2)], U.Pres[LU(i,j,k,0)]);
 				uE = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i+1,j,k-1,2)], U.Pres[LU(i+1,j,k-1,0)], MESH.MU[LU(i+1,j,k,2)], U.Pres[LU(i+1,j,k,0)]);
 
-                wW = ConvectiveScheme(MESH.MU[LU(i,j,k,0)], uW_pred, MESH.MW[LW(i-2,j,k,0)], W.Pres[LW(i-2,j,k,0)], MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], EsquemaLargo);
-				wE = ConvectiveScheme(MESH.MU[LU(i+1,j,k,0)], uE_pred, MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], MESH.MW[LW(i+2,j,k,0)], W.Pres[LW(i+2,j,k,0)], EsquemaLargo);
+                wW = ConvectiveScheme(MESH.MU[LU(i,j,k,0)], uW, MESH.MW[LW(i-2,j,k,0)], W.Pres[LW(i-2,j,k,0)], MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], EsquemaLargo);
+				wE = ConvectiveScheme(MESH.MU[LU(i+1,j,k,0)], uE, MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], MESH.MW[LW(i+2,j,k,0)], W.Pres[LW(i+2,j,k,0)], EsquemaLargo);
 
 				vS = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j,k-1,2)], V.Pres[LV(i,j,k-1,0)], MESH.MV[LV(i,j,k,2)], V.Pres[LV(i,j,k,0)]);
 				vN = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j+1,k-1,2)], V.Pres[LV(i,j+1,k-1,0)], MESH.MV[LV(i,j+1,k,2)], V.Pres[LV(i,j+1,k,0)]);
 	
-				wS = ConvectiveScheme(MESH.MV[LV(i,j,k,1)], vS_pred, MESH.MW[LW(i,j-2,k,1)], W.Pres[LW(i,j-2,k,0)], MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], EsquemaLargo);
-				wN = ConvectiveScheme(MESH.MV[LV(i,j+1,k,1)], vN_pred, MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], MESH.MW[LW(i,j+2,k,1)], W.Pres[LW(i,j+2,k,0)], EsquemaLargo);
+				wS = ConvectiveScheme(MESH.MV[LV(i,j,k,1)], vS, MESH.MW[LW(i,j-2,k,1)], W.Pres[LW(i,j-2,k,0)], MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], EsquemaLargo);
+				wN = ConvectiveScheme(MESH.MV[LV(i,j+1,k,1)], vN, MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], MESH.MW[LW(i,j+2,k,1)], W.Pres[LW(i,j+2,k,0)], EsquemaLargo);
 
 				W.Convective[LW(i,j,k,0)] = (1 / MESH.VolMW[LW(i,j,k,0)])*(
 											 + MESH.SupMW[LW(i,j,k,0)] * (wE * uE - wW * uW)
@@ -646,6 +646,263 @@ double uW, uE, vW, vE, vS, vN, wH, wT, vH, vT;
 
             }
         }
+    }
+
+    // Bottom
+    j = 0;
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (k = 1; k < NZ; k++){
+                
+			wH_pred = Interpolacion(MESH.MP[LP(i,j,k-1,2)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)]);
+			wT_pred = Interpolacion(MESH.MP[LP(i,j,k,2)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)]);
+
+            wH = ConvectiveScheme(MESH.MP[LP(i,j,k-1,2)], wH_pred, MESH.MW[LW(i,j,k-2,2)], W.Pres[LW(i,j,k-2,0)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], EsquemaLargo);
+			wT = ConvectiveScheme(MESH.MP[LP(i,j,k,2)], wT_pred, MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], MESH.MW[LW(i,j,k+2,2)], W.Pres[LW(i,j,k+2,0)], EsquemaLargo);
+
+			uW = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i,j,k-1,2)], U.Pres[LU(i,j,k-1,0)], MESH.MU[LU(i,j,k,2)], U.Pres[LU(i,j,k,0)]);
+			uE = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i+1,j,k-1,2)], U.Pres[LU(i+1,j,k-1,0)], MESH.MU[LU(i+1,j,k,2)], U.Pres[LU(i+1,j,k,0)]);
+
+            wW = ConvectiveScheme(MESH.MU[LU(i,j,k,0)], uW, MESH.MW[LW(i-2,j,k,0)], W.Pres[LW(i-2,j,k,0)], MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], EsquemaLargo);
+			wE = ConvectiveScheme(MESH.MU[LU(i+1,j,k,0)], uE, MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], MESH.MW[LW(i+2,j,k,0)], W.Pres[LW(i+2,j,k,0)], EsquemaLargo);
+
+			vS = V.Bottom[BOTTOM(i,j,k)];
+			vN = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j+1,k-1,2)], V.Pres[LV(i,j+1,k-1,0)], MESH.MV[LV(i,j+1,k,2)], V.Pres[LV(i,j+1,k,0)]);
+	
+			wS = W.Bottom[BOTTOM(i,j,k)];
+			wN = ConvectiveScheme(MESH.MV[LV(i,j+1,k,1)], vN, MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], MESH.MW[LW(i,j+2,k,1)], W.Pres[LW(i,j+2,k,0)], EsquemaLargo);
+
+			W.Convective[LW(i,j,k,0)] = (1 / MESH.VolMW[LW(i,j,k,0)])*(
+											 + MESH.SupMW[LW(i,j,k,0)] * (wE * uE - wW * uW)
+											 + MESH.SupMW[LW(i,j,k,1)] * (wN * vN - wS * vS)
+											 + MESH.SupMW[LW(i,j,k,2)] * (wT * wT - wH * wH)
+											 );
+
+        }
+    }
+
+    // Top
+    j = NY - 1;
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (k = 1; k < NZ; k++){
+                
+			wH_pred = Interpolacion(MESH.MP[LP(i,j,k-1,2)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)]);
+			wT_pred = Interpolacion(MESH.MP[LP(i,j,k,2)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)]);
+
+            wH = ConvectiveScheme(MESH.MP[LP(i,j,k-1,2)], wH_pred, MESH.MW[LW(i,j,k-2,2)], W.Pres[LW(i,j,k-2,0)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], EsquemaLargo);
+			wT = ConvectiveScheme(MESH.MP[LP(i,j,k,2)], wT_pred, MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], MESH.MW[LW(i,j,k+2,2)], W.Pres[LW(i,j,k+2,0)], EsquemaLargo);
+
+			uW = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i,j,k-1,2)], U.Pres[LU(i,j,k-1,0)], MESH.MU[LU(i,j,k,2)], U.Pres[LU(i,j,k,0)]);
+			uE = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i+1,j,k-1,2)], U.Pres[LU(i+1,j,k-1,0)], MESH.MU[LU(i+1,j,k,2)], U.Pres[LU(i+1,j,k,0)]);
+
+            wW = ConvectiveScheme(MESH.MU[LU(i,j,k,0)], uW, MESH.MW[LW(i-2,j,k,0)], W.Pres[LW(i-2,j,k,0)], MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], EsquemaLargo);
+			wE = ConvectiveScheme(MESH.MU[LU(i+1,j,k,0)], uE, MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], MESH.MW[LW(i+2,j,k,0)], W.Pres[LW(i+2,j,k,0)], EsquemaLargo);
+
+			vS = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j,k-1,2)], V.Pres[LV(i,j,k-1,0)], MESH.MV[LV(i,j,k,2)], V.Pres[LV(i,j,k,0)]);
+			vN = V.Top[TOP(i,j,k)];
+	
+			wS = ConvectiveScheme(MESH.MV[LV(i,j,k,1)], vS, MESH.MW[LW(i,j-2,k,1)], W.Pres[LW(i,j-2,k,0)], MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], EsquemaLargo);
+			wN = W.Top[TOP(i,j,k)];
+
+			W.Convective[LW(i,j,k,0)] = (1 / MESH.VolMW[LW(i,j,k,0)])*(
+											 + MESH.SupMW[LW(i,j,k,0)] * (wE * uE - wW * uW)
+											 + MESH.SupMW[LW(i,j,k,1)] * (wN * vN - wS * vS)
+											 + MESH.SupMW[LW(i,j,k,2)] * (wT * wT - wH * wH)
+											 );
+
+        }
+    }
+
+    if (Rango == 0){
+
+        i = 0;
+
+        // Center
+        for (j = 1; j < NY - 1; j++){
+            for (k = 1; k < NZ; k++){
+                
+				wH_pred = Interpolacion(MESH.MP[LP(i,j,k-1,2)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)]);
+				wT_pred = Interpolacion(MESH.MP[LP(i,j,k,2)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)]);
+
+                wH = ConvectiveScheme(MESH.MP[LP(i,j,k-1,2)], wH_pred, MESH.MW[LW(i,j,k-2,2)], W.Pres[LW(i,j,k-2,0)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], EsquemaLargo);
+				wT = ConvectiveScheme(MESH.MP[LP(i,j,k,2)], wT_pred, MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], MESH.MW[LW(i,j,k+2,2)], W.Pres[LW(i,j,k+2,0)], EsquemaLargo);
+
+				uW = U.Left[LEFT(i,j,k)];
+				uE = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i+1,j,k-1,2)], U.Pres[LU(i+1,j,k-1,0)], MESH.MU[LU(i+1,j,k,2)], U.Pres[LU(i+1,j,k,0)]);
+
+                wW = W.Left[LEFT(i,j,k)];
+				wE = ConvectiveScheme(MESH.MU[LU(i+1,j,k,0)], uE, MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], MESH.MW[LW(i+2,j,k,0)], W.Pres[LW(i+2,j,k,0)], EsquemaLargo);
+
+				vS = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j,k-1,2)], V.Pres[LV(i,j,k-1,0)], MESH.MV[LV(i,j,k,2)], V.Pres[LV(i,j,k,0)]);
+				vN = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j+1,k-1,2)], V.Pres[LV(i,j+1,k-1,0)], MESH.MV[LV(i,j+1,k,2)], V.Pres[LV(i,j+1,k,0)]);
+	
+				wS = ConvectiveScheme(MESH.MV[LV(i,j,k,1)], vS, MESH.MW[LW(i,j-2,k,1)], W.Pres[LW(i,j-2,k,0)], MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], EsquemaLargo);
+				wN = ConvectiveScheme(MESH.MV[LV(i,j+1,k,1)], vN, MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], MESH.MW[LW(i,j+2,k,1)], W.Pres[LW(i,j+2,k,0)], EsquemaLargo);
+
+				W.Convective[LW(i,j,k,0)] = (1 / MESH.VolMW[LW(i,j,k,0)])*(
+											 + MESH.SupMW[LW(i,j,k,0)] * (wE * uE - wW * uW)
+											 + MESH.SupMW[LW(i,j,k,1)] * (wN * vN - wS * vS)
+											 + MESH.SupMW[LW(i,j,k,2)] * (wT * wT - wH * wH)
+											 );
+
+            }
+        }
+
+        // Bottom
+        j = 0;
+        for (k = 1; k < NZ; k++){
+                
+			wH_pred = Interpolacion(MESH.MP[LP(i,j,k-1,2)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)]);
+			wT_pred = Interpolacion(MESH.MP[LP(i,j,k,2)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)]);
+
+            wH = ConvectiveScheme(MESH.MP[LP(i,j,k-1,2)], wH_pred, MESH.MW[LW(i,j,k-2,2)], W.Pres[LW(i,j,k-2,0)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], EsquemaLargo);
+			wT = ConvectiveScheme(MESH.MP[LP(i,j,k,2)], wT_pred, MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], MESH.MW[LW(i,j,k+2,2)], W.Pres[LW(i,j,k+2,0)], EsquemaLargo);
+
+			uW = U.Left[LEFT(i,j,k)];
+			uE = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i+1,j,k-1,2)], U.Pres[LU(i+1,j,k-1,0)], MESH.MU[LU(i+1,j,k,2)], U.Pres[LU(i+1,j,k,0)]);
+
+            wW = W.Left[LEFT(i,j,k)];
+			wE = ConvectiveScheme(MESH.MU[LU(i+1,j,k,0)], uE, MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], MESH.MW[LW(i+2,j,k,0)], W.Pres[LW(i+2,j,k,0)], EsquemaLargo);
+
+			vS = V.Bottom[BOTTOM(i,j,k)];
+			vN = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j+1,k-1,2)], V.Pres[LV(i,j+1,k-1,0)], MESH.MV[LV(i,j+1,k,2)], V.Pres[LV(i,j+1,k,0)]);
+	
+			wS = W.Bottom[BOTTOM(i,j,k)];
+			wN = ConvectiveScheme(MESH.MV[LV(i,j+1,k,1)], vN, MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], MESH.MW[LW(i,j+2,k,1)], W.Pres[LW(i,j+2,k,0)], EsquemaLargo);
+
+			W.Convective[LW(i,j,k,0)] = (1 / MESH.VolMW[LW(i,j,k,0)])*(
+											 + MESH.SupMW[LW(i,j,k,0)] * (wE * uE - wW * uW)
+											 + MESH.SupMW[LW(i,j,k,1)] * (wN * vN - wS * vS)
+											 + MESH.SupMW[LW(i,j,k,2)] * (wT * wT - wH * wH)
+											 );
+
+        }
+
+        // Top
+        j = NY - 1;
+        for (k = 1; k < NZ; k++){
+                
+			wH_pred = Interpolacion(MESH.MP[LP(i,j,k-1,2)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)]);
+			wT_pred = Interpolacion(MESH.MP[LP(i,j,k,2)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)]);
+
+            wH = ConvectiveScheme(MESH.MP[LP(i,j,k-1,2)], wH_pred, MESH.MW[LW(i,j,k-2,2)], W.Pres[LW(i,j,k-2,0)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], EsquemaLargo);
+			wT = ConvectiveScheme(MESH.MP[LP(i,j,k,2)], wT_pred, MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], MESH.MW[LW(i,j,k+2,2)], W.Pres[LW(i,j,k+2,0)], EsquemaLargo);
+
+			uW = U.Left[LEFT(i,j,k)];
+			uE = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i+1,j,k-1,2)], U.Pres[LU(i+1,j,k-1,0)], MESH.MU[LU(i+1,j,k,2)], U.Pres[LU(i+1,j,k,0)]);
+
+            wW = W.Left[LEFT(i,j,k)];
+			wE = ConvectiveScheme(MESH.MU[LU(i+1,j,k,0)], uE, MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], MESH.MW[LW(i+2,j,k,0)], W.Pres[LW(i+2,j,k,0)], EsquemaLargo);
+
+			vS = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j,k-1,2)], V.Pres[LV(i,j,k-1,0)], MESH.MV[LV(i,j,k,2)], V.Pres[LV(i,j,k,0)]);
+			vN = V.Top[TOP(i,j,k)];
+	
+			wS = ConvectiveScheme(MESH.MV[LV(i,j,k,1)], vS, MESH.MW[LW(i,j-2,k,1)], W.Pres[LW(i,j-2,k,0)], MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], EsquemaLargo);
+			wN = W.Top[TOP(i,j,k)];
+
+			W.Convective[LW(i,j,k,0)] = (1 / MESH.VolMW[LW(i,j,k,0)])*(
+											 + MESH.SupMW[LW(i,j,k,0)] * (wE * uE - wW * uW)
+											 + MESH.SupMW[LW(i,j,k,1)] * (wN * vN - wS * vS)
+											 + MESH.SupMW[LW(i,j,k,2)] * (wT * wT - wH * wH)
+											 );
+
+        }
+
+    }
+    else if (Rango == Procesos - 1){
+
+        i = NX - 1;
+
+        // Center
+        for (j = 1; j < NY - 1; j++){
+            for (k = 1; k < NZ; k++){
+                
+				wH_pred = Interpolacion(MESH.MP[LP(i,j,k-1,2)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)]);
+				wT_pred = Interpolacion(MESH.MP[LP(i,j,k,2)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)]);
+
+                wH = ConvectiveScheme(MESH.MP[LP(i,j,k-1,2)], wH_pred, MESH.MW[LW(i,j,k-2,2)], W.Pres[LW(i,j,k-2,0)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], EsquemaLargo);
+				wT = ConvectiveScheme(MESH.MP[LP(i,j,k,2)], wT_pred, MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], MESH.MW[LW(i,j,k+2,2)], W.Pres[LW(i,j,k+2,0)], EsquemaLargo);
+
+				uW = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i,j,k-1,2)], U.Pres[LU(i,j,k-1,0)], MESH.MU[LU(i,j,k,2)], U.Pres[LU(i,j,k,0)]);
+				uE = U.Right[RIGHT(i,j,k)];
+
+                wW = ConvectiveScheme(MESH.MU[LU(i,j,k,0)], uW, MESH.MW[LW(i-2,j,k,0)], W.Pres[LW(i-2,j,k,0)], MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], EsquemaLargo);
+				wE = W.Right[RIGHT(i,j,k)];
+
+				vS = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j,k-1,2)], V.Pres[LV(i,j,k-1,0)], MESH.MV[LV(i,j,k,2)], V.Pres[LV(i,j,k,0)]);
+				vN = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j+1,k-1,2)], V.Pres[LV(i,j+1,k-1,0)], MESH.MV[LV(i,j+1,k,2)], V.Pres[LV(i,j+1,k,0)]);
+	
+				wS = ConvectiveScheme(MESH.MV[LV(i,j,k,1)], vS, MESH.MW[LW(i,j-2,k,1)], W.Pres[LW(i,j-2,k,0)], MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], EsquemaLargo);
+				wN = ConvectiveScheme(MESH.MV[LV(i,j+1,k,1)], vN, MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], MESH.MW[LW(i,j+2,k,1)], W.Pres[LW(i,j+2,k,0)], EsquemaLargo);
+
+				W.Convective[LW(i,j,k,0)] = (1 / MESH.VolMW[LW(i,j,k,0)])*(
+											 + MESH.SupMW[LW(i,j,k,0)] * (wE * uE - wW * uW)
+											 + MESH.SupMW[LW(i,j,k,1)] * (wN * vN - wS * vS)
+											 + MESH.SupMW[LW(i,j,k,2)] * (wT * wT - wH * wH)
+											 );
+
+            }
+        }
+
+        // Bottom
+        j = 0;
+        for (k = 1; k < NZ; k++){
+                
+			wH_pred = Interpolacion(MESH.MP[LP(i,j,k-1,2)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)]);
+			wT_pred = Interpolacion(MESH.MP[LP(i,j,k,2)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)]);
+
+            wH = ConvectiveScheme(MESH.MP[LP(i,j,k-1,2)], wH_pred, MESH.MW[LW(i,j,k-2,2)], W.Pres[LW(i,j,k-2,0)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], EsquemaLargo);
+			wT = ConvectiveScheme(MESH.MP[LP(i,j,k,2)], wT_pred, MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], MESH.MW[LW(i,j,k+2,2)], W.Pres[LW(i,j,k+2,0)], EsquemaLargo);
+
+			uW = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i,j,k-1,2)], U.Pres[LU(i,j,k-1,0)], MESH.MU[LU(i,j,k,2)], U.Pres[LU(i,j,k,0)]);
+			uE = U.Right[RIGHT(i,j,k)];
+
+            wW = ConvectiveScheme(MESH.MU[LU(i,j,k,0)], uW, MESH.MW[LW(i-2,j,k,0)], W.Pres[LW(i-2,j,k,0)], MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], EsquemaLargo);
+			wE = W.Right[RIGHT(i,j,k)];
+
+			vS = V.Bottom[BOTTOM(i,j,k)];
+			vN = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j+1,k-1,2)], V.Pres[LV(i,j+1,k-1,0)], MESH.MV[LV(i,j+1,k,2)], V.Pres[LV(i,j+1,k,0)]);
+	
+			wS = W.Bottom[BOTTOM(i,j,k)];
+			wN = ConvectiveScheme(MESH.MV[LV(i,j+1,k,1)], vN, MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], MESH.MW[LW(i,j+2,k,1)], W.Pres[LW(i,j+2,k,0)], EsquemaLargo);
+
+			W.Convective[LW(i,j,k,0)] = (1 / MESH.VolMW[LW(i,j,k,0)])*(
+											 + MESH.SupMW[LW(i,j,k,0)] * (wE * uE - wW * uW)
+											 + MESH.SupMW[LW(i,j,k,1)] * (wN * vN - wS * vS)
+											 + MESH.SupMW[LW(i,j,k,2)] * (wT * wT - wH * wH)
+											 );
+
+        }
+
+        // Top
+        j = NY - 1;
+        for (k = 1; k < NZ; k++){
+                
+			wH_pred = Interpolacion(MESH.MP[LP(i,j,k-1,2)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)]);
+			wT_pred = Interpolacion(MESH.MP[LP(i,j,k,2)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)]);
+
+            wH = ConvectiveScheme(MESH.MP[LP(i,j,k-1,2)], wH_pred, MESH.MW[LW(i,j,k-2,2)], W.Pres[LW(i,j,k-2,0)], MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], EsquemaLargo);
+			wT = ConvectiveScheme(MESH.MP[LP(i,j,k,2)], wT_pred, MESH.MW[LW(i,j,k-1,2)], W.Pres[LW(i,j,k-1,0)], MESH.MW[LW(i,j,k,2)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j,k+1,2)], W.Pres[LW(i,j,k+1,0)], MESH.MW[LW(i,j,k+2,2)], W.Pres[LW(i,j,k+2,0)], EsquemaLargo);
+
+			uW = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MU[LU(i,j,k-1,2)], U.Pres[LU(i,j,k-1,0)], MESH.MU[LU(i,j,k,2)], U.Pres[LU(i,j,k,0)]);
+			uE = U.Right[RIGHT(i,j,k)];
+
+            wW = ConvectiveScheme(MESH.MU[LU(i,j,k,0)], uW, MESH.MW[LW(i-2,j,k,0)], W.Pres[LW(i-2,j,k,0)], MESH.MW[LW(i-1,j,k,0)], W.Pres[LW(i-1,j,k,0)], MESH.MW[LW(i,j,k,0)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i+1,j,k,0)], W.Pres[LW(i+1,j,k,0)], EsquemaLargo);
+			wE = W.Right[RIGHT(i,j,k)];
+
+			vS = Interpolacion(MESH.MW[LW(i,j,k,2)], MESH.MV[LV(i,j,k-1,2)], V.Pres[LV(i,j,k-1,0)], MESH.MV[LV(i,j,k,2)], V.Pres[LV(i,j,k,0)]);
+			vN = V.Top[TOP(i,j,k)];
+	
+			wS = ConvectiveScheme(MESH.MV[LV(i,j,k,1)], vS, MESH.MW[LW(i,j-2,k,1)], W.Pres[LW(i,j-2,k,0)], MESH.MW[LW(i,j-1,k,1)], W.Pres[LW(i,j-1,k,0)], MESH.MW[LW(i,j,k,1)], W.Pres[LW(i,j,k,0)], MESH.MW[LW(i,j+1,k,1)], W.Pres[LW(i,j+1,k,0)], EsquemaLargo);
+			wN = W.Top[TOP(i,j,k)];
+
+			W.Convective[LW(i,j,k,0)] = (1 / MESH.VolMW[LW(i,j,k,0)])*(
+											 + MESH.SupMW[LW(i,j,k,0)] * (wE * uE - wW * uW)
+											 + MESH.SupMW[LW(i,j,k,1)] * (wN * vN - wS * vS)
+											 + MESH.SupMW[LW(i,j,k,2)] * (wT * wT - wH * wH)
+											 );
+
+        }
+
     }
 
 }

@@ -215,7 +215,9 @@ int i, j, k;
     // Velocity Predictor W
     for(i = Ix[Rango]; i < Fx[Rango]; i++){
         for(j = 0; j < NY; j++){
-		    for(k = 0; k < NZ + 1; k++){
+			W.Predictor[LW(i,j,0,0)] = W.Pres[LW(i,j,0,0)];
+			W.Predictor[LW(i,j,NZ,0)] = W.Predictor[LW(i,j,0,0)];
+		    for(k = 1; k < NZ; k++){
 				W.Predictor[LW(i,j,k,0)] = W.Pres[LW(i,j,k,0)] + DeltaT*(1.50*W.ContributionPres[LW(i,j,k,0)] - 0.50*W.ContributionPast[LW(i,j,k,0)]);
 			}
 		}
@@ -368,10 +370,10 @@ int i, j, k;
             W.Fut[LW(i,j,0,0)] = W.Here[HERE(i,j,0)];
 
             // There
-            W.Fut[LW(i,j,NZ,0)] = W.There[THERE(i,j,NZ)];
+            W.Fut[LW(i,j,NZ,0)] = W.Fut[LW(i,j,0,0)];
 
 		    for(k = 1; k < NZ; k++){		
-				W.Fut[LW(i,j,k,0)] = W.Predictor[LW(i,j,k,0)];// - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i,j,k-1,0)]) / MESH.DeltasMW[LW(i,j,k,0)]);
+				W.Fut[LW(i,j,k,0)] = W.Predictor[LW(i,j,k,0)];// - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i,j,k-1,0)]) / MESH.DeltasMW[LW(i,j,k,2)]);
 			}
 		}
 	}

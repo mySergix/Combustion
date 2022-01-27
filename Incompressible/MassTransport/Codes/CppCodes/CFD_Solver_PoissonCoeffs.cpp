@@ -55,12 +55,12 @@ int i, j, k;
 		for(j = 0; j < NY; j++){
 
             // Here
-            A.ah[LA(i,j,0,0)] = 0.0;
+            A.ah[LA(i,j,0,0)] = 0.0;//MESH.SupMP[LP(i,j,0,2)] / (MESH.DeltasMW[LW(i,j,NZ,2)] + MESH.DeltasMW[LW(i,j,0,2)]);
 			A.at[LA(i,j,0,0)] = MESH.SupMP[LP(i,j,0,2)]/MESH.DeltasMW[LW(i,j,1,2)];
 
             // There
             A.ah[LA(i,j,NZ-1,0)] = MESH.SupMP[LP(i,j,NZ-1,2)]/MESH.DeltasMW[LW(i,j,NZ-1,2)];
-			A.at[LA(i,j,NZ-1,0)] = 0.0;
+			A.at[LA(i,j,NZ-1,0)] = 0.0;//MESH.SupMP[LP(i,j,NZ,2)] / (MESH.DeltasMW[LW(i,j,0,2)] + MESH.DeltasMW[LW(i,j,NZ,2)]);
 
             for(k = 1; k < NZ - 1; k++){
                 A.ah[LA(i,j,k,0)] = MESH.SupMP[LP(i,j,k,2)]/MESH.DeltasMW[LW(i,j,k,2)];
@@ -119,6 +119,7 @@ MaxDiffGS = 2.0*ConvergenciaGS;
 
         // Pressure Halo Communication
         P1.CommunicateDataLP(P.Pres, P.Pres);
+        Get_PeriodicPressure();
 
         for (i = Ix[Rango]; i < Fx[Rango]; i++){
             for (j = 1; j < NY; j++){

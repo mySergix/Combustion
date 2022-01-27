@@ -49,7 +49,7 @@ int i, j, k;
         for (j = 0; j < NY; j++){
             U.Here[HERE(i,j,0)] = 0.50 * (U.Pres[LU(i,j,NZ-1,0)] + U.Pres[LU(i+1,j,NZ-1,0)]);
             V.Here[HERE(i,j,0)] = 0.50 * (V.Pres[LV(i,j,NZ-1,0)] + V.Pres[LV(i,j+1,NZ-1,0)]);
-            W.Here[HERE(i,j,0)] = W.Pres[LW(i,j,NZ-1,0)];
+            W.Here[HERE(i,j,0)] = 0.50 * (W.Pres[LW(i,j,0,0)] + W.Pres[LW(i,j,NZ - 1,0)]);
         }
     }
 
@@ -58,7 +58,93 @@ int i, j, k;
         for (j = 0; j < NY; j++){
             U.There[THERE(i,j,0)] = 0.50 * (U.Pres[LU(i,j,0,0)] + U.Pres[LU(i+1,j,0,0)]);
             V.There[THERE(i,j,0)] = 0.50 * (V.Pres[LV(i,j,0,0)] + V.Pres[LV(i,j+1,0,0)]);
-            W.There[THERE(i,j,0)] = W.Pres[LW(i,j,1,0)];
+            W.There[THERE(i,j,0)] = 0.50 * (W.Pres[LW(i,j,0,0)] + W.Pres[LW(i,j,NZ - 1,0)]);
+        }
+    }
+
+    // Velocity W
+
+    // Here
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+        for (j = 0; j < NY; j++){
+            for (k = - Halo; k < 0; k++){
+                W.Pres[LW(i,j,k,0)] = W.Pres[LW(i,j,NZ+k,0)];
+            }
+        }
+    }
+
+    // There
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+        for (j = 0; j < NY; j++){
+            for (k = NZ + 1; k < NZ + Halo; k++){
+                W.Pres[LW(i,j,k,0)] = W.Pres[LW(i,j,k-NZ,0)];
+            }
+        }
+    }
+
+
+    // Velocity U
+
+    // Here
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 2; i++){
+        for (j = 0; j < NY; j++){
+            for (k = - Halo; k < 0; k++){
+                U.Pres[LU(i,j,k,0)] = U.Pres[LU(i,j,NZ+k,0)];
+            }
+        }
+    }
+
+    // There
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 2; i++){
+        for (j = 0; j < NY; j++){
+            for (k = NZ + 1; k < NZ + Halo; k++){
+                U.Pres[LU(i,j,k,0)] = U.Pres[LU(i,j,k-NZ,0)];
+            }
+        }
+    }
+
+    // Velocity V
+
+    // Here
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+        for (j = 0; j < NY+1; j++){
+            for (k = - Halo; k < 0; k++){
+                V.Pres[LV(i,j,k,0)] = V.Pres[LV(i,j,NZ+k,0)];
+            }
+        }
+    }
+
+    // There
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+        for (j = 0; j < NY+1; j++){
+            for (k = NZ + 1; k < NZ + Halo; k++){
+                V.Pres[LV(i,j,k,0)] = V.Pres[LV(i,j,k-NZ,0)];
+            }
+        }
+    }
+
+
+}
+
+// Function to set a periodic conditions in the pressure
+void CFD_Solver::Get_PeriodicPressure(){
+int i, j, k;
+
+    // Here
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = - Halo; k < 0; k++){
+                P.Pres[LP(i,j,k,0)] = P.Pres[LP(i,j,NZ-1 + k,0)];
+            }
+        }
+    }
+
+    // There
+    for (i = Ix[Rango]; i < Fx[Rango]; i++){
+        for (j = 0; j < NY; j++){
+            for (k = NZ + 1; k < NZ + Halo; k++){
+                P.Pres[LP(i,j,k,0)] = P.Pres[LP(i,j,NZ-1 + k,0)];
+            }
         }
     }
 
