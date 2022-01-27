@@ -7,21 +7,21 @@ void Parallel::CommunicateDataLP(double *LocalSend, double *LocalReceive){
 MPI_Status ST;	
 
 	if(Rango != Procesos - 1){
-		MPI_Send(&LocalSend[LP(Fx[Rango] - HP, 0, 0, 0)], (HP)*(NY)*(NZ), MPI_DOUBLE, Rango+1, 0, MPI_COMM_WORLD);
+		MPI_Send(&LocalSend[LP(Fx[Rango] - HP, - HP, - HP, 0)], (HP)*(NY + 2*HP)*(NZ + 2*HP), MPI_DOUBLE, Rango+1, 0, MPI_COMM_WORLD);
 	}
 
 	if(Rango != 0){
-		MPI_Recv(&LocalReceive[LP(Ix[Rango] - HP, 0, 0, 0)], (HP)*(NY)*(NZ), MPI_DOUBLE, Rango-1, 0, MPI_COMM_WORLD, &ST);
+		MPI_Recv(&LocalReceive[LP(Ix[Rango] - HP, - HP, - HP, 0)], (HP)*(NY + 2*HP)*(NZ + 2*HP), MPI_DOUBLE, Rango-1, 0, MPI_COMM_WORLD, &ST);
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	if(Rango != 0){
-		MPI_Send(&LocalSend[LP(Ix[Rango], 0, 0, 0)], (HP)*(NY)*(NZ), MPI_DOUBLE, Rango-1, 0, MPI_COMM_WORLD);
+		MPI_Send(&LocalSend[LP(Ix[Rango], - HP, - HP, 0)], (HP)*(NY + 2*HP)*(NZ + 2*HP), MPI_DOUBLE, Rango-1, 0, MPI_COMM_WORLD);
 	}
 
 	if(Rango != Procesos - 1){
-		MPI_Recv(&LocalReceive[LP(Fx[Rango], 0, 0, 0)], (HP)*(NY)*(NZ), MPI_DOUBLE, Rango+1, 0, MPI_COMM_WORLD, &ST);
+		MPI_Recv(&LocalReceive[LP(Fx[Rango], - HP, - HP, 0)], (HP)*(NY + 2*HP)*(NZ + 2*HP), MPI_DOUBLE, Rango+1, 0, MPI_COMM_WORLD, &ST);
 	}
 	
 }

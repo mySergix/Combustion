@@ -69,7 +69,7 @@ void CFD_Solver::Get_StaticHalos(){
 int i, j, k;
 
     // Velocity U
-    if (Rango == 0){
+    if (Rango == 0){ // Left Side
         for (i = - Halo; i < Ix[Rango] + 1; i++){
             for (j = 0; j < NY; j++){
                 for (k = 0; k < NZ; k++){
@@ -78,7 +78,7 @@ int i, j, k;
             }
         }
     }
-    else if (Rango == Procesos - 1){
+    else if (Rango == Procesos - 1){ // Right Side
         for (i = Fx[Rango]; i < Fx[Rango] + Halo + 1; i++){
             for (j = 0; j < NY; j++){
                 for (k = 0; k < NZ; k++){
@@ -88,5 +88,61 @@ int i, j, k;
         }
     }
 
+    // Bottom Side
+    for (i = Ix[Rango] - 1; i <Fx[Rango] + 1; i++){
+        for (j = - Halo; j < 0; j++){
+            for (k = 0; k < NZ; k++){
+                U.Pres[LU(i,j,k,0)] = U.Bottom[BOTTOM(i,j,k)];
+            }
+        }
+    }
+
+    // Top Side
+    for (i = Ix[Rango] - 1; i <Fx[Rango] + 1; i++){
+        for (j = NY; j < NY + Halo; j++){
+            for (k = 0; k < NZ; k++){
+                U.Pres[LU(i,j,k,0)] = U.Bottom[BOTTOM(i,j,k)];
+            }
+        }
+    }
+
+
+    // Velocity V
+    if (Rango == 0){ // Left Side
+        for (i = - Halo; i < Ix[Rango]; i++){
+            for (j = 0; j < NY + 1; j++){
+                for (k = 0; k < NZ; k++){
+                    V.Pres[LV(i,j,k,0)] = V.Left[LEFT(i,j,k)];
+                }
+            }
+        }
+    }
+    else if (Rango == Procesos - 1){ // Right Side
+        for (i = Fx[Rango]; i < Fx[Rango] + Halo; i++){
+            for (j = 0; j < NY + 1; j++){
+                for (k = 0; k < NZ; k++){
+                    V.Pres[LV(i,j,k,0)] = V.Right[RIGHT(i,j,k)];
+                }
+            }
+        }
+    }
+
+    // Bottom Side
+    for (i = Ix[Rango] - 1; i <Fx[Rango] + 1; i++){
+        for (j = - Halo; j < 1; j++){
+            for (k = 0; k < NZ; k++){
+                V.Pres[LV(i,j,k,0)] = V.Bottom[BOTTOM(i,j,k)];
+            }
+        }
+    }
+
+    // Top Side
+    for (i = Ix[Rango] - 1; i <Fx[Rango] + 1; i++){
+        for (j = NY; j < NY + Halo; j++){
+            for (k = 0; k < NZ; k++){
+                U.Pres[LU(i,j,k,0)] = U.Bottom[BOTTOM(i,j,k)];
+            }
+        }
+    }
 
 }
