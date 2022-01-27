@@ -22,6 +22,8 @@ int i, j, k;
     // Initial settings and calculations
     Get_InitialConditions();
     Get_PoissonCoefficients(MESH);
+	PrintTxt();
+	
     Get_InitialBoundaryConditions();
     
 	while(MaxDiffGlobal >= ConvergenciaGlobal){
@@ -46,7 +48,7 @@ int i, j, k;
         Get_GaussSeidel(P1);
 		Get_Velocities(MESH, P1);
 
-		if(Step%100 == 0){
+		if(Step%1 == 0){
 
 			// Communication to global matrix
 			P1.SendMatrixToZeroMP(P.Pres, Global.P);

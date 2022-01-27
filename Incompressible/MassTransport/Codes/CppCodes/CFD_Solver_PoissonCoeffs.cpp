@@ -36,12 +36,12 @@ int i, j, k;
 		for(k = 0; k < NZ; k++){
             
             // Top
-            A.as[LA(i,NY-1,k,0)] = MESH.SupMP[LP(i,j,k,1)]/MESH.DeltasMV[LV(i,j,k,1)];
+            A.as[LA(i,NY-1,k,0)] = MESH.SupMP[LP(i,NY-1,k,1)]/MESH.DeltasMV[LV(i,NY-1,k,1)];
             A.an[LA(i,NY-1,k,0)] = 0.0;
 
             // Bottom
             A.as[LA(i,0,k,0)] = 0.0;
-            A.an[LA(i,0,k,0)] = MESH.SupMP[LP(i,j,k,1)]/MESH.DeltasMV[LV(i,j+1,k,1)];
+            A.an[LA(i,0,k,0)] = MESH.SupMP[LP(i,0,k,1)]/MESH.DeltasMV[LV(i,1,k,1)];
 
 			for(j = 1; j < NY - 1; j++){
                 A.as[LA(i,j,k,0)] = MESH.SupMP[LP(i,j,k,1)]/MESH.DeltasMV[LV(i,j,k,1)];
@@ -56,10 +56,10 @@ int i, j, k;
 
             // Here
             A.ah[LA(i,j,0,0)] = 0.0;
-			A.at[LA(i,j,0,0)] = MESH.SupMP[LP(i,j,k,2)]/MESH.DeltasMW[LW(i,j,k+1,2)];
+			A.at[LA(i,j,0,0)] = MESH.SupMP[LP(i,j,0,2)]/MESH.DeltasMW[LW(i,j,1,2)];
 
             // There
-            A.ah[LA(i,j,NZ-1,0)] = MESH.SupMP[LP(i,j,k,2)]/MESH.DeltasMW[LW(i,j,k,2)];
+            A.ah[LA(i,j,NZ-1,0)] = MESH.SupMP[LP(i,j,NZ-1,2)]/MESH.DeltasMW[LW(i,j,NZ-1,2)];
 			A.at[LA(i,j,NZ-1,0)] = 0.0;
 
             for(k = 1; k < NZ - 1; k++){
@@ -79,6 +79,37 @@ int i, j, k;
 
 }
 
+// Function to write a .txt with the mesh data
+void CFD_Solver::PrintTxt(){
+int i, j, k;
+string Carpeta = "GnuPlotResults/";
+ofstream file;
+//string FileName;
+stringstream InitialNameMP;
+string FinalNameMP;
+	char FileName[300]; 
+	sprintf(FileName, "ap_Processor_%d.txt", Rango);
+	//FileName = "DeltasMP_X.txt";
+
+	InitialNameMP<<"../"<<Carpeta<<FileName;
+
+	FinalNameMP = InitialNameMP.str();
+    file.open(FinalNameMP.c_str());
+	file<<"Processor: "<<Rango<<endl;
+	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+        for(j = 0; j < NY; j++){
+			for(k = 0; k < NZ; k++){
+				file<<"I: "<<i<<"\t"<<"J: "<<j<<"\t"<<"K: "<<k<<"\t"<<"ap: "<<A.ap[LA(i,j,k,0)]<<"\t"<<endl;
+			}
+			file<<endl;
+		}   	
+    }
+
+	file.close();
+
+}
+
+
 // Function to solve the system with Gauss-Seidel
 void CFD_Solver::Get_GaussSeidel(Parallel P1){
 int i, j, k;
@@ -90,7 +121,7 @@ MaxDiffGS = 2.0*ConvergenciaGS;
         P1.CommunicateDataLP(P.Pres, P.Pres);
 
         for (i = Ix[Rango]; i < Fx[Rango]; i++){
-            for (j = 0; j < NY - 1; j++){
+            for (j = 1; j < NY; j++){
                 for (k = 0; k < NZ; k++){
                     P.Pres[LP(i,j,k,0)] = (A.aw[LA(i,j,k,0)]*P.Pres[LP(i-1,j,k,0)] + A.ae[LA(i,j,k,0)]*P.Pres[LP(i+1,j,k,0)] + A.as[LA(i,j,k,0)]*P.Pres[LP(i,j-1,k,0)] + A.an[LA(i,j,k,0)]*P.Pres[LP(i,j+1,k,0)] + A.ah[LA(i,j,k,0)]*P.Pres[LP(i,j,k-1,0)] + A.at[LA(i,j,k,0)]*P.Pres[LP(i,j,k+1,0)] + A.bp[LA(i,j,k,0)])/A.ap[LA(i,j,k,0)];
                 }
@@ -99,7 +130,7 @@ MaxDiffGS = 2.0*ConvergenciaGS;
 
         for (i = Ix[Rango]; i < Fx[Rango]; i++){
             for (k = 0; k < NZ; k++){
-                P.Pres[LP(i,NY-1,k,0)] = 0.0;
+                P.Pres[LP(i,0,k,0)] = 0.0;
             }
         }
 

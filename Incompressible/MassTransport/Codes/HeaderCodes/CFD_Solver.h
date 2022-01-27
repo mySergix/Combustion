@@ -159,6 +159,7 @@ class CFD_Solver{
             // Poisson Coefficients
             void Get_PoissonCoefficients(Mesher);
             void Get_GaussSeidel(Parallel);
+            void PrintTxt();
 
             // Momentum Diffusion
             void Get_DiffusionU(Mesher);

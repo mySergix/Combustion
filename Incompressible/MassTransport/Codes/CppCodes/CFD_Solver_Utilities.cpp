@@ -324,8 +324,7 @@ int i, j, k;
     for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
         for(j = 0; j < NY; j++){
 		    for(k = 0; k < NZ; k++){		
-				U.Fut[LU(i,j,k,0)] = U.Predictor[LU(i,j,k,0)]; //- (DeltaT / Rho) * (P.Pres[LP(i,j,k,0)] - P.Pres[LP(i-1,j,k,0)]);
-				// - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i-1,j,k,0)]) / 1.0);//MESH.DeltasMU[LU(i,j,k,0)]);
+				U.Fut[LU(i,j,k,0)] = U.Predictor[LU(i,j,k,0)];// - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i-1,j,k,0)]) / MESH.DeltasMU[LU(i,j,k,0)]); 
 			}
 		}
 	}
