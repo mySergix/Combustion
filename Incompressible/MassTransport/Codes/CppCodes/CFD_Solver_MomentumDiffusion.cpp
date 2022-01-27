@@ -6,11 +6,13 @@
 void CFD_Solver::Get_DiffusionU(Mesher MESH){
 int i, j, k;
 
+
+	
     // Centro
 	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
         for(j = 1; j < NY - 1; j++){
 		    for(k = 1; k < NZ - 1; k++){	
-				U.Diffusive[LU(i,j,k,0)] =  (mu/(Rho*MESH.VolMU[LU(i,j,k,0)]))*(1.0
+				U.Diffusive[LU(i,j,k,0)] =  (mu/(Rho*MESH.VolMU[LU(i,j,k,0)]))*(
                                          + MESH.SupMU[LU(i,j,k,0)] * (U.Pres[LU(i+1,j,k,0)] - U.Pres[LU(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,0)]
                                          - MESH.SupMU[LU(i,j,k,0)] * (U.Pres[LU(i,j,k,0)] - U.Pres[LU(i-1,j,k,0)]) / MESH.DeltasMP[LP(i-1,j,k,0)]
 										 + MESH.SupMU[LU(i,j,k,1)] * (U.Pres[LU(i,j+1,k,0)] - U.Pres[LU(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
@@ -21,7 +23,8 @@ int i, j, k;
 			}
 		}
 	}
-
+	
+	
     // Top
     j = NY - 1;
     for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
@@ -36,8 +39,8 @@ int i, j, k;
 										 );
         }
     }
-
-    // Bottom
+	
+	// Bottom
     j = 0;
     for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(k = 1; k < NZ - 1; k++){
@@ -52,7 +55,7 @@ int i, j, k;
         }
     }
 
-    // Here
+	// Here
     k = 0;
     for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 1; j < NY - 1; j++){
@@ -67,7 +70,7 @@ int i, j, k;
         }
     }
 
-    // There
+	// There
     k = NZ - 1;
     for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 1; j < NY - 1; j++){
@@ -148,7 +151,7 @@ int i, j, k;
     else if (Rango == Procesos - 1){
         for(j = 0; j < NY; j++){
 		    for(k = 0; k < NZ; k++){	
-				U.Diffusive[LU(NX-1,j,k,0)] = 0.0;
+				U.Diffusive[LU(NX,j,k,0)] = 0.0;
 			}
 		}
     }

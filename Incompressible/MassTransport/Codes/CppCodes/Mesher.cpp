@@ -56,7 +56,7 @@ void Mesher::Get_Deltas(){
 int i, j, k;
 
 	// Collocated mesh distances
-	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+	for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){
 				DeltasMP[LP(i,j,k,0)] = MU[LU(i+1,j,k,0)] - MU[LU(i,j,k,0)]; // Delta X
@@ -68,7 +68,7 @@ int i, j, k;
 
 	// Staggered U mesh distances
 	if (Rango != 0 && Rango != Procesos - 1){
-		for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+		for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
 			for(j = 0; j < NY; j++){
 				for(k = 0; k < NZ; k++){
 					DeltasMU[LU(i,j,k,0)] = MP[LP(i,j,k,0)] - MP[LP(i-1,j,k,0)]; // Delta X
@@ -112,7 +112,7 @@ int i, j, k;
 	}
 
 	// Staggered V mesh distances
-	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+	for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
 		for(k = 0; k < NZ; k++){
 
 			DeltasMV[LV(i,0,k,0)] = MU[LU(i+1,0,k,0)] - MU[LU(i,0,k,0)]; // Delta X Parte Abajo
@@ -134,7 +134,7 @@ int i, j, k;
 	}
 
 	// Staggered W mesh distances
-	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+	for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 
 			DeltasMW[LW(i,j,0,0)] = MU[LU(i+1,j,0,0)] - MU[LU(i,j,0,0)]; // Delta X Parte Here
@@ -161,7 +161,7 @@ void Mesher::Get_Surfaces(){
 int i, j, k;
 
 	// Collocated mesh surfaces
-	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+	for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){
 				SupMP[LP(i,j,k,0)] = DeltasMU[LU(i,j,k,1)]*DeltasMU[LU(i,j,k,2)]; // Surface X
@@ -172,7 +172,7 @@ int i, j, k;
 	}
 
 	// Staggered U mesh surfaces
-	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+	for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){
 				SupMU[LU(i,j,k,0)] = DeltasMU[LU(i,j,k,1)]*DeltasMU[LU(i,j,k,2)]; // Surface X
@@ -183,7 +183,7 @@ int i, j, k;
 	}	
 
 	// Staggered V mesh surfaces
-	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+	for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
 		for(k = 0; k < NZ; k++){
 			for(j = 0; j < NY + 1; j++){
 				SupMV[LV(i,j,k,0)] = DeltasMV[LV(i,j,k,1)]*DeltasMV[LV(i,j,k,2)]; // Surface X
@@ -194,7 +194,7 @@ int i, j, k;
 	}
 
 	// Staggered W mesh surfaces
-	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+	for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){		
 			for(k = 0; k < NZ + 1; k++){
 				SupMW[LW(i,j,k,0)] = DeltasMW[LW(i,j,k,1)]*DeltasMW[LW(i,j,k,2)]; // Surface X
@@ -214,7 +214,7 @@ int i, j, k;
 	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){
-				VolMP[LP(i,j,k,0)] = DeltasMP[LP(i,j,k,0)]*SupMP[LP(i,j,k,0)];
+				VolMP[LP(i,j,k,0)] = DeltasMP[LP(i,j,k,0)]*DeltasMP[LP(i,j,k,1)]*DeltasMP[LP(i,j,k,2)];
 			}
 		}
 	}
@@ -223,7 +223,7 @@ int i, j, k;
 	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){
-				VolMU[LU(i,j,k,0)] = DeltasMU[LU(i,j,k,0)]*SupMU[LU(i,j,k,0)];
+				VolMU[LU(i,j,k,0)] = DeltasMU[LU(i,j,k,0)]*DeltasMU[LU(i,j,k,1)]*DeltasMU[LU(i,j,k,2)];
 			}
 		}
 	}
@@ -232,7 +232,7 @@ int i, j, k;
 	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY + 1; j++){
 			for(k = 0; k < NZ; k++){
-				VolMV[LV(i,j,k,0)] = DeltasMV[LV(i,j,k,0)]*SupMV[LV(i,j,k,0)];
+				VolMV[LV(i,j,k,0)] = DeltasMV[LV(i,j,k,0)]*DeltasMV[LV(i,j,k,1)]*DeltasMV[LV(i,j,k,2)];
 			}
 		}
 	}
@@ -241,10 +241,40 @@ int i, j, k;
 	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ + 1; k++){
-				VolMW[LW(i,j,k,0)] = DeltasMW[LW(i,j,k,2)]*SupMW[LW(i,j,k,2)];
+				VolMW[LW(i,j,k,0)] = DeltasMW[LW(i,j,k,0)]*DeltasMW[LW(i,j,k,1)]*DeltasMW[LW(i,j,k,2)];
 			}
 		}
 	}
+
+}
+
+// Function to write a .txt with the mesh data
+void Mesher::PrintTxt(){
+int i, j, k;
+string Carpeta = "GnuPlotResults/";
+ofstream file;
+//string FileName;
+stringstream InitialNameMP;
+string FinalNameMP;
+	char FileName[300]; 
+	sprintf(FileName, "DeltasMP_X_Processor_%d.txt", Rango);
+	//FileName = "DeltasMP_X.txt";
+
+	InitialNameMP<<"../"<<Carpeta<<FileName;
+
+	FinalNameMP = InitialNameMP.str();
+    file.open(FinalNameMP.c_str());
+	file<<"Processor: "<<Rango<<endl;
+	for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+        for(j = 0; j < NY; j++){
+			for(k = 0; k < NZ+1; k++){
+				file<<"I: "<<i<<"\t"<<"J: "<<j<<"\t"<<"K: "<<k<<"\t"<<"DeltaMU: "<<DeltasMW[LW(i,j,k,2)]<<"\t"<<endl;
+			}
+			file<<endl;
+		}   	
+    }
+
+	file.close();
 
 }
 
@@ -252,12 +282,14 @@ int i, j, k;
 void Mesher::ExecuteMesher(Memory M1){
 	
 	Allocate_MesherMemory(M1); // Memory Allocation
-	Get_Meshes(); // Creación de todas las mallas
+	Get_LocalMeshes(); // Creación de todas las mallas
 	Get_Deltas(); // Cálculo de las distancias entre nodos en cada una de las matrices
 	Get_Surfaces(); // Cálculo de las superficies de cada uno de los volúmenes de control
 	Get_Volumes(); // Cálculo de los volúmenes de control de cada volúmen
+	PrintTxt();
 
 	if(Rango == 0){	
+		Get_GlobalMesh();
 	//	MallaVTK3D("ParaviewResults/MeshResults/", "MallaP", "MallaMP", MP, NX, NY, NZ);
 		cout<<"Mesh created."<<endl;
 	}

@@ -5,7 +5,7 @@
 // Local Index of Collocated and Staggered Matrix
 
 // Local Index Collocated mesh
-#define LP(i,j,k,dim) (NY + 2*HP)*(NZ + 2*HP)*((i) - Ix[Rango] + HP) + (j + HP)*(NZ + 2*HP) + ((k) + HP) + ((Fx[Rango] - Ix[Rango] + 2*HP)*(NY + 2*HP)*(NZ + 2*HP) * dim)
+#define LP(i,j,k,dim) (NY + 2*HP)*(NZ + 2*HP)*((i) - Ix[Rango] + HP) + ((j) + HP)*(NZ + 2*HP) + ((k) + HP) + ((Fx[Rango] - Ix[Rango] + 2*HP)*(NY + 2*HP)*(NZ + 2*HP) * dim)
 
 // Local Index Staggered U mesh
 #define LU(i,j,k,dim) (NY + 2*Halo)*(NZ + 2*Halo)*((i) - Ix[Rango] + Halo) + (NZ + 2*Halo)*((j) + Halo) + ((k) + Halo) + ((Fx[Rango] - Ix[Rango] + 2*HP + 1)*(NY + 2*HP)*(NZ + 2*HP) * dim)
@@ -44,7 +44,7 @@
 // Global Index of Collocated and Staggered Matrix
 
 // Global Index Collocated mesh
-#define GP(i,j,k,Dim) (NY + 2*HP)*(NZ + 2*HP)*((i) + HP)  + ((j) + HP)*(NZ + 2*HP) + ((k) + HP)
+#define GP(i,j,k,Dim) (NY + 2*HP)*(NZ + 2*HP)*((i) + HP)  + ((j) + HP)*(NZ + 2*HP) + ((k) + HP) + (NY + 2*HP)*(NZ + 2*HP)*(NX + 2*HP)*(Dim)
 
 // Global Index Staggered U mesh
 #define GU(i,j,k,Dim) (NY + 2*Halo)*(NZ + 2*Halo)*((i) + Halo)  + ((j) + Halo)*(NZ + 2*Halo) + ((k) + Halo)

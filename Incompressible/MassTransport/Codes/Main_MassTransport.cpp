@@ -15,7 +15,7 @@
 #include "HeaderCodes/ReadData.h"
 #include "HeaderCodes/Parallel.h"
 #include "HeaderCodes/Mesher.h"
-//#include "HeaderCodes/PostProcessing.h"
+#include "HeaderCodes/PostProcessing.h"
 #include "HeaderCodes/CFD_Solver.h"
 
 using namespace std;
@@ -40,11 +40,10 @@ MESH.ExecuteMesher(M1);
 
 MPI_Barrier(MPI_COMM_WORLD);
 
-//PostProcessing POST1(M1, R1, MESH, DIRECTORIO);
-
+PostProcessing POST1(M1, R1, MESH);
 CFD_Solver CFD_S1(M1, R1, P1);
 
-//CFD_S1.RunSolver(M1, P1, MESH);
+CFD_S1.RunSolver(M1, P1, MESH, POST1);
 
 MPI_Finalize();
 

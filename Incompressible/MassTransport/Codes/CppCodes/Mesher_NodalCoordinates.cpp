@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------------------------//
 
 // Nodal coordinates discretization
-void Mesher::Get_Meshes(){
+void Mesher::Get_LocalMeshes(){
 int i, j, k;
 double I, J, K;
 double nx = NX;
@@ -181,5 +181,80 @@ double nz = NZ;
 				}
 			}
 		}
+
+}
+
+// Function to calculate the coordinates of teh global mesh
+void Mesher::Get_GlobalMesh(){
+int i, j, k;
+double I, J, K;
+double nx = NX;
+double ny = NY;
+double nz = NZ;
+
+	// Coordinates X
+
+	if(OptionX == 1){ // Regular
+		for (i = 0; i < NX; i++){
+			for (j = 0; j < NY; j++){
+				for (k = 0; k < NZ; k++){
+					GlobalMeshP[GP(i,j,k,0)] = 0.50 * (i*(Xdominio/nx) + (i+1)*(Xdominio/nx));
+				}
+			}
+		}
+	}
+	else if(OptionX == 2){ // Hyperbolic Tangent
+		for (i = 0; i < NX; i++){
+			for (j = 0; j < NY; j++){
+				for (k = 0; k < NZ; k++){
+					GlobalMeshP[GP(i,j,k,0)] = 0.50 * ((Xdominio/2.0)*(1.0 + (tanh(SFX*((2.0*I - nx)/nx)) + tanh(SFX))/tanh(SFX) - 1.0) + (Xdominio/2.0)*(1.0 + (tanh(SFX*((2.0*(I+1) - nx)/nx)) + tanh(SFX))/tanh(SFX) - 1.0));
+				}
+			}
+		}
+	}
+		
+
+	// Coordinates Y
+
+	if(OptionY == 1){ // Regular
+		for (i = 0; i < NX; i++){
+			for (j = 0; j < NY; j++){
+				for (k = 0; k < NZ; k++){
+					GlobalMeshP[GP(i,j,k,1)] = 0.50 * (j*(Ydominio/ny) + (j+1)*(Ydominio/ny));
+				}
+			}
+		}
+	}
+	else if(OptionY == 2){ // Hyperbolic Tangent
+		for (i = 0; i < NX; i++){
+			for (j = 0; j < NY; j++){
+				for (k = 0; k < NZ; k++){
+					GlobalMeshP[GP(i,j,k,1)] = 0.50 * ((Ydominio/2.0)*(1.0 + (tanh(SFY*((2.0*J - ny)/ny)) + tanh(SFY))/tanh(SFY) - 1.0) + (Ydominio/2.0)*(1.0 + (tanh(SFY*((2.0*(J+1) - ny)/ny)) + tanh(SFY))/tanh(SFY) - 1.0));
+				}
+			}
+		}
+	}
+ 
+
+	// Coordinates Z
+
+	if(OptionZ == 1){ // Regular
+		for (i = 0; i < NX; i++){
+			for (j = 0; j < NY; j++){
+				for (k = 0; k < NZ; k++){
+					GlobalMeshP[GP(i,j,k,2)] = 0.50 * (k*(Zdominio/nz) + (k+1)*(Zdominio/nz));
+				}
+			}
+		}
+	}
+	else if(OptionZ == 2){ // Hyperbolic Tangent
+		for (i = 0; i < NX; i++){
+			for (j = 0; j < NY; j++){
+				for (k = 0; k < NZ; k++){
+					GlobalMeshP[GP(i,j,k,2)] = 0.50 * ((Zdominio/2.0)*(1.0 + (tanh(SFZ*((2.0*K - nz)/nz)) + tanh(SFZ))/tanh(SFZ) - 1.0) + (Zdominio/2.0)*(1.0 + (tanh(SFZ*((2.0*(K+1) - nz)/nz)) + tanh(SFZ))/tanh(SFZ) - 1.0));
+				}
+			}
+		}
+	}
 
 }

@@ -4,6 +4,8 @@
         "array": "cpp",
         "string_view": "cpp",
         "chrono": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "string": "cpp",
+        "ostream": "cpp"
     }
 }

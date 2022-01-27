@@ -74,16 +74,22 @@ class Mesher{
 		double *VolMV; // Staggered V mesh CV Volumes
 		double *VolMW; // Staggered W mesh CV Volumes
 
+
+		// Global Mesh
+		double *GlobalMeshP;
+
 		void Allocate_MesherMemory(Memory); //Alojamiento de memoria para cada matriz
 		void Delete_MesherMemory(); // Borrado de toda la memoria
 
-		void Get_Meshes(); //Creación de todas las mallas
+		void Get_LocalMeshes(); //Creación de todas las mallas
+		void Get_GlobalMesh(); // Creation of global collocated meesh
+
 		void Get_Deltas(); //Cálculo de las distancias entre nodos en cada una de las matrices
 		void Get_Surfaces(); //Cálculo de las superficies de cada uno de los volúmenes de control
 		void Get_Volumes(); //Cálculo de los volúmenes de control de cada volúmen
 		
 		//void MallaVTK3D(string, string, string, double*, int, int, int); //Pasar todos los resultados escalares en 2D a un archivo VTK
-		
+		void PrintTxt();
 		void ExecuteMesher(Memory); //Ejecutar todos los procesos del mallador
 
 };

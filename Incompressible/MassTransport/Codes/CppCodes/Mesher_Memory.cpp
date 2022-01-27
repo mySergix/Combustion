@@ -29,11 +29,14 @@ void Mesher::Allocate_MesherMemory(Memory M1){
 	SupMW = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo, NZ + 2*Halo + 1, 3); // Staggered W mesh surfaces
 
     // Volumes of the CV of the meshes
-	VolMP = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*HP, NZ + 2*HP, 3); // Collocated mesh CV Volumes
-	VolMU = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo + 1, NY + 2*Halo, NZ + 2*Halo, 3); // Staggered U mesh CV Volumes
-	VolMV = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo + 1, NZ + 2*Halo, 3); // Staggered V mesh CV Volumes
-	VolMW = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo, NZ + 2*Halo + 1, 3); // Staggered W mesh CV Volumes
+	VolMP = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*HP, NZ + 2*HP, 1); // Collocated mesh CV Volumes
+	VolMU = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo + 1, NY + 2*Halo, NZ + 2*Halo, 1); // Staggered U mesh CV Volumes
+	VolMV = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo + 1, NZ + 2*Halo, 1); // Staggered V mesh CV Volumes
+	VolMW = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*Halo, NY + 2*Halo, NZ + 2*Halo + 1, 1); // Staggered W mesh CV Volumes
 
+	// Global Mesh Coordinates
+	GlobalMeshP = M1.AllocateDouble(NX + 2*HP, NY + 2*HP, NZ + 2*HP, 3); // Global mesh
+	
 }
 
 // Function to delete all the memory from the mesher class

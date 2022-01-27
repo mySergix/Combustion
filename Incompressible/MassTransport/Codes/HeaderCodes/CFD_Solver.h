@@ -113,6 +113,14 @@ class CFD_Solver{
             double *Sup;
         };
 
+        struct Global_Struct
+        {
+            double *P;
+            double *U;
+            double *V;
+            double *W;
+        };
+
         struct Velocity_Struct U;
         struct Velocity_Struct V;
         struct Velocity_Struct W;
@@ -121,6 +129,8 @@ class CFD_Solver{
 
         struct Poisson_Coeffs A;
         
+        struct Global_Struct Global;
+
         // Class functions
 
             // Memory Allocation
@@ -129,6 +139,7 @@ class CFD_Solver{
             void Allocate_VelocitiesBoundaryConditionsMemory(Memory, Velocity_Struct&, int, int, int);
             void Allocate_PressureMemory(Memory);
             void Allocate_VelocitiesMemory(Memory);
+            void Allocate_GlobalMemory(Memory);
             void Delete_VelocityMemory(Velocity_Struct&);
 
             // Utilities
@@ -155,6 +166,6 @@ class CFD_Solver{
             void Get_DiffusionW(Mesher);
 
             // Run Solver
-            void RunSolver(Memory, Parallel, Mesher);
+            void RunSolver(Memory, Parallel, Mesher, PostProcessing);
             
 };

@@ -23,15 +23,18 @@ PostProcessing::PostProcessing(Memory M1, ReadData R1, Mesher MESH){
 
 }
 
-//Pasar los resultados de las matrices locales a un VTK en 3D
-void PostProcessing::LocalEscalarVTK3D(string Carpeta, string Variable, string NombreFile, double *PropertyMatrix, double *MC, int Ix, int Fx, int ComHalo, int Ny, int Nz){
+// Files of the class
+#include "Matrix_Index.cpp"
+
+// Function to write a .VTK to see scalar fields results in Paraview
+void PostProcessing::VTK_GlobalScalar3D(string Carpeta, string Variable, string NombreFile, Mesher MESH, double *PropertyMatrix){
 int i, j, k;
 
 	ofstream file;
     stringstream InitialName;
     string FinalName;
 
-	InitialName<<DIRECTORIO<<"ParaviewResults/"<<Carpeta<<NombreFile<<".vtk";
+	InitialName<<"../ParaviewResults/"<<Carpeta<<NombreFile<<".vtk";
 
 	FinalName = InitialName.str();
     file.open(FinalName.c_str());
@@ -41,27 +44,27 @@ int i, j, k;
     file<<"ASCII"<<endl;
     file<<endl;
     file<<"DATASET STRUCTURED_GRID"<<endl;
-    file<<"DIMENSIONS"<<"   "<<(Fx - Ix + 2*ComHalo)<<"   "<<Ny<<"   "<<Nz<<endl;
+    file<<"DIMENSIONS"<<"   "<<NX<<"   "<<NY<<"   "<<NZ<<endl;
     file<<endl;
-    file<<"POINTS"<<"   "<<(Fx - Ix + 2*ComHalo)*Ny*Nz<<"   "<<"double"<<endl;
+    file<<"POINTS"<<"   "<<NX*NY*NZ<<"   "<<"double"<<endl;
 	
-	for(k = 0; k < Nz; k++){
-		for(j = 0; j < Ny; j++){
-			for(i = Ix - ComHalo; i < Fx + ComHalo; i++){
-				file<<MC[GP(i,j,k,0)]<<"   "<<MC[GP(i,j,k,1)]<<"   "<<MC[GP(i,j,k,2)]<<endl;
+	for(k = 0; k < NZ; k++){
+		for(j = 0; j < NY; j++){
+			for(i = 0; i < NX; i++){
+				file<<MESH.GlobalMeshP[GP(i,j,k,0)]<<"   "<<MESH.GlobalMeshP[GP(i,j,k,1)]<<"   "<<MESH.GlobalMeshP[GP(i,j,k,2)]<<endl;
 			}
 		}
 	}
         
     file<<endl;
-	file<<"POINT_DATA"<<"   "<<(Fx - Ix + 2*ComHalo)*Ny*Nz<<endl;
+	file<<"POINT_DATA"<<"   "<<NX*NY*NZ<<endl;
     file<<"SCALARS "<<Variable<<" double"<<endl;
     file<<"LOOKUP_TABLE"<<"   "<<Variable<<endl;
     file<<endl;
-	for(k = 0; k < Nz; k++){
-		for(j = 0; j < Ny; j++){
-			for(i = Ix - ComHalo; i < Fx + ComHalo; i++){
-				file<<PropertyMatrix[LP(i,j,k,0)]<<" ";
+	for(k = 0; k < NZ; k++){
+		for(j = 0; j < NY; j++){
+			for(i = 0; i < NX; i++){
+				file<<PropertyMatrix[GP(i,j,k,0)]<<" ";
 			}
 		}
 	}
@@ -70,6 +73,54 @@ int i, j, k;
 
 }
 
+// Function to write a .VTK to see vectorial fields results in Paraview
+void PostProcessing::VTK_GlobalVectorial3D(string Carpeta, string Variable, string NombreFile, Mesher MESH, double *Field1, double *Field2, double *Field3){
+int i, j, k;
+
+	ofstream file;
+    stringstream InitialName;
+    string FinalName;
+
+	InitialName<<"../ParaviewResults/"<<Carpeta<<NombreFile<<".vtk";
+
+	FinalName = InitialName.str();
+    file.open(FinalName.c_str());
+
+    file<<"# vtk DataFile Version 2.0"<<endl;
+    file<<Variable<<endl;
+    file<<"ASCII"<<endl;
+    file<<endl;
+    file<<"DATASET STRUCTURED_GRID"<<endl;
+    file<<"DIMENSIONS"<<"   "<<NX<<"   "<<NY<<"   "<<NZ<<endl;
+    file<<endl;
+    file<<"POINTS"<<"   "<<NX*NY*NZ<<"   "<<"double"<<endl;
+	
+	for(k = 0; k < NZ; k++){
+		for(i = 0; i < NX; i++){
+			for(j = 0; j < NY; j++){
+				file<<MESH.GlobalMeshP[GP(i,j,k,0)]<<"   "<<MESH.GlobalMeshP[GP(i,j,k,1)]<<"   "<<MESH.GlobalMeshP[GP(i,j,k,2)]<<endl;
+			}
+		}
+	}
+        
+    file<<endl;
+    file<<"POINT_DATA"<<"   "<<NX*NY*NZ<<endl;
+    file<<"VECTORS "<<Variable<<" double"<<endl;
+    file<<endl;
+
+	for(k = 0; k < NZ; k++){
+		for(i = 0; i < NX; i++){
+			for(j = 0; j < NY; j++){	
+				file<<0.50*(Field1[GU(i,j,k,0)] + Field1[GU(i+1,j,k,0)])<<" "<<0.50*(Field2[GV(i,j,k,0)] + Field2[GV(i,j+1,k,0)])<<" "<<0.50*(Field3[GW(i,j,k,0)] + Field3[GW(i,j,k+1,0)])<<endl;
+			}
+		}
+	}
+
+    file.close();
+
+}
+
+/*
 //Pasar los resultados de las matrices locales a un VTK en 3D
 void PostProcessing::LocalEscalarCoefficientsVTK3D(string Carpeta, string Variable, string NombreFile, double *a, double *MC, int Ix, int Fx, int Ny, int Nz){
 int i, j, k;
@@ -210,52 +261,7 @@ int i, j, k;
 
 }
 
-//Pasar los resultados de variables vectoriales a un archivo VTK en 3D
-void PostProcessing::VectorialVTK3D(Mesher MESH, string Carpeta, string Variable, string NombreFile, double *Field1, double *Field2, double *Field3, double *MC, int Nx, int Ny, int Nz){
-int i, j, k;
 
-	ofstream file;
-    stringstream InitialName;
-    string FinalName;
-
-	InitialName<<DIRECTORIO<<"ParaviewResults/"<<Carpeta<<NombreFile<<".vtk";
-
-	FinalName = InitialName.str();
-    file.open(FinalName.c_str());
-
-    file<<"# vtk DataFile Version 2.0"<<endl;
-    file<<Variable<<endl;
-    file<<"ASCII"<<endl;
-    file<<endl;
-    file<<"DATASET STRUCTURED_GRID"<<endl;
-    file<<"DIMENSIONS"<<"   "<<Nx<<"   "<<Ny<<"   "<<Nz<<endl;
-    file<<endl;
-    file<<"POINTS"<<"   "<<Nx*Ny*Nz<<"   "<<"double"<<endl;
-	
-	for(k = 0; k < Nz; k++){
-		for(i = 0; i < Nx; i++){
-			for(j = 0; j < Ny; j++){
-				file<<MC[GP(i,j,k,0)]<<"   "<<MC[GP(i,j,k,1)]<<"   "<<MC[GP(i,j,k,2)]<<endl;
-			}
-		}
-	}
-        
-    file<<endl;
-    file<<"POINT_DATA"<<"   "<<(Nx)*(Ny)*(Nz)<<endl;
-    file<<"VECTORS "<<Variable<<" double"<<endl;
-    file<<endl;
-
-	for(k = 0; k < Nz; k++){
-		for(i = 0; i < Nx; i++){
-			for(j = 0; j < Ny; j++){	
-				file<<0.50*(Field1[GU(i,j,k,0)] + Field1[GU(i+1,j,k,0)])<<" "<<0.50*(Field2[GV(i,j,k,0)] + Field2[GV(i,j+1,k,0)])<<" "<<0.50*(Field3[GW(i,j,k,0)] + Field3[GW(i,j,k+1,0)])<<endl;
-			}
-		}
-	}
-
-    file.close();
-
-}
 
 //Pasar los resultados del Driven Cavity a un TXT
 void PostProcessing::Get_DrivenResults(Mesher MESH, double SimulationTime, int Procesos, int Step, double *UFIELD, double *VFIELD){
@@ -493,7 +499,7 @@ char Name[200];
 	delete LocalVmax;
 
 }
-
+*/
 /*
 //Borrado de toda la memoria alocada para el mallador y el solver
 void PostProc::DeleteEverything(Solver S1, Mesher MESH, ReadData R1){

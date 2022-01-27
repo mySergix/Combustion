@@ -60,7 +60,7 @@ int i, j, k;
 void CFD_Solver::Get_StepTime(Mesher MESH, Parallel P1){
 int i, j , k;
 DeltaT = 1000.0;
-double Tpar = 0.20;
+double Tpar = 0.05;
 
 	//Comparacion 
 	//a*(a>b) + b*(b>a)

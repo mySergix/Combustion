@@ -76,6 +76,16 @@ void CFD_Solver::Allocate_PressureMemory(Memory M1){
     P.Sup = M1.AllocateDouble(Fx[Rango] - Ix[Rango], NY, NZ, 1);
 }
 
+// Function to allocate memory for the global matrix in core 0
+void CFD_Solver::Allocate_GlobalMemory(Memory M1){
+
+    Global.P = M1.AllocateDouble(NX + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
+    Global.U = M1.AllocateDouble(NX + 2*HP + 1, NY + 2*Halo, NZ + 2*Halo, 1);
+    Global.V = M1.AllocateDouble(NX + 2*HP, NY + 2*Halo + 1, NZ + 2*Halo, 1);
+    Global.W = M1.AllocateDouble(NX + 2*HP, NY + 2*Halo, NZ + 2*Halo + 1, 1);
+
+}
+
 // Function to delete all the memory of a velocity structure
 void CFD_Solver::Delete_VelocityMemory(Velocity_Struct &StructName){
 
