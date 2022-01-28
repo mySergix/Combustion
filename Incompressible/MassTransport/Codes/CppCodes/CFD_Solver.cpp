@@ -45,15 +45,33 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
 	Cp = R1.ProblemPhysicalData[4];
 	Prandtl = R1.ProblemPhysicalData[5];
 
-	gx = R1.ProblemPhysicalData[6];
-	gy = R1.ProblemPhysicalData[7];
-	gz = R1.ProblemPhysicalData[8];
+	U.Gravity = R1.ProblemPhysicalData[6];
+	V.Gravity = R1.ProblemPhysicalData[7];
+	W.Gravity = R1.ProblemPhysicalData[8];
+
+	Tleft = R1.ProblemPhysicalData[9]; 
+	Tright = R1.ProblemPhysicalData[10]; 
 
     mu = (Uref * Xdominio) / Reynolds;
 
     ConvergenciaGS = R1.ProblemData[3];
 	ConvergenciaGlobal = R1.ProblemData[4];
 
+	if (Problema == 2){
+
+		//Cálculo de To
+		To = abs(0.50*(Tleft + Tright));
+		Difference = abs(Tleft - Tright);
+		
+		Beta = 1.0/To;
+		Producto = (pow(Rho,2)*abs(V.Gravity)*pow(Xdominio,3)*Beta*Difference*Prandtl)/Rayleigh;
+
+		mu = sqrt(Producto);
+
+		K = (Cp*mu)/Prandtl;
+
+	}
+	
 }
 
 // Files of the class
@@ -64,6 +82,6 @@ CFD_Solver::CFD_Solver(Memory M1, ReadData R1, Parallel P1){
 #include "CFD_Solver_PoissonCoeffs.cpp"
 #include "CFD_Solver_MomentumDiffusion.cpp"
 #include "CFD_Solver_MomentumConvection.cpp"
-//#include "CFD_Solver_Energy.cpp"
+#include "CFD_Solver_Energy.cpp"
 #include "CFD_Solver_RunSolver.cpp"
 

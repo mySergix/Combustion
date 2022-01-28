@@ -61,6 +61,16 @@ class CFD_Solver{
 		double DeltaT;
         double mu;
 
+        double To;
+		double Beta;
+		double Difference;
+		double Producto;
+
+		double K;
+
+        double Tleft;
+		double Tright;
+
         double ConvergenciaGS;
 		double MaxDiffGS;
 
@@ -89,8 +99,30 @@ class CFD_Solver{
             double *Left;
             double *Right;
 
+            double *Boussinesq;
             double Gravity;
         };
+
+        struct Energy_Struct
+        {
+            double *Pres;
+            double *Fut;
+
+            double *ContributionPast;
+            double *ContributionPres;
+
+            double *Convective;
+            double *Diffusive;
+
+            double *Bottom;
+            double *Top;
+
+            double *Here;
+            double *There;
+
+            double *Left;
+            double *Right;
+        };  
 
         struct Poisson_Coeffs
         {
@@ -119,6 +151,8 @@ class CFD_Solver{
             double *U;
             double *V;
             double *W;
+
+            double *T;
         };
 
         struct Velocity_Struct U;
@@ -127,6 +161,7 @@ class CFD_Solver{
 
         struct Pressure_Struct P;
 
+        struct Energy_Struct T;
         struct Poisson_Coeffs A;
         
         struct Global_Struct Global;
@@ -139,6 +174,7 @@ class CFD_Solver{
             void Allocate_VelocitiesBoundaryConditionsMemory(Memory, Velocity_Struct&, int, int, int);
             void Allocate_PressureMemory(Memory);
             void Allocate_VelocitiesMemory(Memory);
+            void Allocate_EnergyMemory(Memory);
             void Allocate_GlobalMemory(Memory);
             void Delete_VelocityMemory(Velocity_Struct&);
 
@@ -154,9 +190,10 @@ class CFD_Solver{
 
             // Boundary Conditions
             void Get_InitialBoundaryConditions();
-            void Get_PeriodicBoundaryConditions();
-            void Get_StaticHalos();
+            void Get_UpdateBoundaryConditions();
             void Get_PeriodicPressure();
+            void Get_StaticHalos();
+            void Get_UpdateHalos();
 
             // Poisson Coefficients
             void Get_PoissonCoefficients(Mesher);
@@ -172,6 +209,12 @@ class CFD_Solver{
             void Get_ConvectionU(Mesher);
             void Get_ConvectionV(Mesher);
             void Get_ConvectionW(Mesher);
+
+            // Energy Equation
+            void Get_DiffusionEnergy(Mesher);
+            void Get_ConvectionEnergy(Mesher);
+            void Get_BoussinesqV(Mesher);
+            void Get_Temperature();
 
             // Run Solver
             void RunSolver(Memory, Parallel, Mesher, PostProcessing);

@@ -37,6 +37,7 @@ int i, j, k;
 
 				V.Convective[LV(i,j,k,0)] = 0.0;
 				V.Diffusive[LV(i,j,k,0)] = 0.0;	
+				V.Boussinesq[LV(i,j,k,0)] = 0.0;
 			}
 		}
 	}
@@ -50,6 +51,19 @@ int i, j, k;
 
 				W.Convective[LW(i,j,k,0)] = 0.0;
 				W.Diffusive[LW(i,j,k,0)] = 0.0;	
+			}
+		}
+	}
+
+	// Temperature T
+	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+		for(j = 0; j < NY; j++){
+			for(k = 0; k < NZ; k++){	
+				T.Pres[LP(i,j,k,0)] = To * (1.0 - (i/NX));
+				T.Fut[LP(i,j,k,0)] = To * (1.0 - (i/NX));
+
+				T.Convective[LP(i,j,k,0)] = 0.0;
+				T.Diffusive[LP(i,j,k,0)] = 0.0;	
 			}
 		}
 	}
@@ -67,8 +81,8 @@ double Tpar = 0.05;
 	//b+=(a-b)*(a>b)
 
 	for(i = Ix[Rango]; i < Fx[Rango]; i++){
-		for(k = 0; k < NZ; k++){
-			for(j = 0; j < NY; j++){
+		for(j = 0; j < NY; j++){
+			for(k = 0; k < NZ; k++){	
 	
 				// CFL Velocities (U, V, W)
 	
@@ -97,6 +111,29 @@ double Tpar = 0.05;
 		}
 	}
 	
+	if(Problema == 2){
+
+		for(i = Ix[Rango]; i < Fx[Rango]; i++){	
+			for(j = 0; j < NY; j++){
+				for(k = 0; k < NZ; k++){
+
+					// Temperature Diffusion
+
+					// Diffusion U
+					DeltaT += ((Tpar*Rho*Cp*pow(MESH.DeltasMP[LP(i,j,k,0)],2.0))/(K + 1e-10) - DeltaT)*((Tpar*Rho*Cp*pow(MESH.DeltasMP[LP(i,j,k,0)],2.0))/(K + 1e-10) <= DeltaT);
+
+					// Diffusion V
+					DeltaT += ((Tpar*Rho*Cp*pow(MESH.DeltasMP[LP(i,j,k,1)],2.0))/(K + 1e-10) - DeltaT)*((Tpar*Rho*Cp*pow(MESH.DeltasMP[LP(i,j,k,1)],2.0))/(K + 1e-10) <= DeltaT);
+
+					// Diffusion W
+					DeltaT += ((Tpar*Rho*Cp*pow(MESH.DeltasMP[LP(i,j,k,2)],2.0))/(K + 1e-10) - DeltaT)*((Tpar*Rho*Cp*pow(MESH.DeltasMP[LP(i,j,k,2)],2.0))/(K + 1e-10) <= DeltaT);
+
+				}
+			}
+		}
+
+	}
+
 	MPI_Allreduce(&DeltaT, &DeltaT, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
 
 }
@@ -180,7 +217,7 @@ int i, j, k;
 	for(i = Ix[Rango]; i < Fx[Rango]; i++){
         for(j = 0; j < NY + 1; j++){
 		    for(k = 0; k < NZ; k++){
-				V.ContributionPres[LV(i,j,k,0)] = V.Diffusive[LV(i,j,k,0)] - V.Convective[LV(i,j,k,0)];
+				V.ContributionPres[LV(i,j,k,0)] = V.Diffusive[LV(i,j,k,0)] - V.Convective[LV(i,j,k,0)] + V.Boussinesq[LV(i,j,k,0)];
 			}
 		}
 	}
@@ -265,12 +302,21 @@ MaxDiffGlobal = 0.0;
 			}
 		}
 	}
-
+/*
 	// Velocity W
 	for(i = Ix[Rango]; i < Fx[Rango]; i++){
         for(j = 0; j < NY; j++){
 		    for(k = 0; k < NZ + 1; k++){
 				MaxDiffGlobal += (abs((W.Fut[LW(i,j,k,0)] - W.Pres[LW(i,j,k,0)])/(W.Pres[LW(i,j,k,0)] + 1e-10)) - MaxDiffGlobal)*(abs((W.Fut[LW(i,j,k,0)] - W.Pres[LW(i,j,k,0)])/(W.Pres[LW(i,j,k,0)] + 1e-10)) >= MaxDiffGlobal);
+			}
+		}
+	}
+*/
+	// Temperature T
+	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+        for(j = 0; j < NY; j++){
+		    for(k = 0; k < NZ; k++){
+				MaxDiffGlobal += (abs((T.Fut[LP(i,j,k,0)] - T.Pres[LP(i,j,k,0)])/(T.Pres[LP(i,j,k,0)] + 1e-10)) - MaxDiffGlobal)*(abs((T.Fut[LP(i,j,k,0)] - T.Pres[LP(i,j,k,0)])/(T.Pres[LP(i,j,k,0)] + 1e-10)) >= MaxDiffGlobal);
 			}
 		}
 	}
@@ -309,6 +355,16 @@ int i, j, k;
 		    for(k = 0; k < NZ + 1; k++){
 				W.Pres[LW(i,j,k,0)] = W.Fut[LW(i,j,k,0)];
                 W.ContributionPast[LW(i,j,k,0)] = W.ContributionPres[LW(i,j,k,0)];
+            }
+		}
+	}
+
+	// Temperature T
+    for(i = Ix[Rango]; i < Fx[Rango]; i++){
+        for(j = 0; j < NY; j++){
+		    for(k = 0; k < NZ; k++){
+				T.Pres[LP(i,j,k,0)] = T.Fut[LP(i,j,k,0)];
+                T.ContributionPast[LP(i,j,k,0)] = T.ContributionPres[LP(i,j,k,0)];
             }
 		}
 	}
@@ -373,7 +429,7 @@ int i, j, k;
             W.Fut[LW(i,j,NZ,0)] = W.Fut[LW(i,j,0,0)];
 
 		    for(k = 1; k < NZ; k++){		
-				W.Fut[LW(i,j,k,0)] = W.Predictor[LW(i,j,k,0)];// - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i,j,k-1,0)]) / MESH.DeltasMW[LW(i,j,k,2)]);
+				W.Fut[LW(i,j,k,0)] = W.Predictor[LW(i,j,k,0)] - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i,j,k-1,0)]) / MESH.DeltasMW[LW(i,j,k,2)]);
 			}
 		}
 	}

@@ -33,6 +33,7 @@ void CFD_Solver::Allocate_VelocitiesPartMemory(Memory M1, Velocity_Struct &Struc
     StructName.Convective = M1.AllocateDouble(NodeX, NodesY, NodesZ, 1);
     StructName.Diffusive = M1.AllocateDouble(NodeX, NodesY, NodesZ, 1);
 
+    StructName.Boussinesq = M1.AllocateDouble(NodeX, NodesY, NodesZ, 1);
 }
 
 // Function to allocate memory for the boundary conditions of the velocities
@@ -76,14 +77,43 @@ void CFD_Solver::Allocate_PressureMemory(Memory M1){
     P.Sup = M1.AllocateDouble(Fx[Rango] - Ix[Rango], NY, NZ, 1);
 }
 
+// Function to allocate memory for the energy equation resolution
+void CFD_Solver::Allocate_EnergyMemory(Memory M1){
+
+    T.Pres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
+    T.Fut = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
+
+    T.ContributionPast = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
+    T.ContributionPres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
+
+    T.Convective = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
+    T.Diffusive = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
+    
+    if (Rango == 0){
+		T.Left = M1.AllocateDouble(1, NY, NZ, 1);
+    }
+    else if (Rango == Procesos - 1){
+        T.Right = M1.AllocateDouble(1, NY, NZ, 1);
+    }
+
+    T.Bottom = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2, 1, NZ, 1);
+    T.Top = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2, 1, NZ, 1);
+
+    T.Here = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2, NY, 1, 1);
+    T.There = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2, NY, 1, 1);
+
+}
+
 // Function to allocate memory for the global matrix in core 0
 void CFD_Solver::Allocate_GlobalMemory(Memory M1){
 
     Global.P = M1.AllocateDouble(NX + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
+    
     Global.U = M1.AllocateDouble(NX + 2*HP + 1, NY + 2*Halo, NZ + 2*Halo, 1);
     Global.V = M1.AllocateDouble(NX + 2*HP, NY + 2*Halo + 1, NZ + 2*Halo, 1);
     Global.W = M1.AllocateDouble(NX + 2*HP, NY + 2*Halo, NZ + 2*Halo + 1, 1);
 
+    Global.T = M1.AllocateDouble(NX + 2*HP, NY + 2*Halo, NZ + 2*Halo, 1);
 }
 
 // Function to delete all the memory of a velocity structure

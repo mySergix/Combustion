@@ -25,104 +25,103 @@ int i, j, k;
         }
     }
 
-    // Bottom and Top
-    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
-        for (k = 0; k < NZ; k++){
-            U.Bottom[BOTTOM(i,0,k)] = 0.0;
-            V.Bottom[BOTTOM(i,0,k)] = 0.0;
-            W.Bottom[BOTTOM(i,0,k)] = 0.0;
+    if (Problema == 2){
+        if (Rango == 0){ // Left
+            for (j = 0; j < NY; j++){
+                for (k = 0; k < NZ; k++){
+                    T.Left[LEFT(i,j,k)] = Tleft;
+                }
+            }
+        }
+        else if (Rango == Procesos - 1){ // Right
+            for (j = 0; j < NY; j++){
+                for (k = 0; k < NZ; k++){
+                    T.Right[RIGHT(i,j,k)] = Tright;
+                }
+            }
+        }
 
-            U.Top[TOP(i,NY,k)] = Uref;
-            V.Top[TOP(i,NY,k)] = 0.0;
-            W.Top[TOP(i,NY,k)] = 0.0;
+    }
+    
+
+    // Bottom and Top
+    if (Problema == 1){ 
+        for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+            for (k = 0; k < NZ; k++){
+                U.Bottom[BOTTOM(i,0,k)] = 0.0;
+                V.Bottom[BOTTOM(i,0,k)] = 0.0;
+                W.Bottom[BOTTOM(i,0,k)] = 0.0;
+
+                U.Top[TOP(i,NY,k)] = Uref;
+                V.Top[TOP(i,NY,k)] = 0.0;
+                W.Top[TOP(i,NY,k)] = 0.0;
+            }
         }
     }
+    else if (Problema == 2){
+        for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+            for (k = 0; k < NZ; k++){
+                U.Bottom[BOTTOM(i,0,k)] = 0.0;
+                V.Bottom[BOTTOM(i,0,k)] = 0.0;
+                W.Bottom[BOTTOM(i,0,k)] = 0.0;
 
+                U.Top[TOP(i,NY,k)] = 0.0;
+                V.Top[TOP(i,NY,k)] = 0.0;
+                W.Top[TOP(i,NY,k)] = 0.0;
+            }
+        }
+
+
+    }
+    
 }
 
 // Function to calculate the periodic boundary conditions
-void CFD_Solver::Get_PeriodicBoundaryConditions(){
+void CFD_Solver::Get_UpdateBoundaryConditions(){
 int i, j, k;
 
     // Here
     for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
         for (j = 0; j < NY; j++){
-            U.Here[HERE(i,j,0)] = 0.50 * (U.Pres[LU(i,j,NZ-1,0)] + U.Pres[LU(i+1,j,NZ-1,0)]);
-            V.Here[HERE(i,j,0)] = 0.50 * (V.Pres[LV(i,j,NZ-1,0)] + V.Pres[LV(i,j+1,NZ-1,0)]);
-            W.Here[HERE(i,j,0)] = 0.50 * (W.Pres[LW(i,j,0,0)] + W.Pres[LW(i,j,NZ - 1,0)]);
+            U.Here[HERE(i,j,0)] = U.Pres[LU(i,j,0,0)];
+            V.Here[HERE(i,j,0)] = V.Pres[LV(i,j,0,0)];
+            W.Here[HERE(i,j,0)] = W.Pres[LW(i,j,1,0)];
         }
     }
 
     // There
     for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
         for (j = 0; j < NY; j++){
-            U.There[THERE(i,j,0)] = 0.50 * (U.Pres[LU(i,j,0,0)] + U.Pres[LU(i+1,j,0,0)]);
-            V.There[THERE(i,j,0)] = 0.50 * (V.Pres[LV(i,j,0,0)] + V.Pres[LV(i,j+1,0,0)]);
-            W.There[THERE(i,j,0)] = 0.50 * (W.Pres[LW(i,j,0,0)] + W.Pres[LW(i,j,NZ - 1,0)]);
+            U.There[THERE(i,j,0)] = U.Pres[LU(i,j,NZ-1,0)];
+            V.There[THERE(i,j,0)] = V.Pres[LV(i,j,NZ-1,0)];
+            W.There[THERE(i,j,0)] = W.Pres[LU(i,j,NZ-1,0)];
         }
     }
 
-    // Velocity W
-
-    // Here
-    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
-        for (j = 0; j < NY; j++){
-            for (k = - Halo; k < 0; k++){
-                W.Pres[LW(i,j,k,0)] = W.Pres[LW(i,j,NZ+k,0)];
+    if (Problema == 2){
+        // Here
+        for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+            for (j = 0; j < NY; j++){
+                T.Here[HERE(i,j,k)] = T.Pres[LP(i,j,0,0)];
             }
         }
-    }
 
-    // There
-    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
-        for (j = 0; j < NY; j++){
-            for (k = NZ + 1; k < NZ + Halo; k++){
-                W.Pres[LW(i,j,k,0)] = W.Pres[LW(i,j,k-NZ,0)];
+        // There
+        for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+            for (j = 0; j < NY; j++){
+                T.There[THERE(i,j,k)] = T.Pres[LP(i,j,NZ-1,0)];
             }
         }
-    }
 
-
-    // Velocity U
-
-    // Here
-    for (i = Ix[Rango] - 1; i < Fx[Rango] + 2; i++){
-        for (j = 0; j < NY; j++){
-            for (k = - Halo; k < 0; k++){
-                U.Pres[LU(i,j,k,0)] = U.Pres[LU(i,j,NZ+k,0)];
+        // Top and Bottom
+        for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+            for (k = 0; k < NZ; k++){
+                T.Bottom[BOTTOM(i,0,k)] = T.Pres[LP(i,0,k,0)];
+                T.Top[TOP(i,NZ,k)] = T.Pres[LP(i,NY-1,k,0)];
             }
         }
+
     }
-
-    // There
-    for (i = Ix[Rango] - 1; i < Fx[Rango] + 2; i++){
-        for (j = 0; j < NY; j++){
-            for (k = NZ + 1; k < NZ + Halo; k++){
-                U.Pres[LU(i,j,k,0)] = U.Pres[LU(i,j,k-NZ,0)];
-            }
-        }
-    }
-
-    // Velocity V
-
-    // Here
-    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
-        for (j = 0; j < NY+1; j++){
-            for (k = - Halo; k < 0; k++){
-                V.Pres[LV(i,j,k,0)] = V.Pres[LV(i,j,NZ+k,0)];
-            }
-        }
-    }
-
-    // There
-    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
-        for (j = 0; j < NY+1; j++){
-            for (k = NZ + 1; k < NZ + Halo; k++){
-                V.Pres[LV(i,j,k,0)] = V.Pres[LV(i,j,k-NZ,0)];
-            }
-        }
-    }
-
 
 }
 
@@ -187,7 +186,7 @@ int i, j, k;
     for (i = Ix[Rango] - 1; i <Fx[Rango] + 1; i++){
         for (j = NY; j < NY + Halo; j++){
             for (k = 0; k < NZ; k++){
-                U.Pres[LU(i,j,k,0)] = U.Bottom[BOTTOM(i,j,k)];
+                U.Pres[LU(i,j,k,0)] = U.Top[TOP(i,j,k)];
             }
         }
     }
@@ -214,7 +213,7 @@ int i, j, k;
     }
 
     // Bottom Side
-    for (i = Ix[Rango] - 1; i <Fx[Rango] + 1; i++){
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
         for (j = - Halo; j < 1; j++){
             for (k = 0; k < NZ; k++){
                 V.Pres[LV(i,j,k,0)] = V.Bottom[BOTTOM(i,j,k)];
@@ -223,12 +222,99 @@ int i, j, k;
     }
 
     // Top Side
-    for (i = Ix[Rango] - 1; i <Fx[Rango] + 1; i++){
-        for (j = NY; j < NY + Halo; j++){
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+        for (j = NY; j < NY + Halo + 1; j++){
             for (k = 0; k < NZ; k++){
-                U.Pres[LU(i,j,k,0)] = U.Bottom[BOTTOM(i,j,k)];
+                V.Pres[LV(i,j,k,0)] = V.Top[TOP(i,j,k)];
             }
         }
+    }
+
+    if (Problema == 2){
+        if (Rango == 0){ // Left Side
+            for (i = - Halo; i < Ix[Rango]; i++){
+                for (j = 0; j < NY; j++){
+                    for (k = 0; k < NZ; k++){
+                        T.Pres[LP(i,j,k,0)] = T.Left[LEFT(i,j,k)];
+                    }
+                }
+            }
+        }
+        else if (Rango == Procesos - 1){ // Right Side
+            for (i = Fx[Rango]; i < Fx[Rango] + Halo; i++){
+                for (j = 0; j < NY; j++){
+                    for (k = 0; k < NZ; k++){
+                        T.Pres[LP(i,j,k,0)] = T.Right[RIGHT(i,j,k)];
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+// Function to update the boundary conditions
+void CFD_Solver::Get_UpdateHalos(){
+int i, j, k;
+
+    // Here
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+        for (j = 0; j < NY; j++){
+            for (k = - Halo; k < 0; k++){
+                U.Pres[LU(i,j,k,0)] = U.Here[HERE(i,j,0)];
+                V.Pres[LV(i,j,k,0)] = V.Here[HERE(i,j,0)];
+                W.Pres[LW(i,j,k,0)] = W.Here[HERE(i,j,0)];
+            }
+        }
+    }
+
+    // There
+    for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+        for (j = 0; j < NY; j++){
+            for (k = NZ; k < NZ + Halo; k++){
+                U.Pres[LU(i,j,k,0)] = U.There[THERE(i,j,0)];
+                V.Pres[LV(i,j,k,0)] = V.There[THERE(i,j,0)];
+                W.Pres[LW(i,j,k,0)] = W.There[THERE(i,j,0)];
+            }
+        }
+    }
+    if (Problema == 2){
+        // Here
+        for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+            for (j = 0; j < NY; j++){
+                for (k = - Halo; k < 0; k++){
+                    T.Pres[LP(i,j,k,0)] = T.Here[HERE(i,j,k)];
+                }
+            }
+        }
+
+        // There
+        for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+            for (j = 0; j < NY; j++){
+                for (k = NZ; k < NZ + Halo; k++){
+                    T.Pres[LP(i,j,k,0)] = T.There[THERE(i,j,k)];
+                }
+            }
+        }
+
+        // Top Side
+        for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+            for (j = NY; j < NY + Halo; j++){
+                for (k = 0; k < NZ; k++){
+                    T.Pres[LP(i,j,k,0)] = T.Top[TOP(i,j,k)];
+                }
+            }
+        }
+
+        // Bottom Side
+        for (i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
+            for (j = - Halo; j < 0; j++){
+                for (k = 0; k < NZ; k++){
+                    T.Pres[LP(i,j,k,0)] = T.Bottom[BOTTOM(i,j,k)];
+                }
+            }
+        }
+
     }
 
 }

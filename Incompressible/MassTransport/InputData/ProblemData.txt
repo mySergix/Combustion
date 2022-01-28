@@ -2,7 +2,7 @@ Datos sobre el problema a simular
 (No cambiar el formato)
 			
 Datos numéricos:
-1	Numero del problema				(Problema 1 -> Driven cavity)
+2	Numero del problema				(Problema 1 -> Driven cavity)
 									(Problema 2 -> Differential heated)
 									(Problema 3 -> Square cylinder)
 	
