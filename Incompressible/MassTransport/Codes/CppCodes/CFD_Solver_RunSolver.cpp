@@ -81,8 +81,10 @@ int i, j, k;
 			if(Rango == 0){
 				sprintf(FileName_1, "MapaPresiones_Step_%d", Step);
 				POST1.VTK_GlobalScalar3D("DrivenCavity/", "Presion", FileName_1, MESH, Global.P);
-				sprintf(FileName_1, "MapaTemperature_Step_%d", Step);
-				POST1.VTK_GlobalScalar3D("DrivenCavity/", "Temperatura", FileName_1, MESH, Global.T);
+				if (Problema == 2){
+					sprintf(FileName_1, "MapaTemperaturas_Step_%d", Step);
+					POST1.VTK_GlobalScalar3D("DrivenCavity/", "Temperatura", FileName_1, MESH, Global.T);
+				}
 				sprintf(FileName_1, "MapaVelocidades_Step_%d", Step);
 				POST1.VTK_GlobalVectorial3D("DrivenCavity/", "Velocidades", FileName_1, MESH, Global.U, Global.V, Global.W);
 				cout<<"Step: "<<Step<<", Total time: "<<Time<<", MaxDif: "<<MaxDiffGlobal<<endl;
