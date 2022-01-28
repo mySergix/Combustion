@@ -1,0 +1,32 @@
+Datos sobre el problema a simular
+(No cambiar el formato)
+			
+Datos numéricos:
+1	Numero del problema				(Problema 1 -> Driven cavity)
+									(Problema 2 -> Differential heated)
+									(Problema 3 -> Square cylinder)
+	
+0	Progresión lineal en las transiciones 				(En el caso de haber elegido el problema 3)
+                                                        (1 -> Activado, 0 -> Desactivado)
+
+40	Número de nodos en la dirección X
+40	Número de nodos en la dirección Y
+20      Número de nodos en la dirección Z
+
+1	Tipo de discretización en la dirección X			(1 -> Discretización Regular, Uniforme)
+1	Tipo de discretización en la dirección Y			(2 -> Discretización Tanh, Más densa en los extremos)
+1	Tipo de discretización en la dirección Z            
+
+100	Salto entre Steps para imprimir por pantalla
+100000	Salto entre Steps para guardar una imagen de los resultados
+
+
+1.0	Stretching de la función Tanh en Direccion X					(En caso de haber elegido discretización tanh)
+1.0	Stretching de la función Tanh en Direccion Y					(En caso de haber elegido discretización tanh)
+1.0	Stretching de la función Tanh en Direccion Z					(En caso de haber elegido discretización tanh)
+
+1e-5	Precisión de la convergencia en cada step	
+1e-5	Precisión de la convergencia en el estado estacionario
+
+SUDS	    Esquema convectivo de 2o orden utilizado en el problema
+UDS	    Esquema convectivo de 1er orden utilizado en el problema

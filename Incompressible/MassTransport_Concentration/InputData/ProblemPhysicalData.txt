@@ -1,0 +1,19 @@
+Datos físicos sobre el problema a simular y su fluido
+(No cambiar el formato)
+
+Datos físicos:
+1.188	    Densidad del fluido (kg/m3)	
+
+1.0	    Velocidad de flujo libre (m/s)					    (En el caso de seleccionar problemas 1 o 3)
+844.0	Numero de Reynolds de la simulación				(En el caso de seleccionar problemas 1 o 3)
+
+1e4	    Numero de Rayleigh de la simulación				                (En el caso de seleccionar problema 2)
+1004	Calor específico del fluido a presión constante (Cp) (J/kgK)    (En el caso de seleccionar problema 2)
+0.71	Número de Prandtl de la simulación				            (En el caso de seleccionar problema 2)
+
+0.0 	Gravedad en la dirección X (m/s2)
+-9.8	    Gravedad en la dirección Y (m/s2)
+0.0	    Gravedad en la dirección Z (m/s2)
+
+1.0	Temperature pared izquierda (Tleft) (K)
+0.0	Temperature pared derecha (Tright) (K)
