@@ -1,0 +1,8 @@
+set xrange[0:1]
+set key default
+set title "Comparativa resultados Driven Cavity velocidades V, RE 1000"
+set xlabel "Coordenada X"
+set ylabel "Velocidad V"
+plot "GraficaV_Journal.txt" using 1:2 w points ps 3 linecolor "black" title "Resultados Journal of Computational Physics", \
+     "HorizontalData.txt" using 6:2 w lines linecolor "blue" title "Resultados Sergio"
+

@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------------------------//
 
 // Function to run the solver of the simulation
-void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcessing POST1, Species_Solver SPE_S1){	
+void CFD_Solver::RunSolver(Memory M1, Parallel P1, Mesher MESH, PostProcessing POST1){	
 int i, j, k;
 
 	double Time = 0.0;
@@ -23,36 +23,59 @@ int i, j, k;
 		if (Rango == 0){ Allocate_GlobalMemory(M1); }
 
 		// Species Transport
-		SPE_S1.Allocate_StructSpecies(M1, 0);
-		SPE_S1.Allocate_StructSpecies(M1, 1);
+		Allocate_StructSpecies(M1, 0);
+		Allocate_StructSpecies(M1, 1);
 
     // Initial settings and calculations
-    Get_InitialConditions();
-	SPE_S1.Get_InitialConditionsSpecies();
+    Get_InitialConditions(MESH);
+	//Get_InitialConditionsSpecies();
     Get_PoissonCoefficients(MESH);
 	PrintTxt();
 	
     Get_InitialBoundaryConditions(MESH);
-	SPE_S1.Get_InitialBoundaryConditionsSpecies();
+	//Get_InitialBoundaryConditionsSpecies();
 	Get_StaticHalos();
-	SPE_S1.Get_InitialHalosSpecies();
+	//Get_InitialHalosSpecies();
+
+	// Communication to global matrix
+		P1.SendMatrixToZeroMP(P.Pres, Global.P);
+		//P1.SendMatrixToZeroMP(T.Fut, Global.T);
+		//P1.SendMatrixToZeroMP(Species[0].C_Fut, Species[0].Global);
+		P1.SendMatrixToZeroMU(U.Fut, Global.U);
+		P1.SendMatrixToZeroMV(V.Fut, Global.V);
+		P1.SendMatrixToZeroMW(W.Fut, Global.W);
+
+	if(Rango == 0){
+		sprintf(FileName_1, "MapaPresiones_Step_%d", Step);
+		POST1.VTK_GlobalScalar3D("DrivenCavity/", "Presion", FileName_1, MESH, Global.P);
+				
+		sprintf(FileName_1, "MapaTemperaturas_Step_%d", Step);
+		POST1.VTK_GlobalScalar3D("DrivenCavity/", "Temperatura", FileName_1, MESH, Global.T);
+				
+		sprintf(FileName_1, "MapaConcentraciones_Step_%d", Step);
+		POST1.VTK_GlobalScalar3D("DrivenCavity/", "Concentracion", FileName_1, MESH, Species[0].Global);
+
+		sprintf(FileName_1, "MapaVelocidades_Step_%d", Step);
+		POST1.VTK_GlobalVectorial3D("DrivenCavity/", "Velocidades", FileName_1, MESH, Global.U, Global.V, Global.W);
+		cout<<"Step: "<<Step<<", Total time: "<<Time<<", MaxDif: "<<MaxDiffGlobal<<endl;
+			}
 
 	while(MaxDiffGlobal >= ConvergenciaGlobal){
 		
 		Step++;
 		
 		Get_UpdateBoundaryConditions(MESH);
-		SPE_S1.Get_UpdateBoundaryConditionsSpecies(MESH, T.Pres);
+		//Get_UpdateBoundaryConditionsSpecies(MESH);
 
         Get_UpdateHalos();
-		SPE_S1.Get_UpdateHalosSpecies();
+		//Get_UpdateHalosSpecies();
 
 		P1.CommunicateDataLU(U.Pres, U.Pres);
 		P1.CommunicateDataLV(V.Pres, V.Pres);
 		P1.CommunicateDataLW(W.Pres, W.Pres);
 		
 		P1.CommunicateDataLP(T.Pres, T.Pres);
-		P1.CommunicateDataLP(SPE_S1.Species[0].C_Pres, SPE_S1.Species[0].C_Pres);
+		//P1.CommunicateDataLP(Species[0].C_Pres, Species[0].C_Pres);
 
 		Get_StepTime(MESH, P1); // Time Step Calculation
 		Time += DeltaT;
@@ -65,9 +88,8 @@ int i, j, k;
 		Get_ConvectionV(MESH);
 		Get_ConvectionW(MESH);
 
-		
 		Get_BoussinesqV(MESH);
-		Get_ConcentrationBuoyancy(MESH, SPE_S1, 0);
+		//Get_ConcentrationBuoyancy(MESH, 0);
 
         Get_ContributionsPredictors();
         Get_PredictorsDivergence(MESH);
@@ -79,36 +101,41 @@ int i, j, k;
         Get_ConvectionEnergy(MESH);
         
         Get_Temperature();
+/*
+		Get_DiffusionCoefficients(0);
+		Get_DiffusionSpecies(MESH, 0);
+		Get_ConvectionSpecies(MESH, 0);
 
-		SPE_S1.Get_DiffusionCoefficients(0);
-		SPE_S1.Get_DiffusionSpecies(MESH, 0);
-		SPE_S1.Get_Concentration();
-		SPE_S1.Get_MassConservationSpecies(1);
-
-		if(Step%100 == 0){
+		Get_Concentration();
+		Get_MassConservationSpecies(1);
+*/
+		if(Step%1000 == 0){
 
 			// Communication to global matrix
 			P1.SendMatrixToZeroMP(P.Pres, Global.P);
 			P1.SendMatrixToZeroMP(T.Fut, Global.T);
-			P1.SendMatrixToZeroMP(SPE_S1.Species[0].C_Fut, SPE_S1.Species[0].Global);
+			//P1.SendMatrixToZeroMP(Species[0].C_Fut, Species[0].Global);
 			P1.SendMatrixToZeroMU(U.Fut, Global.U);
 			P1.SendMatrixToZeroMV(V.Fut, Global.V);
 			P1.SendMatrixToZeroMW(W.Fut, Global.W);
 
 			Get_Stop();
 			if(Rango == 0){
+
+				POST1.Get_NusseltResults(MESH, Global.T, Tleft, Tright, Rayleigh);
 				sprintf(FileName_1, "MapaPresiones_Step_%d", Step);
 				POST1.VTK_GlobalScalar3D("DrivenCavity/", "Presion", FileName_1, MESH, Global.P);
-				
+		
 				sprintf(FileName_1, "MapaTemperaturas_Step_%d", Step);
 				POST1.VTK_GlobalScalar3D("DrivenCavity/", "Temperatura", FileName_1, MESH, Global.T);
-				
+				/*
 				sprintf(FileName_1, "MapaConcentraciones_Step_%d", Step);
-				POST1.VTK_GlobalScalar3D("DrivenCavity/", "Concentracion", FileName_1, MESH, SPE_S1.Species[0].Global);
-
+				POST1.VTK_GlobalScalar3D("DrivenCavity/", "Concentracion", FileName_1, MESH, Species[0].Global);
+*/
 				sprintf(FileName_1, "MapaVelocidades_Step_%d", Step);
 				POST1.VTK_GlobalVectorial3D("DrivenCavity/", "Velocidades", FileName_1, MESH, Global.U, Global.V, Global.W);
 				cout<<"Step: "<<Step<<", Total time: "<<Time<<", MaxDif: "<<MaxDiffGlobal<<endl;
+				
 			}
 
 		}

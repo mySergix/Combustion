@@ -50,31 +50,5 @@ Species_Solver::Species_Solver(Memory M1, ReadData R1, Parallel P1){
 
 // Files of the class
 #include "Matrix_Index.cpp"
-#include "Species_Solver_Memory.cpp"
-#include "Species_Solver_BoundaryConditions.cpp"
-#include "Species_Solver_Diffusion.cpp"
-#include "Species_Solver_Convection.cpp"
 
-// Function to calculate the concentration contribution
-void Species_Solver::Get_Concentration(){
-int i, j, k;
 
-    // Species Contributions
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
-        for(j = 0; j < NY; j++){
-		    for(k = 0; k < NZ; k++){
-				Species[0].ContributionPres[LP(i,j,k,0)] = Species[0].Diffusive[LP(i,j,k,0)] - Species[0].Convective[LP(i,j,k,0)];
-			}
-		}
-	}
-
-    // Temperature T Calculations
-    for(i = Ix[Rango]; i < Fx[Rango]; i++){
-        for(j = 0; j < NY; j++){
-		    for(k = 0; k < NZ; k++){
-				Species[0].C_Fut[LP(i,j,k,0)] = Species[0].C_Pres[LP(i,j,k,0)] + DeltaT*(1.50*Species[0].ContributionPres[LP(i,j,k,0)] - 0.50*Species[0].ContributionPast[LP(i,j,k,0)]);
-			}
-		}
-	}
-
-}

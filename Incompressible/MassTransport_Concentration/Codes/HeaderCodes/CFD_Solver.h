@@ -8,10 +8,11 @@
 #include <stdio.h>
 #include <cmath>
 
+#define N_Species 2
+
 using namespace std;
 
 // Forward declaration of classes
-class Species_Solver;
 
 class CFD_Solver{
     private:
@@ -65,6 +66,10 @@ class CFD_Solver{
         double nu;
         double mu;
 
+        double Tleft;
+        double Tright;
+        double Producto;
+        
         double Schmidt;
         double D_AB;
         double w_av;
@@ -82,6 +87,9 @@ class CFD_Solver{
 
 		double ConvergenciaGlobal;
 		double MaxDiffGlobal;
+
+        double hfg;
+        double MW_H2O;
 
         struct Velocity_Struct
         {
@@ -174,6 +182,33 @@ class CFD_Solver{
         
         struct Global_Struct Global;
 
+        struct Species_Struct
+        {
+            double *C_Pres;
+            double *C_Fut;
+
+            double *ContributionPast;
+            double *ContributionPres;
+
+            double *Convective;
+            double *Diffusive;
+
+            double *D_ab;
+
+            double *Bottom;
+            double *Top;
+
+            double *Here;
+            double *There;
+
+            double *Left;
+            double *Right;
+
+            double *Global;
+        };
+
+        Species_Struct Species[N_Species];
+
         // Class functions
 
             // Memory Allocation
@@ -187,7 +222,7 @@ class CFD_Solver{
             void Delete_VelocityMemory(Velocity_Struct&);
 
             // Utilities
-            void Get_InitialConditions();
+            void Get_InitialConditions(Mesher);
             void Get_StepTime(Mesher, Parallel);
             inline double ConvectiveScheme(double, double, double, double, double, double, double, double, double, double, string);
             void Get_ContributionsPredictors();
@@ -195,7 +230,7 @@ class CFD_Solver{
             void Get_Velocities(Mesher, Parallel);
             void Get_Stop();
             void Get_Update();
-            void Get_ConcentrationBuoyancy(Mesher, Species_Solver, int);
+            void Get_ConcentrationBuoyancy(Mesher, int);
 
             // Boundary Conditions
             void Get_InitialBoundaryConditions(Mesher);
@@ -225,6 +260,27 @@ class CFD_Solver{
             void Get_Temperature();
 
             // Run Solver
-            void RunSolver(Memory, Parallel, Mesher, PostProcessing, Species_Solver);
+            void RunSolver(Memory, Parallel, Mesher, PostProcessing);
             
+            // Memory Allocation for species
+            void Allocate_StructSpecies(Memory, int);
+            
+            // Boundary Conditions for species
+            void Get_InitialConditionsSpecies();
+            void Get_InitialBoundaryConditionsSpecies();
+            void Get_UpdateBoundaryConditionsSpecies(Mesher);
+            void Get_InitialHalosSpecies();
+            void Get_UpdateHalosSpecies();
+
+            // Diffusion for species
+            void Get_DiffusionCoefficients(int);
+            void Get_DiffusionSpecies(Mesher, int);
+            void Get_MassConservationSpecies(int);
+
+            // Convection for species
+            inline double ConvectiveSchemeSpecies(double, double, double, double, double, double, double, double, double, double, string);
+            void Get_ConvectionSpecies(Mesher, int);
+
+            void Get_Concentration();
+
 };

@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------------------------//
 
 // Function to allocate memory for each specie on the solver
-void Species_Solver::Allocate_StructSpecies(Memory M1, int SP){
+void CFD_Solver::Allocate_StructSpecies(Memory M1, int SP){
 
     // Mass Fraction fields maps in each time step
     Species[SP].C_Pres = M1.AllocateDouble(Fx[Rango] - Ix[Rango] + 2*HP, NY + 2*HP, NZ + 2*HP, 1);

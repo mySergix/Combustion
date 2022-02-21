@@ -10,7 +10,7 @@ using namespace std;
 #include "../HeaderCodes/Mesher.h"
 #include "../HeaderCodes/PostProcessing.h"
 
-PostProcessing::PostProcessing(Memory M1, ReadData R1, Mesher MESH){
+PostProcessing::PostProcessing(Memory M1, ReadData R1, Mesher MESH, Parallel P1){
 	
     Problema = R1.ProblemNumericalData[0];
 
@@ -20,6 +20,19 @@ PostProcessing::PostProcessing(Memory M1, ReadData R1, Mesher MESH){
 
 	Halo = 2;
 	HP = 2;
+
+	//Datos necesarios para computación paralela
+	Rango = P1.Rango;
+	Procesos = P1.Procesos;
+	Ix = M1.AllocateInt(Procesos, 1, 1, 1);
+    Fx = M1.AllocateInt(Procesos, 1, 1, 1);
+
+    for (int i = 0; i < Procesos; i++){
+        Ix[i] = P1.Ix[i];
+        Fx[i] = P1.Fx[i];
+    }
+
+	LocalNusselt = M1.AllocateDouble(NY, 1, 1, 1);
 
 }
 
@@ -96,8 +109,8 @@ int i, j, k;
     file<<"POINTS"<<"   "<<NX*NY*NZ<<"   "<<"double"<<endl;
 	
 	for(k = 0; k < NZ; k++){
-		for(i = 0; i < NX; i++){
-			for(j = 0; j < NY; j++){
+		for(j = 0; j < NY; j++){
+			for(i = 0; i < NX; i++){
 				file<<MESH.GlobalMeshP[GP(i,j,k,0)]<<"   "<<MESH.GlobalMeshP[GP(i,j,k,1)]<<"   "<<MESH.GlobalMeshP[GP(i,j,k,2)]<<endl;
 			}
 		}
@@ -109,8 +122,8 @@ int i, j, k;
     file<<endl;
 
 	for(k = 0; k < NZ; k++){
-		for(i = 0; i < NX; i++){
-			for(j = 0; j < NY; j++){	
+		for(j = 0; j < NY; j++){	
+			for(i = 0; i < NX; i++){
 				file<<0.50*(Field1[GU(i,j,k,0)] + Field1[GU(i+1,j,k,0)])<<" "<<0.50*(Field2[GV(i,j,k,0)] + Field2[GV(i,j+1,k,0)])<<" "<<0.50*(Field3[GW(i,j,k,0)] + Field3[GW(i,j,k+1,0)])<<endl;
 			}
 		}
@@ -119,6 +132,68 @@ int i, j, k;
     file.close();
 
 }
+
+// Function to calculate the Nusselt number at the walls
+void PostProcessing::Get_NusseltResults(Mesher MESH, double *T_matrix, double Tleft, double Tright, double Rayleigh){
+int i, j, k;
+double NusseltMax, NusseltMin, NusseltMedio;
+double Umax = 0.0;
+int ImaxU = 0;
+double Vmax = 0.0;
+int ImaxV = 0;
+double Sumatorio = 0.0;
+int ImaxNu = 0;
+int IminNu = 0;
+
+	for (int j = 0; j < NY; j++){
+		LocalNusselt[j] = 0.0;
+	}
+
+	for (j = 0; j <  NY; j++){
+		for (k = 0; k < NZ; k++){
+			LocalNusselt[j] += ((Tleft - T_matrix[GP(0,j,k,0)]) / MESH.DeltasMU[LU(0,j,k,0)]) * (MESH.DeltasMW[LW(0,j,k,2)] / MESH.Zdominio);
+		}
+		LocalNusselt[j] = LocalNusselt[j] * (MESH.Xdominio / (Tleft - Tright));
+		Sumatorio += LocalNusselt[j] * MESH.DeltasMP[LP(0,j,0,1)];
+	} 
+
+	NusseltMedio = Sumatorio / MESH.Ydominio;
+
+	NusseltMax = 0.0;
+	NusseltMin = 1e3;
+
+	for (j = 0; j < NY; j++){
+		if (LocalNusselt[j] >= NusseltMax){
+			NusseltMax = LocalNusselt[j];
+			ImaxNu = j;
+		}
+	}
+
+	for (j = 0; j < NY; j++){
+		if (LocalNusselt[j] <= NusseltMin){
+			NusseltMin = LocalNusselt[j];
+			IminNu = j;
+		}
+	}
+
+	FILE *fp1;
+		fp1 = fopen("../NumericalResults/NusseltResults.txt","w");
+			fprintf(fp1,"Número de Rayleigh: %f \n", Rayleigh);
+			fprintf(fp1, "\n");
+			fprintf(fp1,"Número Nusselt medio: %f \n", NusseltMedio);
+			fprintf(fp1, "\n");
+			fprintf(fp1,"Número de Nusselt máximo: %f \n", NusseltMax);
+			fprintf(fp1,"Posición Y del número de Nusselt máximo (m): %f \n", MESH.MP[LP(0,ImaxNu,0,1)]);
+			fprintf(fp1, "\n");
+			fprintf(fp1,"Número de Nusselt mínimo: %f \n", NusseltMin);
+			fprintf(fp1,"Posición Y del número de Nusselt mínimo (m): %f \n", MESH.MP[LP(0,IminNu,0,1)]);
+					
+		fclose(fp1);
+
+}
+
+
+
 
 /*
 //Pasar los resultados de las matrices locales a un VTK en 3D

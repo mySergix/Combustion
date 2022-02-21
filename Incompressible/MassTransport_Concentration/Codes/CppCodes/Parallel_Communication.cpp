@@ -45,7 +45,7 @@ MPI_Status ST;
 	}
 
 	if(Rango != Procesos - 1){
-		MPI_Recv(&LocalReceive[LU(Fx[Rango] + 1, - Halo, - Halo, 0)], (Halo)*(NY + 2*Halo)*(NZ + 2*Halo), MPI_DOUBLE, Rango+1, 0, MPI_COMM_WORLD, &ST);
+		MPI_Recv(&LocalReceive[LU(Fx[Rango], - Halo, - Halo, 0)], (Halo)*(NY + 2*Halo)*(NZ + 2*Halo), MPI_DOUBLE, Rango+1, 0, MPI_COMM_WORLD, &ST);
 	}
 	
 }

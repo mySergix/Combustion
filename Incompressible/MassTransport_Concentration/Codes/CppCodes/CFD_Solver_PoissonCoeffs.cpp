@@ -120,25 +120,27 @@ MaxDiffGS = 2.0*ConvergenciaGS;
         // Pressure Halo Communication
         P1.CommunicateDataLP(P.Pres, P.Pres);
 
-        for (i = Ix[Rango]; i < Fx[Rango]; i++){
-            for (j = 1; j < NY; j++){
-                for (k = 0; k < NZ; k++){
-                    P.Pres[LP(i,j,k,0)] = (A.aw[LA(i,j,k,0)]*P.Pres[LP(i-1,j,k,0)] + A.ae[LA(i,j,k,0)]*P.Pres[LP(i+1,j,k,0)] + A.as[LA(i,j,k,0)]*P.Pres[LP(i,j-1,k,0)] + A.an[LA(i,j,k,0)]*P.Pres[LP(i,j+1,k,0)] + A.ah[LA(i,j,k,0)]*P.Pres[LP(i,j,k-1,0)] + A.at[LA(i,j,k,0)]*P.Pres[LP(i,j,k+1,0)] + A.bp[LA(i,j,k,0)])/A.ap[LA(i,j,k,0)];
+            for (i = Ix[Rango]; i < Fx[Rango]; i++){
+                for (j = 1; j < NY; j++){
+                    for (k = 0; k < NZ; k++){
+                        P.Pres[LP(i,j,k,0)] = (A.aw[LA(i,j,k,0)]*P.Pres[LP(i-1,j,k,0)] + A.ae[LA(i,j,k,0)]*P.Pres[LP(i+1,j,k,0)] + A.as[LA(i,j,k,0)]*P.Pres[LP(i,j-1,k,0)] + A.an[LA(i,j,k,0)]*P.Pres[LP(i,j+1,k,0)] + A.ah[LA(i,j,k,0)]*P.Pres[LP(i,j,k-1,0)] + A.at[LA(i,j,k,0)]*P.Pres[LP(i,j,k+1,0)] + A.bp[LA(i,j,k,0)])/A.ap[LA(i,j,k,0)];
+                    }
                 }
             }
-        }
-
-        for (i = Ix[Rango]; i < Fx[Rango]; i++){
-            for (k = 0; k < NZ; k++){
-                P.Pres[LP(i,0,k,0)] = 0.0;
+        
+           
+            for (i = Ix[Rango]; i < Fx[Rango]; i++){
+                for (k = 0; k < NZ; k++){
+                    P.Pres[LP(i,0,k,0)] = 0.0;
+                }
             }
-        }
+        
 
         MaxDiffGS = 0.0;
 
 		for(i = Ix[Rango]; i < Fx[Rango]; i++){
             for(j = 0; j < NY; j++){
-			    for(k = 0; k < NZ; k++){	
+			    for(k = 0; k < NZ-1; k++){	
                     MaxDiffGS += (abs(P.Pres[LP(i,j,k,0)] - P.Sup[LA(i,j,k,0)]) - MaxDiffGS) * (abs(P.Pres[LP(i,j,k,0)] - P.Sup[LA(i,j,k,0)]) >= MaxDiffGS);
 					P.Sup[LA(i,j,k,0)] = P.Pres[LP(i,j,k,0)];
 				}

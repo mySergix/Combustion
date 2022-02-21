@@ -44,7 +44,7 @@ Mesher::Mesher(Memory M1, ReadData R1, Parallel P1){
         Ix[i] = P1.Ix[i];
         Fx[i] = P1.Fx[i];
     }
-
+	
 }
 
 #include "Matrix_Index.cpp"
@@ -102,7 +102,7 @@ int i, j, k;
 				DeltasMU[LU(NX,j,k,1)] = MV[LV(NX-1,j+1,k,1)] - MV[LV(NX-1,j,k,1)]; //Delta Y Parte Derecha
 				DeltasMU[LU(NX,j,k,2)] = MW[LW(NX-1,j,k+1,2)] - MW[LW(NX-1,j,k,2)]; //Delta Z Parte Derecha
 
-				for(i = Ix[Rango]; i < Fx[Rango]; i++){
+				for(i = Ix[Rango] - 1; i < Fx[Rango]; i++){
 					DeltasMU[LU(i,j,k,0)] = MP[LP(i,j,k,0)] - MP[LP(i-1,j,k,0)]; // Delta X
 					DeltasMU[LU(i,j,k,1)] = MV[LV(i,j+1,k,1)] - MV[LV(i,j,k,1)]; // Delta Y
 					DeltasMU[LU(i,j,k,2)] = MW[LW(i,j,k+1,2)] - MW[LW(i,j,k,2)]; // Delta Z

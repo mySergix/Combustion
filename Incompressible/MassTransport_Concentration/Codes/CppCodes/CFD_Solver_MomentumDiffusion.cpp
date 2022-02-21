@@ -308,10 +308,10 @@ int i, j, k;
 				W.Diffusive[LW(i,j,k,0)] = (mu/(Rho*MESH.VolMW[LW(i,j,k,0)]))*(
 										 + MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i+1,j,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMU[LU(i+1,j,k,0)]
                                          - MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i-1,j,k,0)]) / MESH.DeltasMU[LU(i,j,k,0)]
-										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,0)]
-                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,0)]
+										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
+                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,1)]
 										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k+1,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,2)]
-										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
+										 - MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
 										 );
 			}
 		}
@@ -324,10 +324,10 @@ int i, j, k;
 			W.Diffusive[LW(i,j,k,0)] = (mu/(Rho*MESH.VolMW[LW(i,j,k,0)]))*(
 										 + MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i+1,j,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMU[LU(i+1,j,k,0)]
                                          - MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i-1,j,k,0)]) / MESH.DeltasMU[LU(i,j,k,0)]
-										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,0)]
-                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Bottom[BOTTOM(i,j,k)]) / MESH.DeltasMV[LV(i,j,k,0)]
+										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
+                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Bottom[BOTTOM(i,j,k)]) / MESH.DeltasMV[LV(i,j,k,1)]
 										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k+1,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,2)]
-										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
+										 - MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
 										 );
 		}
     }
@@ -339,10 +339,10 @@ int i, j, k;
 				W.Diffusive[LW(i,j,k,0)] = (mu/(Rho*MESH.VolMW[LW(i,j,k,0)]))*(
 										 + MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i+1,j,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMU[LU(i+1,j,k,0)]
                                          - MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i-1,j,k,0)]) / MESH.DeltasMU[LU(i,j,k,0)]
-										 + MESH.SupMW[LW(i,j,k,1)] * (W.Top[TOP(i,j,k)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,0)]
-                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,0)]
+										 + MESH.SupMW[LW(i,j,k,1)] * (W.Top[TOP(i,j,k)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
+                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,1)]
 										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k+1,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,2)]
-										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
+										 - MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
 										 );
 		}
     }
@@ -355,10 +355,10 @@ int i, j, k;
 				W.Diffusive[LW(i,j,k,0)] = (mu/(Rho*MESH.VolMW[LW(i,j,k,0)]))*(
 										 + MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i+1,j,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMU[LU(i+1,j,k,0)]
                                          - MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i,j,k,0)] - W.Left[LEFT(i,j,k)]) / MESH.DeltasMU[LU(i,j,k,0)]
-										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,0)]
-                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,0)]
+										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
+                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,1)]
 										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k+1,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,2)]
-										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
+										 - MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
 										 );
 			}
 		}
@@ -369,10 +369,10 @@ int i, j, k;
 			W.Diffusive[LW(i,j,k,0)] = (mu/(Rho*MESH.VolMW[LW(i,j,k,0)]))*(
 										 + MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i+1,j,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMU[LU(i+1,j,k,0)]
                                          - MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i,j,k,0)] - W.Left[LEFT(i,j,k)]) / MESH.DeltasMU[LU(i,j,k,0)]
-										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,0)]
-                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Bottom[BOTTOM(i,j,k)]) / MESH.DeltasMV[LV(i,j,k,0)]
+										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
+                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Bottom[BOTTOM(i,j,k)]) / MESH.DeltasMV[LV(i,j,k,1)]
 										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k+1,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,2)]
-										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
+										 - MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
 										 );
 		}
     
@@ -382,10 +382,10 @@ int i, j, k;
 				W.Diffusive[LW(i,j,k,0)] = (mu/(Rho*MESH.VolMW[LW(i,j,k,0)]))*(
 										 + MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i+1,j,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMU[LU(i+1,j,k,0)]
                                          - MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i,j,k,0)] - W.Left[LEFT(i,j,k)]) / MESH.DeltasMU[LU(i,j,k,0)]
-										 + MESH.SupMW[LW(i,j,k,1)] * (W.Top[TOP(i,j,k)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,0)]
-                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,0)]
+										 + MESH.SupMW[LW(i,j,k,1)] * (W.Top[TOP(i,j,k)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
+                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,1)]
 										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k+1,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,2)]
-										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
+										 - MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
 										 );
 		}
 
@@ -398,10 +398,10 @@ int i, j, k;
 				W.Diffusive[LW(i,j,k,0)] = (mu/(Rho*MESH.VolMW[LW(i,j,k,0)]))*(
 										 + MESH.SupMW[LW(i,j,k,0)] * (W.Right[RIGHT(i,j,k)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMU[LU(i+1,j,k,0)]
                                          - MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i-1,j,k,0)]) / MESH.DeltasMU[LU(i,j,k,0)]
-										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,0)]
-                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,0)]
+										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
+                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,1)]
 										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k+1,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,2)]
-										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
+										 - MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
 										 );
 			}
 		}
@@ -412,10 +412,10 @@ int i, j, k;
 			W.Diffusive[LW(i,j,k,0)] = (mu/(Rho*MESH.VolMW[LW(i,j,k,0)]))*(
 										 + MESH.SupMW[LW(i,j,k,0)] * (W.Right[RIGHT(i,j,k)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMU[LU(i+1,j,k,0)]
                                          - MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i-1,j,k,0)]) / MESH.DeltasMU[LU(i,j,k,0)]
-										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,0)]
-                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Bottom[BOTTOM(i,j,k)]) / MESH.DeltasMV[LV(i,j,k,0)]
+										 + MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j+1,k,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
+                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Bottom[BOTTOM(i,j,k)]) / MESH.DeltasMV[LV(i,j,k,1)]
 										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k+1,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,2)]
-										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
+										 - MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
 										 );
 		}
 
@@ -425,10 +425,10 @@ int i, j, k;
 				W.Diffusive[LW(i,j,k,0)] = (mu/(Rho*MESH.VolMW[LW(i,j,k,0)]))*(
 										 + MESH.SupMW[LW(i,j,k,0)] * (W.Right[RIGHT(i,j,k)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMU[LU(i+1,j,k,0)]
                                          - MESH.SupMW[LW(i,j,k,0)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i-1,j,k,0)]) / MESH.DeltasMU[LU(i,j,k,0)]
-										 + MESH.SupMW[LW(i,j,k,1)] * (W.Top[TOP(i,j,k)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,0)]
-                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,0)]
+										 + MESH.SupMW[LW(i,j,k,1)] * (W.Top[TOP(i,j,k)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMV[LV(i,j+1,k,1)]
+                                         - MESH.SupMW[LW(i,j,k,1)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j-1,k,0)]) / MESH.DeltasMV[LV(i,j,k,1)]
 										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k+1,0)] - W.Pres[LW(i,j,k,0)]) / MESH.DeltasMP[LP(i,j,k,2)]
-										 + MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
+										 - MESH.SupMW[LW(i,j,k,2)] * (W.Pres[LW(i,j,k,0)] - W.Pres[LW(i,j,k-1,0)]) / MESH.DeltasMP[LP(i,j,k-1,2)]
 										 );
 		}
 

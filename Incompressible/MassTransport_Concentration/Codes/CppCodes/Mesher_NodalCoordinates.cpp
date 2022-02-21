@@ -207,6 +207,7 @@ double nz = NZ;
 		for (i = 0; i < NX; i++){
 			for (j = 0; j < NY; j++){
 				for (k = 0; k < NZ; k++){
+					I = i;
 					GlobalMeshP[GP(i,j,k,0)] = 0.50 * ((Xdominio/2.0)*(1.0 + (tanh(SFX*((2.0*I - nx)/nx)) + tanh(SFX))/tanh(SFX) - 1.0) + (Xdominio/2.0)*(1.0 + (tanh(SFX*((2.0*(I+1) - nx)/nx)) + tanh(SFX))/tanh(SFX) - 1.0));
 				}
 			}
@@ -229,6 +230,7 @@ double nz = NZ;
 		for (i = 0; i < NX; i++){
 			for (j = 0; j < NY; j++){
 				for (k = 0; k < NZ; k++){
+					J = j;
 					GlobalMeshP[GP(i,j,k,1)] = 0.50 * ((Ydominio/2.0)*(1.0 + (tanh(SFY*((2.0*J - ny)/ny)) + tanh(SFY))/tanh(SFY) - 1.0) + (Ydominio/2.0)*(1.0 + (tanh(SFY*((2.0*(J+1) - ny)/ny)) + tanh(SFY))/tanh(SFY) - 1.0));
 				}
 			}
@@ -251,6 +253,7 @@ double nz = NZ;
 		for (i = 0; i < NX; i++){
 			for (j = 0; j < NY; j++){
 				for (k = 0; k < NZ; k++){
+					K = k;
 					GlobalMeshP[GP(i,j,k,2)] = 0.50 * ((Zdominio/2.0)*(1.0 + (tanh(SFZ*((2.0*K - nz)/nz)) + tanh(SFZ))/tanh(SFZ) - 1.0) + (Zdominio/2.0)*(1.0 + (tanh(SFZ*((2.0*(K+1) - nz)/nz)) + tanh(SFZ))/tanh(SFZ) - 1.0));
 				}
 			}

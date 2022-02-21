@@ -1,0 +1,8 @@
+set xrange[0:1]
+set key default
+set title "U Velocities at the mean vertical line, RE 400"
+set xlabel "Y Coordinate (m)"
+set ylabel "Velocity U (m/s)"
+plot "GraficaU_Journal.txt" using 1:2 w points ps 3 linecolor "black" title "Ghia et Al", \
+     "VerticalData_RE_400.txt" using 7:1 w lines linecolor "blue" title "Results obtained"
+

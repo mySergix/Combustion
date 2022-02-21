@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------------------------//
 
 // Function to set the initial fields
-void CFD_Solver::Get_InitialConditions(){
+void CFD_Solver::Get_InitialConditions(Mesher MESH){
 int i, j, k;
 
 	// Pressure
@@ -16,11 +16,13 @@ int i, j, k;
 	}
 	
 	// Velocity U
+	double m = 1.7 + 0.50 * pow(gamma_geometry, -1.40);
+    double n = 2 + 0.30 * (gamma_geometry - 1.0/3.0);
 	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){	
-				U.Pres[LU(i,j,k,0)] = 0.0;
-				U.Fut[LU(i,j,k,0)] = 0.0;
+				U.Pres[LU(i,j,k,0)] = 0.0;//w_av * ((m+1)/m) * ((n+1)/n) * (1.0 - pow(MESH.MU[LU(i,j,k,1)]/Ydominio, n)) * (1.0 - pow(MESH.MU[LU(i,j,k,2)]/Zdominio, m));
+				U.Fut[LU(i,j,k,0)] = 0.0;//w_av * ((m+1)/m) * ((n+1)/n) * (1.0 - pow(MESH.MU[LU(i,j,k,1)]/Ydominio, n)) * (1.0 - pow(MESH.MU[LU(i,j,k,2)]/Zdominio, m));
 
 				U.Convective[LU(i,j,k,0)] = 0.0;
 				U.Diffusive[LU(i,j,k,0)] = 0.0;	
@@ -43,21 +45,24 @@ int i, j, k;
 	}
 
     // Velocity W
+	
+	
 	for(i = Ix[Rango]; i < Fx[Rango]; i++){
 		for(j = 0; j < NY; j++){
-			for(k = 0; k < NZ + 1; k++){	
+			for(k = 0; k < NZ; k++){	
 				W.Pres[LW(i,j,k,0)] = 0.0;
 				W.Fut[LW(i,j,k,0)] = 0.0;
-
+				
 				W.Convective[LW(i,j,k,0)] = 0.0;
 				W.Diffusive[LW(i,j,k,0)] = 0.0;	
 			}
 		}
 	}
-
+double J;
 	// Temperature T
-	for(i = Ix[Rango]; i < Fx[Rango]; i++){
+	for(i = Ix[Rango]; i < Fx[Rango]; i++){	
 		for(j = 0; j < NY; j++){
+			J = j;
 			for(k = 0; k < NZ; k++){	
 				T.Pres[LP(i,j,k,0)] = To;
 				T.Fut[LP(i,j,k,0)] = To;
@@ -72,7 +77,7 @@ int i, j, k;
 
 //Cálculo del tiempo entre Steps
 void CFD_Solver::Get_StepTime(Mesher MESH, Parallel P1){
-int i, j , k;
+int i, j, k;
 DeltaT = 1000.0;
 double Tpar = 0.05;
 
@@ -83,7 +88,7 @@ double Tpar = 0.05;
 	for(i = Ix[Rango]; i < Fx[Rango]; i++){
 		for(j = 0; j < NY; j++){
 			for(k = 0; k < NZ; k++){	
-	
+				
 				// CFL Velocities (U, V, W)
 	
 				// Velocity U
@@ -111,8 +116,7 @@ double Tpar = 0.05;
 		}
 	}
 	
-	if(Problema == 2){
-
+	
 		for(i = Ix[Rango]; i < Fx[Rango]; i++){	
 			for(j = 0; j < NY; j++){
 				for(k = 0; k < NZ; k++){
@@ -132,7 +136,7 @@ double Tpar = 0.05;
 			}
 		}
 
-	}
+	
 
 	MPI_Allreduce(&DeltaT, &DeltaT, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
 
@@ -215,9 +219,9 @@ int i, j, k;
 
 	// Velocity V
 	for(i = Ix[Rango]; i < Fx[Rango]; i++){
-        for(j = 0; j < NY + 1; j++){
+        for(j = 1; j < NY; j++){
 		    for(k = 0; k < NZ; k++){
-				V.ContributionPres[LV(i,j,k,0)] = V.Diffusive[LV(i,j,k,0)] - V.Convective[LV(i,j,k,0)] + V.Boussinesq[LV(i,j,k,0)] + V.Boussinesq_C[LV(i,j,k,0)];
+				V.ContributionPres[LV(i,j,k,0)] = V.Diffusive[LV(i,j,k,0)] - V.Convective[LV(i,j,k,0)] - V.Boussinesq[LV(i,j,k,0)] - V.Boussinesq_C[LV(i,j,k,0)];
 			}
 		}
 	}
@@ -225,7 +229,7 @@ int i, j, k;
     // Velocity V
 	for(i = Ix[Rango]; i < Fx[Rango]; i++){
         for(j = 0; j < NY; j++){
-		    for(k = 0; k < NZ + 1; k++){
+		    for(k = 1; k < NZ; k++){
 				W.ContributionPres[LW(i,j,k,0)] = W.Diffusive[LW(i,j,k,0)] - W.Convective[LW(i,j,k,0)];
 			}
 		}
@@ -286,10 +290,10 @@ int i, j, k;
 MaxDiffGlobal = 0.0;
 
 	// Velocity U
-	for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+	for(i = Ix[Rango]; i < Fx[Rango]; i++){
         for(j = 0; j < NY; j++){
 		    for(k = 0; k < NZ; k++){
-				MaxDiffGlobal += (abs((U.Fut[LU(i,j,k,0)] - U.Pres[LU(i,j,k,0)])/(U.Pres[LU(i,j,k,0)] + 1e-10)) - MaxDiffGlobal)*(abs((U.Fut[LU(i,j,k,0)] - U.Pres[LU(i,j,k,0)])/(U.Pres[LU(i,j,k,0)] + 1e-10)) >= MaxDiffGlobal);
+				MaxDiffGlobal += (abs((U.Fut[LU(i,j,k,0)] - U.Pres[LU(i,j,k,0)])/(U.Pres[LU(i,j,k,0)] + 1e-15)) - MaxDiffGlobal)*(abs((U.Fut[LU(i,j,k,0)] - U.Pres[LU(i,j,k,0)])/(U.Pres[LU(i,j,k,0)] + 1e-15)) >= MaxDiffGlobal);
 			}
 		}
 	}
@@ -302,7 +306,7 @@ MaxDiffGlobal = 0.0;
 			}
 		}
 	}
-/*
+
 	// Velocity W
 	for(i = Ix[Rango]; i < Fx[Rango]; i++){
         for(j = 0; j < NY; j++){
@@ -311,7 +315,8 @@ MaxDiffGlobal = 0.0;
 			}
 		}
 	}
-*/
+	
+
 	// Temperature T
 	for(i = Ix[Rango]; i < Fx[Rango]; i++){
         for(j = 0; j < NY; j++){
@@ -330,7 +335,7 @@ void CFD_Solver::Get_Update(){
 int i, j, k;
 
 	// Velocity U
-    for(i = Ix[Rango]; i < Fx[Rango] + 1; i++){
+    for(i = Ix[Rango] - 1; i < Fx[Rango] + 1; i++){
         for(j = 0; j < NY; j++){
 		    for(k = 0; k < NZ; k++){
 				U.Pres[LU(i,j,k,0)] = U.Fut[LU(i,j,k,0)];
@@ -365,6 +370,16 @@ int i, j, k;
 		    for(k = 0; k < NZ; k++){
 				T.Pres[LP(i,j,k,0)] = T.Fut[LP(i,j,k,0)];
                 T.ContributionPast[LP(i,j,k,0)] = T.ContributionPres[LP(i,j,k,0)];
+            }
+		}
+	}
+
+	// Concentration
+    for(i = Ix[Rango]; i < Fx[Rango]; i++){
+        for(j = 0; j < NY; j++){
+		    for(k = 0; k < NZ; k++){
+				Species[0].C_Pres[LP(i,j,k,0)] = Species[0].C_Fut[LP(i,j,k,0)];
+                Species[0].ContributionPast[LP(i,j,k,0)] = Species[0].ContributionPres[LP(i,j,k,0)];
             }
 		}
 	}
@@ -426,7 +441,7 @@ int i, j, k;
             W.Fut[LW(i,j,0,0)] = W.Here[HERE(i,j,0)];
 
             // There
-            W.Fut[LW(i,j,NZ,0)] = W.Fut[LW(i,j,0,0)];
+            W.Fut[LW(i,j,NZ,0)] = W.There[THERE(i,j,NZ)];
 
 		    for(k = 1; k < NZ; k++){		
 				W.Fut[LW(i,j,k,0)] = W.Predictor[LW(i,j,k,0)] - (DeltaT / Rho) * ((P.Pres[LP(i,j,k,0)] - P.Pres[LP(i,j,k-1,0)]) / MESH.DeltasMW[LW(i,j,k,2)]);
@@ -437,14 +452,14 @@ int i, j, k;
 }
 
 // Function to calculate the concentration buoyancy term of the velocity
-void CFD_Solver::Get_ConcentrationBuoyancy(Mesher MESH, Species_Solver SPE_S1, int SP){
+void CFD_Solver::Get_ConcentrationBuoyancy(Mesher MESH, int SP){
 int i, j, k;
 double Conc;
 
     for (i = Ix[Rango]; i < Fx[Rango]; i++){
         for (j = 1; j < NY - 1; j++){
             for (k = 0; k < NZ; k++){
-                Conc = ConvectiveScheme(MESH.MV[LV(i,j,k,1)], V.Pres[LV(i,j,k,0)], MESH.MP[LP(i,j-2,k,1)], SPE_S1.Species[SP].C_Pres[LP(i,j-2,k,0)], MESH.MP[LP(i,j-1,k,1)], SPE_S1.Species[SP].C_Pres[LP(i,j-1,k,0)], MESH.MP[LP(i,j,k,1)], SPE_S1.Species[SP].C_Pres[LP(i,j,k,0)], MESH.MP[LP(i,j+1,k,1)], SPE_S1.Species[SP].C_Pres[LP(i,j+1,k,0)], EsquemaLargo);
+                Conc = ConvectiveScheme(MESH.MV[LV(i,j,k,1)], V.Pres[LV(i,j,k,0)], MESH.MP[LP(i,j-2,k,1)], Species[SP].C_Pres[LP(i,j-2,k,0)], MESH.MP[LP(i,j-1,k,1)], Species[SP].C_Pres[LP(i,j-1,k,0)], MESH.MP[LP(i,j,k,1)], Species[SP].C_Pres[LP(i,j,k,0)], MESH.MP[LP(i,j+1,k,1)], Species[SP].C_Pres[LP(i,j+1,k,0)], EsquemaLargo);
                 V.Boussinesq_C[LV(i,j,k,0)] = V.Gravity * Beta_Concentration * (Conc - Co);
             }
         }
